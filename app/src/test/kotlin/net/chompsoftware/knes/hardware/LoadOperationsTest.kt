@@ -2,210 +2,221 @@ package net.chompsoftware.knes.hardware
 
 import net.chompsoftware.knes.HardwareInterrogator
 import net.chompsoftware.knes.setupMemory
-import kotlin.test.Test
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
+
 
 @ExperimentalUnsignedTypes
 class LoadOperationsTest {
-    @Test
-    fun `LDA Immediate`() {
-        val memory = BasicMemory(setupMemory(LDA_I, 0x01u))
 
-        val interrogator = HardwareInterrogator(CpuState(), memory)
+    @Nested
+    inner class LDA {
+        @Test
+        fun `Immediate`() {
+            val memory = BasicMemory(setupMemory(LDA_I, 0x01u))
 
-        interrogator.processInstruction()
+            val interrogator = HardwareInterrogator(CpuState(), memory)
 
-        interrogator.assertCycleLog {
-            cycle {
-                memoryRead(0, LDA_I)
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LDA_I)
+                }
+                cycle {
+                    memoryRead(1, 0x01u)
+                }
             }
-            cycle {
-                memoryRead(1, 0x01u)
-            }
-        }
 
-        interrogator.assertCpuState {
-            programCounter(2)
-            aReg(0x1u)
-        }
-    }
-
-    @Test
-    fun `LDA Immediate with Negative Flag set`() {
-        val memory = BasicMemory(setupMemory(LDA_I, 0x81u))
-
-        val interrogator = HardwareInterrogator(CpuState(), memory)
-
-        interrogator.processInstruction()
-
-        interrogator.assertCpuState {
-            programCounter(2)
-            aReg(0x81u)
-            isNegativeFlag(true)
-        }
-
-        interrogator.assertCycleLog {
-            cycle {
-                memoryRead(0, LDA_I)
-            }
-            cycle {
-                memoryRead(1, 0x81u)
-            }
-        }
-    }
-
-    @Test
-    fun `LDA Immediate with Zero Flag set`() {
-        val memory = BasicMemory(setupMemory(LDA_I, 0x0u))
-
-        val interrogator = HardwareInterrogator(CpuState(), memory)
-
-        interrogator.processInstruction()
-
-        interrogator.assertCpuState {
-            programCounter(2)
-            aReg(0x0u)
-            isZeroFlag(true)
-        }
-
-        interrogator.assertCycleLog {
-            cycle {
-                memoryRead(0, LDA_I)
-            }
-            cycle {
-                memoryRead(1, 0x0u)
-            }
-        }
-    }
-
-    @Test
-    fun `LDA Absolute`() {
-        val memory = BasicMemory(setupMemory(LDA_AB, 0x04u, 0x00u, NOP, 0x99u))
-
-        val interrogator = HardwareInterrogator(CpuState(), memory)
-
-        interrogator.processInstruction()
-
-        interrogator.assertCycleLog {
-            cycle {
-                memoryRead(0, LDA_AB)
-            }
-            cycle {
-                memoryRead(1, 0x4u)
-            }
-            cycle {
-                memoryRead(2, 0x0u)
-            }
-            cycle {
-                memoryRead(4, 0x99u)
+            interrogator.assertCpuState {
+                programCounter(2)
+                aReg(0x1u)
             }
         }
 
-        interrogator.assertCpuState {
-            programCounter(3)
-            aReg(0x99u)
-            isNegativeFlag(true)
-        }
-    }
 
+        @Test
+        fun `LDA Immediate with Negative Flag set`() {
+            val memory = BasicMemory(setupMemory(LDA_I, 0x81u))
 
-    @Test
-    fun `LDX Immediate`() {
-        val memory = BasicMemory(setupMemory(LDX_I, 0x01u))
+            val interrogator = HardwareInterrogator(CpuState(), memory)
 
-        val interrogator = HardwareInterrogator(CpuState(), memory)
+            interrogator.processInstruction()
 
-        interrogator.processInstruction()
-
-        interrogator.assertCycleLog {
-            cycle {
-                memoryRead(0, LDX_I)
+            interrogator.assertCpuState {
+                programCounter(2)
+                aReg(0x81u)
+                isNegativeFlag(true)
             }
-            cycle {
-                memoryRead(1, 0x01u)
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LDA_I)
+                }
+                cycle {
+                    memoryRead(1, 0x81u)
+                }
             }
         }
 
-        interrogator.assertCpuState {
-            programCounter(2)
-            xReg(0x1u)
-        }
-    }
+        @Test
+        fun `LDA Immediate with Zero Flag set`() {
+            val memory = BasicMemory(setupMemory(LDA_I, 0x0u))
 
-    @Test
-    fun `LDX Immediate with Negative Flag set`() {
-        val memory = BasicMemory(setupMemory(LDX_I, 0x81u))
+            val interrogator = HardwareInterrogator(CpuState(), memory)
 
-        val interrogator = HardwareInterrogator(CpuState(), memory)
+            interrogator.processInstruction()
 
-        interrogator.processInstruction()
-
-        interrogator.assertCpuState {
-            programCounter(2)
-            xReg(0x81u)
-            isNegativeFlag(true)
-        }
-
-        interrogator.assertCycleLog {
-            cycle {
-                memoryRead(0, LDX_I)
+            interrogator.assertCpuState {
+                programCounter(2)
+                aReg(0x0u)
+                isZeroFlag(true)
             }
-            cycle {
-                memoryRead(1, 0x81u)
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LDA_I)
+                }
+                cycle {
+                    memoryRead(1, 0x0u)
+                }
+            }
+        }
+
+        @Test
+        fun `LDA Absolute`() {
+            val memory = BasicMemory(setupMemory(LDA_AB, 0x04u, 0x00u, NOP, 0x99u))
+
+            val interrogator = HardwareInterrogator(CpuState(), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LDA_AB)
+                }
+                cycle {
+                    memoryRead(1, 0x4u)
+                }
+                cycle {
+                    memoryRead(2, 0x0u)
+                }
+                cycle {
+                    memoryRead(4, 0x99u)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(3)
+                aReg(0x99u)
+                isNegativeFlag(true)
             }
         }
     }
 
-    @Test
-    fun `LDX Immediate with Zero Flag set`() {
-        val memory = BasicMemory(setupMemory(LDX_I, 0x0u))
+    @Nested
+    inner class LDX {
 
-        val interrogator = HardwareInterrogator(CpuState(), memory)
 
-        interrogator.processInstruction()
+        @Test
+        fun `LDX Immediate`() {
+            val memory = BasicMemory(setupMemory(LDX_I, 0x01u))
 
-        interrogator.assertCpuState {
-            programCounter(2)
-            xReg(0x0u)
-            isZeroFlag(true)
-        }
+            val interrogator = HardwareInterrogator(CpuState(), memory)
 
-        interrogator.assertCycleLog {
-            cycle {
-                memoryRead(0, LDX_I)
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LDX_I)
+                }
+                cycle {
+                    memoryRead(1, 0x01u)
+                }
             }
-            cycle {
-                memoryRead(1, 0x0u)
-            }
-        }
-    }
 
-    @Test
-    fun `LDX Absolute`() {
-        val memory = BasicMemory(setupMemory(LDX_AB, 0x04u, 0x00u, NOP, 0x99u))
-
-        val interrogator = HardwareInterrogator(CpuState(), memory)
-
-        interrogator.processInstruction()
-
-        interrogator.assertCycleLog {
-            cycle {
-                memoryRead(0, LDX_AB)
-            }
-            cycle {
-                memoryRead(1, 0x4u)
-            }
-            cycle {
-                memoryRead(2, 0x0u)
-            }
-            cycle {
-                memoryRead(4, 0x99u)
+            interrogator.assertCpuState {
+                programCounter(2)
+                xReg(0x1u)
             }
         }
 
-        interrogator.assertCpuState {
-            programCounter(3)
-            xReg(0x99u)
-            isNegativeFlag(true)
+        @Test
+        fun `LDX Immediate with Negative Flag set`() {
+            val memory = BasicMemory(setupMemory(LDX_I, 0x81u))
+
+            val interrogator = HardwareInterrogator(CpuState(), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCpuState {
+                programCounter(2)
+                xReg(0x81u)
+                isNegativeFlag(true)
+            }
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LDX_I)
+                }
+                cycle {
+                    memoryRead(1, 0x81u)
+                }
+            }
+        }
+
+        @Test
+        fun `LDX Immediate with Zero Flag set`() {
+            val memory = BasicMemory(setupMemory(LDX_I, 0x0u))
+
+            val interrogator = HardwareInterrogator(CpuState(), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCpuState {
+                programCounter(2)
+                xReg(0x0u)
+                isZeroFlag(true)
+            }
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LDX_I)
+                }
+                cycle {
+                    memoryRead(1, 0x0u)
+                }
+            }
+        }
+
+        @Test
+        fun `LDX Absolute`() {
+            val memory = BasicMemory(setupMemory(LDX_AB, 0x04u, 0x00u, NOP, 0x99u))
+
+            val interrogator = HardwareInterrogator(CpuState(), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LDX_AB)
+                }
+                cycle {
+                    memoryRead(1, 0x4u)
+                }
+                cycle {
+                    memoryRead(2, 0x0u)
+                }
+                cycle {
+                    memoryRead(4, 0x99u)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(3)
+                xReg(0x99u)
+                isNegativeFlag(true)
+            }
         }
     }
 }

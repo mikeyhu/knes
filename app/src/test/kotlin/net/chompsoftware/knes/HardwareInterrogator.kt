@@ -1,7 +1,8 @@
 package net.chompsoftware.knes
 
 import net.chompsoftware.knes.hardware.*
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+
 
 @ExperimentalUnsignedTypes
 class HardwareInterrogator(private val cpuState: CpuState, private val memory: Memory) {
