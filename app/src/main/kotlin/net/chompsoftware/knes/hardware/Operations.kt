@@ -65,16 +65,36 @@ class ImmediateMemoryOperation(vararg postEffects: Effect) : EffectPipeline(
 
 @ExperimentalUnsignedTypes
 class AbsoluteMemoryOperation(vararg postEffects: Effect) : EffectPipeline(
-    AbsoluteReadArgument1,
-    AbsoluteReadArgument2,
+    ReadArgument1,
+    ReadArgument2,
     AbsoluteRead,
     *postEffects
 )
 
 @ExperimentalUnsignedTypes
-val instructionMap: Map<UByte, EffectPipeline> = mapOf(
+class ZeroPageOperation(vararg postEffects: Effect) : EffectPipeline(
+    ReadArgument1,
+    ZeroPageRead,
+    *postEffects
+)
+
+@ExperimentalUnsignedTypes
+val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
+    //Load Accumulator
     LDA_I to ImmediateMemoryOperation(ReadIntoAccumulator),
     LDA_AB to AbsoluteMemoryOperation(ReadIntoAccumulator),
+    LDA_Z to ZeroPageOperation(ReadIntoAccumulator),
     LDX_I to ImmediateMemoryOperation(ReadIntoX),
+
+    //Load X
     LDX_AB to AbsoluteMemoryOperation(ReadIntoX),
 )
+
+@ExperimentalUnsignedTypes
+val instructionMap: Map<UByte, EffectPipeline> = mapOf(*instructionList).also {
+    if (it.size != instructionList.size) {
+        throw Error("instructionMap size incorrect")
+    }
+}
+
+

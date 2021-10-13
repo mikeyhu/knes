@@ -111,6 +111,33 @@ class LoadOperationsTest {
                 isNegativeFlag(true)
             }
         }
+
+        @Test
+        fun `LDA ZeroPage`() {
+            val memory = BasicMemory(setupMemory(LDA_Z, 0x03u, NOP, 0x99u))
+
+            val interrogator = HardwareInterrogator(CpuState(), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LDA_Z)
+                }
+                cycle {
+                    memoryRead(1, 0x3u)
+                }
+                cycle {
+                    memoryRead(3, 0x99u)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+                aReg(0x99u)
+                isNegativeFlag(true)
+            }
+        }
     }
 
     @Nested

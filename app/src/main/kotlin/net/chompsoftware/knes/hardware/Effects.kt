@@ -6,17 +6,25 @@ abstract class Effect {
     open fun requiresCycle(): Boolean = true
 }
 
-object AbsoluteReadArgument1 : Effect() {
+object ReadArgument1 : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         operationState.argument1 = memory[cpuState.programCounterWithIncrement()]
     }
 }
 
-object AbsoluteReadArgument2 : Effect() {
+object ReadArgument2 : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         operationState.argument2 = memory[cpuState.programCounterWithIncrement()]
+    }
+}
+
+object ZeroPageRead : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        if (operationState.argument1 == null) throw Error("argument1 not supplied")
+        operationState.memoryRead = memory[operationState.argument1!!.toInt()]
     }
 }
 
