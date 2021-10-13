@@ -16,9 +16,9 @@ class HardwareInterrogator(private val cpuState: CpuState, private val memory: M
     }
 
     fun processInstruction() {
-        val effectState = EffectState(0, null, null, null)
+        val effectState = OperationState(0, null, null, null)
         nextCycle()
-        var nextPipeline: EffectPipeline? = InstructionCheckEffectPipeline.run(cpuState, trackingMemory, effectState)
+        var nextPipeline: EffectPipeline? = Operation.run(cpuState, trackingMemory, effectState)
 
         while (nextPipeline != null) {
             nextCycle()

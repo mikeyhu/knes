@@ -3,7 +3,7 @@ package net.chompsoftware.knes.hardware
 import net.chompsoftware.knes.toHex
 import net.chompsoftware.knes.toInt16
 
-class EffectState(
+class OperationState(
     var pipelinePosition: Int,
     var memoryRead: UByte?,
     var argument1: UByte?,
@@ -25,8 +25,8 @@ class EffectState(
 }
 
 @ExperimentalUnsignedTypes
-object InstructionCheckEffectPipeline : EffectPipeline() {
-    override fun run(cpuState: CpuState, memory: Memory, effectState: EffectState): EffectPipeline {
+object Operation : EffectPipeline() {
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline {
         val instruction = memory[cpuState.programCounterWithIncrement()]
 
         return instructionMap.getOrElse(instruction) {
@@ -37,34 +37,34 @@ object InstructionCheckEffectPipeline : EffectPipeline() {
 
 @ExperimentalUnsignedTypes
 abstract class EffectPipeline(vararg var effects: Effect) {
-    open fun run(cpuState: CpuState, memory: Memory, effectState: EffectState): EffectPipeline? {
-        if (effects.size < effectState.pipelinePosition)
+    open fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline? {
+        if (effects.size < operationState.pipelinePosition)
             throw Error("Pipeline past end of effects")
-        if (effectState.cyclesRemaining > 0) {
-            effectState.cyclesRemaining -= 1
+        if (operationState.cyclesRemaining > 0) {
+            operationState.cyclesRemaining -= 1
             return this
         }
-        effects[effectState.pipelinePosition].run(cpuState, memory, effectState)
-        effectState.pipelinePosition++
-        while (effects.size > effectState.pipelinePosition && !effects[effectState.pipelinePosition].requiresCycle()) {
-            effects[effectState.pipelinePosition].run(cpuState, memory, effectState)
-            effectState.pipelinePosition++
+        effects[operationState.pipelinePosition].run(cpuState, memory, operationState)
+        operationState.pipelinePosition++
+        while (effects.size > operationState.pipelinePosition && !effects[operationState.pipelinePosition].requiresCycle()) {
+            effects[operationState.pipelinePosition].run(cpuState, memory, operationState)
+            operationState.pipelinePosition++
         }
-        if (effects.size > effectState.pipelinePosition)
+        if (effects.size > operationState.pipelinePosition)
             return this
-        effectState.reset()
+        operationState.reset()
         return null
     }
 }
 
 @ExperimentalUnsignedTypes
-class ImmediateMemoryEffectPipeline(vararg postEffects: Effect) : EffectPipeline(
+class ImmediateMemoryOperation(vararg postEffects: Effect) : EffectPipeline(
     ImmediateRead,
     *postEffects
 )
 
 @ExperimentalUnsignedTypes
-class AbsoluteMemoryEffectPipeline(vararg postEffects: Effect) : EffectPipeline(
+class AbsoluteMemoryOperation(vararg postEffects: Effect) : EffectPipeline(
     AbsoluteReadArgument1,
     AbsoluteReadArgument2,
     AbsoluteRead,
@@ -73,8 +73,8 @@ class AbsoluteMemoryEffectPipeline(vararg postEffects: Effect) : EffectPipeline(
 
 @ExperimentalUnsignedTypes
 val instructionMap: Map<UByte, EffectPipeline> = mapOf(
-    LDA_I to ImmediateMemoryEffectPipeline(ReadIntoAccumulator),
-    LDA_AB to AbsoluteMemoryEffectPipeline(ReadIntoAccumulator),
-    LDX_I to ImmediateMemoryEffectPipeline(ReadIntoX),
-    LDX_AB to AbsoluteMemoryEffectPipeline(ReadIntoX),
+    LDA_I to ImmediateMemoryOperation(ReadIntoAccumulator),
+    LDA_AB to AbsoluteMemoryOperation(ReadIntoAccumulator),
+    LDX_I to ImmediateMemoryOperation(ReadIntoX),
+    LDX_AB to AbsoluteMemoryOperation(ReadIntoX),
 )

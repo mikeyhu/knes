@@ -12,7 +12,7 @@ class LoadOperationsTest {
     @Nested
     inner class LDA {
         @Test
-        fun `Immediate`() {
+        fun `LDA Immediate`() {
             val memory = BasicMemory(setupMemory(LDA_I, 0x01u))
 
             val interrogator = HardwareInterrogator(CpuState(), memory)
@@ -33,7 +33,6 @@ class LoadOperationsTest {
                 aReg(0x1u)
             }
         }
-
 
         @Test
         fun `LDA Immediate with Negative Flag set`() {
@@ -116,7 +115,6 @@ class LoadOperationsTest {
 
     @Nested
     inner class LDX {
-
 
         @Test
         fun `LDX Immediate`() {
