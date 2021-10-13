@@ -178,4 +178,34 @@ class LoadOperationsTest {
             }
         }
     }
+
+    @Test
+    fun `LDX Absolute`() {
+        val memory = BasicMemory(setupMemory(LDX_AB, 0x04u, 0x00u, NOP, 0x99u))
+
+        val interrogator = HardwareInterrogator(CpuState(), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, LDX_AB)
+            }
+            cycle {
+                memoryRead(1, 0x4u)
+            }
+            cycle {
+                memoryRead(2, 0x0u)
+            }
+            cycle {
+                memoryRead(4, 0x99u)
+            }
+        }
+
+        interrogator.assertCpuState {
+            programCounter(3)
+            xReg(0x99u)
+            isNegativeFlag(true)
+        }
+    }
 }

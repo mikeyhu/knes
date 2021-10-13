@@ -4,4 +4,5 @@ const val LDA_I: UByte = 0xa9u
 const val LDA_AB: UByte = 0xadu
 const val NOP: UByte = 0xeau
 const val LDX_I: UByte = 0xa2u
+const val LDX_AB: UByte = 0xaeu
 

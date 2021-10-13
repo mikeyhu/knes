@@ -76,4 +76,5 @@ val instructionMap: Map<UByte, EffectPipeline> = mapOf(
     LDA_I to ImmediateMemoryEffectPipeline(ReadIntoAccumulator),
     LDA_AB to AbsoluteMemoryEffectPipeline(ReadIntoAccumulator),
     LDX_I to ImmediateMemoryEffectPipeline(ReadIntoX),
+    LDX_AB to AbsoluteMemoryEffectPipeline(ReadIntoX),
 )
