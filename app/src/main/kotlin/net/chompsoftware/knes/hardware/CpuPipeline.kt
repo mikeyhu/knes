@@ -35,6 +35,7 @@ object InstructionCheckEffectPipeline : EffectPipeline() {
         return when (instruction) {
             LDA_I -> LDA_Immediate
             LDA_AB -> LDA_Absolute
+            LDX_I -> LDX_Immediate
             else -> throw NotImplementedError()
         }
     }
@@ -68,6 +69,11 @@ object LDA_Absolute : EffectPipeline(
     AbsoluteReadArgument1,
     AbsoluteReadArgument2,
     Combination(AbsoluteRead, ReadIntoAccumulator)
+)
+
+@ExperimentalUnsignedTypes
+object LDX_Immediate : EffectPipeline(
+    Combination(ImmediateRead, ReadIntoX)
 )
 
 object AbsoluteReadArgument1 : Effect() {
@@ -106,6 +112,16 @@ object ReadIntoAccumulator : Effect() {
     override fun run(cpuState: CpuState, memory: Memory, effectState: EffectState) {
         val read = (effectState.memoryRead ?: throw Error("Read not performed")).toUInt()
         cpuState.aReg = read
+        cpuState.isNegativeFlag = tweakNegative(read)
+        cpuState.isZeroFlag = tweakZero(read)
+    }
+}
+
+object ReadIntoX : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, effectState: EffectState) {
+        val read = (effectState.memoryRead ?: throw Error("Read not performed")).toUInt()
+        cpuState.xReg = read
         cpuState.isNegativeFlag = tweakNegative(read)
         cpuState.isZeroFlag = tweakZero(read)
     }

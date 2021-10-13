@@ -106,4 +106,76 @@ class LoadOperationsTest {
             isNegativeFlag(true)
         }
     }
+
+
+    @Test
+    fun `LDX Immediate`() {
+        val memory = BasicMemory(setupMemory(LDX_I, 0x01u))
+
+        val interrogator = HardwareInterrogator(CpuState(), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, LDX_I)
+            }
+            cycle {
+                memoryRead(1, 0x01u)
+            }
+        }
+
+        interrogator.assertCpuState {
+            programCounter(2)
+            xReg(0x1u)
+        }
+    }
+
+    @Test
+    fun `LDX Immediate with Negative Flag set`() {
+        val memory = BasicMemory(setupMemory(LDX_I, 0x81u))
+
+        val interrogator = HardwareInterrogator(CpuState(), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCpuState {
+            programCounter(2)
+            xReg(0x81u)
+            isNegativeFlag(true)
+        }
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, LDX_I)
+            }
+            cycle {
+                memoryRead(1, 0x81u)
+            }
+        }
+    }
+
+    @Test
+    fun `LDX Immediate with Zero Flag set`() {
+        val memory = BasicMemory(setupMemory(LDX_I, 0x0u))
+
+        val interrogator = HardwareInterrogator(CpuState(), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCpuState {
+            programCounter(2)
+            xReg(0x0u)
+            isZeroFlag(true)
+        }
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, LDX_I)
+            }
+            cycle {
+                memoryRead(1, 0x0u)
+            }
+        }
+    }
 }

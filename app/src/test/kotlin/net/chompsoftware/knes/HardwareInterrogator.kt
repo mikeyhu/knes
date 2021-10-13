@@ -72,6 +72,11 @@ class HardwareInterrogator(private val cpuState: CpuState, private val memory: M
             checkState.aReg = expected.toUInt()
         }
 
+        fun xReg(expected: UByte) {
+            assertEquals(expected.toUInt(), cpuState.xReg, "assertXReg")
+            checkState.xReg = expected.toUInt()
+        }
+
         fun isNegativeFlag(expected: Boolean) {
             assertEquals(expected, cpuState.isNegativeFlag, "assertIsNegativeFlag")
             checkState.isNegativeFlag = expected
