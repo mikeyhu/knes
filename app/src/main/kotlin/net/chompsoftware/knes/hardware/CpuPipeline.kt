@@ -98,7 +98,9 @@ object ImmediateRead : Effect() {
 object ReadIntoAccumulator : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, effectState: EffectState) {
-        cpuState.aReg = effectState.memoryRead ?: throw Error("Read not performed")
+        val read = effectState.memoryRead ?: throw Error("Read not performed")
+        cpuState.aReg = read.toUInt()
+        cpuState.isNegativeFlag = tweakNegative(read.toUInt())
     }
 }
 
@@ -111,5 +113,6 @@ class Combination(vararg val effects: Effect): Effect() {
     }
 }
 
+private fun tweakNegative(value: UInt) = value.and(NEGATIVE_BYTE_POSITION) > 0u
 
 

@@ -6,9 +6,11 @@ import kotlin.test.assertEquals
 @ExperimentalUnsignedTypes
 class HardwareInterrogator(private val cpuState: CpuState, private val memory: Memory) {
 
-    val cycleLog: MutableList<MutableList<Activity>> = mutableListOf()
+    private val cycleLog: MutableList<MutableList<Activity>> = mutableListOf()
 
-    val trackingMemory: Memory by lazy {
+    private val priorCpuState = cpuState.copy()
+
+    private val trackingMemory: Memory by lazy {
         TrackingMemory(memory)
     }
 
@@ -47,22 +49,36 @@ class HardwareInterrogator(private val cpuState: CpuState, private val memory: M
     fun assertCycleLog(init: CycleLog.() -> Unit) {
         val expected = CycleLog()
         expected.init()
-        val expectedCycleLog:List<List<Activity>> = expected.build()
+        val expectedCycleLog: List<List<Activity>> = expected.build()
         assertEquals(expectedCycleLog, cycleLog)
     }
 
     fun assertCpuState(init: AssertCpuState.() -> Unit) {
         val assertions = AssertCpuState()
         assertions.init()
+        assertions.assertNothingElseChanged()
     }
 
     inner class AssertCpuState {
-        fun assertProgramCounter(expected:Int) {
-            assertEquals(expected, cpuState.programCounter,"assertProgramCounter")
+        val checkState = priorCpuState.copy()
+
+        fun assertProgramCounter(expected: Int) {
+            assertEquals(expected, cpuState.programCounter, "assertProgramCounter")
+            checkState.programCounter = expected
         }
 
         fun assertAReg(expected: UByte) {
-            assertEquals(expected, cpuState.aReg, "assertAReg")
+            assertEquals(expected.toUInt(), cpuState.aReg, "assertAReg")
+            checkState.aReg = expected.toUInt()
+        }
+
+        fun assertIsNegativeFlag(expected: Boolean) {
+            assertEquals(expected, cpuState.isNegativeFlag, "assertIsNegativeFlag")
+            checkState.isNegativeFlag = expected
+        }
+
+        fun assertNothingElseChanged() {
+            assertEquals(checkState, cpuState, "Unexpected CpuState change occurred,")
         }
     }
 
@@ -92,8 +108,8 @@ class CycleLog {
 class Cycle {
     val activities = arrayListOf<Activity>()
 
-    fun activity(act: Activity) {
-        activities.add(act)
+    fun memoryRead(position: Int, returned: UByte) {
+        activities.add(Activity.MemoryReadActivity(position, returned))
     }
 }
 
