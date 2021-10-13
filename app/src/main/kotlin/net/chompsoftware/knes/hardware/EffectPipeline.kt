@@ -47,6 +47,10 @@ abstract class EffectPipeline(vararg var effects: Effect) {
         }
         effects[effectState.pipelinePosition].run(cpuState, memory, effectState)
         effectState.pipelinePosition++
+        while (effects.size > effectState.pipelinePosition && !effects[effectState.pipelinePosition].requiresCycle()) {
+            effects[effectState.pipelinePosition].run(cpuState, memory, effectState)
+            effectState.pipelinePosition++
+        }
         if (effects.size > effectState.pipelinePosition)
             return this
         effectState.reset()
@@ -56,19 +60,21 @@ abstract class EffectPipeline(vararg var effects: Effect) {
 
 @ExperimentalUnsignedTypes
 object LDA_Immediate : EffectPipeline(
-    Combination(ImmediateRead, ReadIntoAccumulator)
+    ImmediateRead, ReadIntoAccumulator
 )
 
 @ExperimentalUnsignedTypes
 object LDA_Absolute : EffectPipeline(
     AbsoluteReadArgument1,
     AbsoluteReadArgument2,
-    Combination(AbsoluteRead, ReadIntoAccumulator)
+    AbsoluteRead,
+    ReadIntoAccumulator
 )
 
 @ExperimentalUnsignedTypes
 object LDX_Immediate : EffectPipeline(
-    Combination(ImmediateRead, ReadIntoX)
+    ImmediateRead,
+    ReadIntoX
 )
 
 

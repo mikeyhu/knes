@@ -3,6 +3,7 @@ package net.chompsoftware.knes.hardware
 abstract class Effect {
     @ExperimentalUnsignedTypes
     abstract fun run(cpuState: CpuState, memory: Memory, effectState: EffectState)
+    open fun requiresCycle(): Boolean = true
 }
 
 object AbsoluteReadArgument1 : Effect() {
@@ -42,6 +43,8 @@ object ReadIntoAccumulator : Effect() {
         val read = effectState.memoryRead ?: throw Error("Read not performed")
         cpuState.setARegWithFlags(read)
     }
+
+    override fun requiresCycle() = false
 }
 
 object ReadIntoX : Effect() {
@@ -50,15 +53,8 @@ object ReadIntoX : Effect() {
         val read = effectState.memoryRead ?: throw Error("Read not performed")
         cpuState.setXRegWithFlags(read)
     }
-}
 
-class Combination(vararg val effects: Effect) : Effect() {
-    @ExperimentalUnsignedTypes
-    override fun run(cpuState: CpuState, memory: Memory, effectState: EffectState) {
-        for (effect in effects) {
-            effect.run(cpuState, memory, effectState)
-        }
-    }
+    override fun requiresCycle() = false
 }
 
 
