@@ -1,5 +1,6 @@
 package net.chompsoftware.knes.hardware
 
+import net.chompsoftware.knes.toHex
 import net.chompsoftware.knes.toInt16
 
 class EffectState(
@@ -27,11 +28,9 @@ class EffectState(
 object InstructionCheckEffectPipeline : EffectPipeline() {
     override fun run(cpuState: CpuState, memory: Memory, effectState: EffectState): EffectPipeline {
         val instruction = memory[cpuState.programCounterWithIncrement()]
-        return when (instruction) {
-            LDA_I -> LDA_Immediate
-            LDA_AB -> LDA_Absolute
-            LDX_I -> LDX_Immediate
-            else -> throw NotImplementedError()
+
+        return instructionMap.getOrElse(instruction) {
+            throw NotImplementedError("Instruction ${instruction.toHex()} not found.")
         }
     }
 }
@@ -59,23 +58,22 @@ abstract class EffectPipeline(vararg var effects: Effect) {
 }
 
 @ExperimentalUnsignedTypes
-object LDA_Immediate : EffectPipeline(
-    ImmediateRead, ReadIntoAccumulator
+class ImmediateMemoryEffectPipeline(vararg postEffects: Effect) : EffectPipeline(
+    ImmediateRead,
+    *postEffects
 )
 
 @ExperimentalUnsignedTypes
-object LDA_Absolute : EffectPipeline(
+class AbsoluteMemoryEffectPipeline(vararg postEffects: Effect) : EffectPipeline(
     AbsoluteReadArgument1,
     AbsoluteReadArgument2,
     AbsoluteRead,
-    ReadIntoAccumulator
+    *postEffects
 )
 
 @ExperimentalUnsignedTypes
-object LDX_Immediate : EffectPipeline(
-    ImmediateRead,
-    ReadIntoX
+val instructionMap: Map<UByte, EffectPipeline> = mapOf(
+    LDA_I to ImmediateMemoryEffectPipeline(ReadIntoAccumulator),
+    LDA_AB to AbsoluteMemoryEffectPipeline(ReadIntoAccumulator),
+    LDX_I to ImmediateMemoryEffectPipeline(ReadIntoX),
 )
-
-
-
