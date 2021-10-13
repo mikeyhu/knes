@@ -62,19 +62,24 @@ class HardwareInterrogator(private val cpuState: CpuState, private val memory: M
     inner class AssertCpuState {
         val checkState = priorCpuState.copy()
 
-        fun assertProgramCounter(expected: Int) {
+        fun programCounter(expected: Int) {
             assertEquals(expected, cpuState.programCounter, "assertProgramCounter")
             checkState.programCounter = expected
         }
 
-        fun assertAReg(expected: UByte) {
+        fun aReg(expected: UByte) {
             assertEquals(expected.toUInt(), cpuState.aReg, "assertAReg")
             checkState.aReg = expected.toUInt()
         }
 
-        fun assertIsNegativeFlag(expected: Boolean) {
+        fun isNegativeFlag(expected: Boolean) {
             assertEquals(expected, cpuState.isNegativeFlag, "assertIsNegativeFlag")
             checkState.isNegativeFlag = expected
+        }
+
+        fun isZeroFlag(expected: Boolean) {
+            assertEquals(expected, cpuState.isZeroFlag, "assertIsZeroFlag")
+            checkState.isZeroFlag = expected
         }
 
         fun assertNothingElseChanged() {

@@ -24,8 +24,8 @@ class LoadOperationsTest {
         }
 
         interrogator.assertCpuState {
-            assertProgramCounter(2)
-            assertAReg(0x1u)
+            programCounter(2)
+            aReg(0x1u)
         }
     }
 
@@ -38,9 +38,9 @@ class LoadOperationsTest {
         interrogator.processInstruction()
 
         interrogator.assertCpuState {
-            assertProgramCounter(2)
-            assertAReg(0x81u)
-            assertIsNegativeFlag(true)
+            programCounter(2)
+            aReg(0x81u)
+            isNegativeFlag(true)
         }
 
         interrogator.assertCycleLog {
@@ -49,6 +49,30 @@ class LoadOperationsTest {
             }
             cycle {
                 memoryRead(1, 0x81u)
+            }
+        }
+    }
+
+    @Test
+    fun `LDA Immediate with Zero Flag set`() {
+        val memory = BasicMemory(setupMemory(LDA_I, 0x0u))
+
+        val interrogator = HardwareInterrogator(CpuState(), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCpuState {
+            programCounter(2)
+            aReg(0x0u)
+            isZeroFlag(true)
+        }
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, LDA_I)
+            }
+            cycle {
+                memoryRead(1, 0x0u)
             }
         }
     }
@@ -77,9 +101,9 @@ class LoadOperationsTest {
         }
 
         interrogator.assertCpuState {
-            assertProgramCounter(3)
-            assertAReg(0x99u)
-            assertIsNegativeFlag(true)
+            programCounter(3)
+            aReg(0x99u)
+            isNegativeFlag(true)
         }
     }
 }

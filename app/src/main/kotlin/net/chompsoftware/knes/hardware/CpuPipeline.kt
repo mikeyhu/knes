@@ -7,7 +7,13 @@ abstract class Effect {
     abstract fun run(cpuState: CpuState, memory: Memory, effectState: EffectState)
 }
 
-class EffectState(var pipelinePosition: Int, var memoryRead: UByte?, var argument1: UByte?, var argument2: UByte?, var cyclesRemaining: Int = 0) {
+class EffectState(
+    var pipelinePosition: Int,
+    var memoryRead: UByte?,
+    var argument1: UByte?,
+    var argument2: UByte?,
+    var cyclesRemaining: Int = 0
+) {
     fun absolutePosition() = toInt16(
         argument1 ?: throw Error("argument1 not available"),
         argument2 ?: throw Error("argument2 not available")
@@ -39,7 +45,7 @@ abstract class EffectPipeline(vararg var effects: Effect) {
     open fun run(cpuState: CpuState, memory: Memory, effectState: EffectState): EffectPipeline? {
         if (effects.size < effectState.pipelinePosition)
             throw Error("Pipeline past end of effects")
-        if(effectState.cyclesRemaining > 0) {
+        if (effectState.cyclesRemaining > 0) {
             effectState.cyclesRemaining -= 1
             return this
         }
@@ -98,13 +104,14 @@ object ImmediateRead : Effect() {
 object ReadIntoAccumulator : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, effectState: EffectState) {
-        val read = effectState.memoryRead ?: throw Error("Read not performed")
-        cpuState.aReg = read.toUInt()
-        cpuState.isNegativeFlag = tweakNegative(read.toUInt())
+        val read = (effectState.memoryRead ?: throw Error("Read not performed")).toUInt()
+        cpuState.aReg = read
+        cpuState.isNegativeFlag = tweakNegative(read)
+        cpuState.isZeroFlag = tweakZero(read)
     }
 }
 
-class Combination(vararg val effects: Effect): Effect() {
+class Combination(vararg val effects: Effect) : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, effectState: EffectState) {
         for (effect in effects) {
@@ -114,5 +121,5 @@ class Combination(vararg val effects: Effect): Effect() {
 }
 
 private fun tweakNegative(value: UInt) = value.and(NEGATIVE_BYTE_POSITION) > 0u
-
+private fun tweakZero(value: UInt) = value == 0u
 
