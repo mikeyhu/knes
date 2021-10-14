@@ -25,6 +25,14 @@ data class CpuState(
         isZeroFlag = tweakZero(asUInt)
     }
 
+    fun getAReg() : UByte {
+        return aReg.toUByte()
+    }
+
+    fun getXReg() : UByte {
+        return xReg.toUByte()
+    }
+
     private fun tweakNegative(value: UInt) = value.and(NEGATIVE_BYTE_POSITION) > 0u
     private fun tweakZero(value: UInt) = value == 0u
 }

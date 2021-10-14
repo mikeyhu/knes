@@ -17,27 +17,38 @@ plugins {
 
 }
 
+tasks.compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+
+tasks.compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+
 repositories {
-    // Use JCenter for resolving dependencies.
+// Use JCenter for resolving dependencies.
     jcenter()
 }
 
 dependencies {
-    // Align versions of all Kotlin components
+// Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
 
-    // Use the Kotlin JDK 8 standard library.
+// Use the Kotlin JDK 8 standard library.
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    // This dependency is used by the application.
+// This dependency is used by the application.
     implementation("com.google.guava:guava:29.0-jre")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.6.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.6.2")
 }
 
 application {
-    // Define the main class for the application.
+// Define the main class for the application.
     mainClass.set("net.chompsoftware.knes.AppKt")
 }
 
@@ -54,5 +65,7 @@ tasks {
         }
     }
 }
+
+
 
 

@@ -36,7 +36,7 @@ object Operation : EffectPipeline() {
 }
 
 @ExperimentalUnsignedTypes
-abstract class EffectPipeline(vararg var effects: Effect) {
+open class EffectPipeline(vararg var effects: Effect) {
     open fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline? {
         if (effects.size < operationState.pipelinePosition)
             throw Error("Pipeline past end of effects")
@@ -88,6 +88,9 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //Load X
     LDX_AB to AbsoluteMemoryOperation(ReadIntoX),
+
+    //Transfer
+    TAX to EffectPipeline(TransferAccumulatorToX)
 )
 
 @ExperimentalUnsignedTypes
