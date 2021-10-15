@@ -80,6 +80,8 @@ class ZeroPageOperation(vararg postEffects: Effect) : EffectPipeline(
 
 @ExperimentalUnsignedTypes
 val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
+    //Increment
+    INX to EffectPipeline(IncrementX),
     //Load Accumulator
     LDA_I to ImmediateMemoryOperation(ReadIntoAccumulator),
     LDA_AB to AbsoluteMemoryOperation(ReadIntoAccumulator),
@@ -90,7 +92,8 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     LDX_AB to AbsoluteMemoryOperation(ReadIntoX),
 
     //Transfer
-    TAX to EffectPipeline(TransferAccumulatorToX)
+    TAX to EffectPipeline(TransferAccumulatorToX),
+    TXA to EffectPipeline(TransferXToAccumulator),
 )
 
 @ExperimentalUnsignedTypes

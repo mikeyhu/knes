@@ -70,7 +70,20 @@ object TransferAccumulatorToX : Effect() {
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         cpuState.setXRegWithFlags(cpuState.getAReg())
     }
+}
 
+object TransferXToAccumulator : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        cpuState.setARegWithFlags(cpuState.getXReg())
+    }
+}
+
+object IncrementX : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        cpuState.setXRegWithFlags((cpuState.getXReg() + 1u).toUByte())
+    }
 }
 
 
