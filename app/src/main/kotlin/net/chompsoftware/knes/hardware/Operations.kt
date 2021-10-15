@@ -87,6 +87,7 @@ class ZeroPageWriteOperation(vararg postEffects: Effect) : EffectPipeline(
 @ExperimentalUnsignedTypes
 val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //Branch
+    BEQ to ImmediateMemoryOperation(BranchOnEqual),
     BNE to ImmediateMemoryOperation(BranchOnNotEqual),
 
     //Compare

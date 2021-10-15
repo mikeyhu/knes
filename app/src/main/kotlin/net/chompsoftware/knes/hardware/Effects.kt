@@ -118,4 +118,19 @@ object BranchOnNotEqual : Effect() {
     override fun requiresCycle() = false
 }
 
+object BranchOnEqual : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        val read = operationState.memoryRead ?: throw Error("Read not performed")
+        val location: Int = if (read >= 0x80u)
+            -0x100 + read.toInt()
+        else read.toInt()
+        if (cpuState.isZeroFlag) {
+            cpuState.programCounter += location
+        }
+    }
+
+    override fun requiresCycle() = false
+}
+
 

@@ -1,6 +1,7 @@
 package net.chompsoftware.knes.hardware
 
 //Branch
+const val BEQ: UByte = 0xf0u //On equal
 const val BNE: UByte = 0xd0u //On not equal
 
 //Compare
@@ -28,8 +29,11 @@ const val STA_Z: UByte = 0x85u //Accumulator in memory
 const val TAX: UByte = 0xaau //Accumulator to X
 const val TXA: UByte = 0x8au //X to Accumulator
 
+
+
+
+
 const val CLD: UByte = 0xd8u
-const val BEQ: UByte = 0xf0u
 
 
 
