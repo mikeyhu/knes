@@ -1,5 +1,7 @@
 package net.chompsoftware.knes.hardware
 
+import net.chompsoftware.knes.hardware.effects.BranchOnEqual
+import net.chompsoftware.knes.hardware.effects.BranchOnNotEqual
 import net.chompsoftware.knes.toHex
 import net.chompsoftware.knes.toInt16
 
@@ -42,7 +44,7 @@ open class EffectPipeline(vararg var effects: Effect) {
             throw Error("Pipeline past end of effects")
         if (operationState.cyclesRemaining > 0) {
             operationState.cyclesRemaining -= 1
-            return this
+            return nextEffectPipeline(operationState)
         }
         effects[operationState.pipelinePosition].run(cpuState, memory, operationState)
         operationState.pipelinePosition++
@@ -50,12 +52,17 @@ open class EffectPipeline(vararg var effects: Effect) {
             effects[operationState.pipelinePosition].run(cpuState, memory, operationState)
             operationState.pipelinePosition++
         }
-        if (effects.size > operationState.pipelinePosition)
+        return nextEffectPipeline(operationState)
+    }
+
+    private fun nextEffectPipeline(operationState: OperationState): EffectPipeline? {
+        if (effects.size > operationState.pipelinePosition || operationState.cyclesRemaining > 0)
             return this
         operationState.reset()
         return null
     }
 }
+
 
 @ExperimentalUnsignedTypes
 class ImmediateMemoryOperation(vararg postEffects: Effect) : EffectPipeline(

@@ -46,6 +46,7 @@ class BranchOperationsTest {
                 cycle {
                     memoryRead(1, 0x10u)
                 }
+                cycle {}
                 // TODO : timings are incorrect in this state. Branches should be either 3 or 4 cycles depending on the page
             }
 
@@ -69,6 +70,7 @@ class BranchOperationsTest {
                 cycle {
                     memoryRead(2, 0xfdu)
                 }
+                cycle {}
                 // TODO : timings are incorrect in this state. Branches should be either 3 or 4 cycles depending on the page
             }
 
@@ -117,6 +119,7 @@ class BranchOperationsTest {
                 cycle {
                     memoryRead(1, 0x10u)
                 }
+                cycle {}
                 // TODO : timings are incorrect in this state. Branches should be either 3 or 4 cycles depending on the page
             }
 
@@ -140,6 +143,7 @@ class BranchOperationsTest {
                 cycle {
                     memoryRead(2, 0xfdu)
                 }
+                cycle {}
                 // TODO : timings are incorrect in this state. Branches should be either 3 or 4 cycles depending on the page
             }
 
