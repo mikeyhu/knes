@@ -43,7 +43,8 @@ class HardwareInterrogator(private val cpuState: CpuState, private val memory: M
         }
 
         override fun set(position: Int, value: UByte) {
-            TODO("Not yet implemented")
+            memory.set(position, value)
+            log(Activity.MemoryWriteActivity(position, value))
         }
     }
 
@@ -121,6 +122,10 @@ class Cycle {
 
     fun memoryRead(position: Int, returned: UByte) {
         activities.add(Activity.MemoryReadActivity(position, returned))
+    }
+
+    fun memoryWrite(position: Int, written: UByte) {
+        activities.add(Activity.MemoryWriteActivity(position, written))
     }
 }
 

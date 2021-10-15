@@ -86,4 +86,11 @@ object IncrementX : Effect() {
     }
 }
 
+object StoreAccumulator : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        memory.set(operationState.memoryRead!!.toInt(), cpuState.aReg.toUByte())
+    }
+}
+
 

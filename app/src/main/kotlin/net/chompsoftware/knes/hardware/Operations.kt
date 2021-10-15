@@ -72,9 +72,15 @@ class AbsoluteMemoryOperation(vararg postEffects: Effect) : EffectPipeline(
 )
 
 @ExperimentalUnsignedTypes
-class ZeroPageOperation(vararg postEffects: Effect) : EffectPipeline(
+class ZeroPageReadOperation(vararg postEffects: Effect) : EffectPipeline(
     ReadArgument1,
     ZeroPageRead,
+    *postEffects
+)
+
+@ExperimentalUnsignedTypes
+class ZeroPageWriteOperation(vararg postEffects: Effect) : EffectPipeline(
+    ImmediateRead,
     *postEffects
 )
 
@@ -85,11 +91,14 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //Load Accumulator
     LDA_I to ImmediateMemoryOperation(ReadIntoAccumulator),
     LDA_AB to AbsoluteMemoryOperation(ReadIntoAccumulator),
-    LDA_Z to ZeroPageOperation(ReadIntoAccumulator),
+    LDA_Z to ZeroPageReadOperation(ReadIntoAccumulator),
     LDX_I to ImmediateMemoryOperation(ReadIntoX),
 
     //Load X
     LDX_AB to AbsoluteMemoryOperation(ReadIntoX),
+
+    //Store
+    STA_Z to ZeroPageWriteOperation(StoreAccumulator),
 
     //Transfer
     TAX to EffectPipeline(TransferAccumulatorToX),
