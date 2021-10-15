@@ -86,6 +86,12 @@ class ZeroPageWriteOperation(vararg postEffects: Effect) : EffectPipeline(
 
 @ExperimentalUnsignedTypes
 val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
+    //Branch
+    BNE to ImmediateMemoryOperation(BranchOnNotEqual),
+
+    //Compare
+    CMP_I to ImmediateMemoryOperation(CompareToAccumulator),
+
     //Increment
     INX to EffectPipeline(IncrementX),
     //Load Accumulator

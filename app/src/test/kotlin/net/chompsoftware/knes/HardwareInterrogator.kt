@@ -89,6 +89,11 @@ class HardwareInterrogator(private val cpuState: CpuState, private val memory: M
             checkState.isZeroFlag = expected
         }
 
+        fun isCarryFlag(expected:Boolean) {
+            assertEquals(expected, cpuState.isCarryFlag, "assertIsCarryFlag")
+            checkState.isCarryFlag = expected
+        }
+
         fun assertNothingElseChanged() {
             assertEquals(checkState, cpuState, "Unexpected CpuState change occurred,")
         }

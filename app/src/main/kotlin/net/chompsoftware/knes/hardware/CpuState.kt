@@ -5,7 +5,8 @@ data class CpuState(
     var aReg: UInt = 0x0u,
     var xReg: UInt = 0x0u,
     var isNegativeFlag: Boolean = false,
-    var isZeroFlag: Boolean = false
+    var isZeroFlag: Boolean = false,
+    var isCarryFlag: Boolean = false
 ) {
     fun programCounterWithIncrement(): Int {
         return programCounter++
@@ -31,6 +32,12 @@ data class CpuState(
 
     fun getXReg() : UByte {
         return xReg.toUByte()
+    }
+
+    fun setComparisonFlags(existing:UByte, compareTo:UByte) {
+        isZeroFlag = existing == compareTo
+        isNegativeFlag = existing < compareTo
+        isCarryFlag = existing >= compareTo
     }
 
     private fun tweakNegative(value: UInt) = value.and(NEGATIVE_BYTE_POSITION) > 0u
