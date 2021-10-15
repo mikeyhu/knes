@@ -17,15 +17,11 @@ plugins {
 
 }
 
-tasks.compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
-
-
-tasks.compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
 
 repositories {
 // Use JCenter for resolving dependencies.
