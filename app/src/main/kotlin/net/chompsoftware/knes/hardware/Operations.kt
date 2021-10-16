@@ -12,10 +12,19 @@ class OperationState(
     var argument2: UByte?,
     var cyclesRemaining: Int = 0
 ) {
-    fun absolutePosition() = toInt16(
-        argument1 ?: throw Error("argument1 not available"),
-        argument2 ?: throw Error("argument2 not available")
-    )
+    fun absolutePosition() = toInt16(getArgument1(), getArgument2())
+
+    fun getMemoryRead(): UByte {
+        return memoryRead ?: throw Error("memoryRead was not set")
+    }
+
+    fun getArgument1(): UByte {
+        return argument1 ?: throw Error("argument1 was not set")
+    }
+
+    fun getArgument2(): UByte {
+        return argument2 ?: throw Error("argument2 was not set")
+    }
 
     fun reset() {
         pipelinePosition = 0

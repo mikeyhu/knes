@@ -23,16 +23,13 @@ object ReadArgument2 : Effect() {
 object ZeroPageRead : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        if (operationState.argument1 == null) throw Error("argument1 not supplied")
-        operationState.memoryRead = memory[operationState.argument1!!.toInt()]
+        operationState.memoryRead = memory[operationState.getArgument1().toInt()]
     }
 }
 
 object AbsoluteRead : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        if (operationState.argument1 == null) throw Error("argument1 not supplied")
-        if (operationState.argument2 == null) throw Error("argument2 not supplied")
         operationState.memoryRead = memory[operationState.absolutePosition()]
     }
 }
@@ -48,8 +45,7 @@ object ImmediateRead : Effect() {
 object ReadIntoAccumulator : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        val read = operationState.memoryRead ?: throw Error("Read not performed")
-        cpuState.setARegWithFlags(read)
+        cpuState.setARegWithFlags(operationState.getMemoryRead())
     }
 
     override fun requiresCycle() = false
@@ -58,8 +54,7 @@ object ReadIntoAccumulator : Effect() {
 object ReadIntoX : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        val read = operationState.memoryRead ?: throw Error("Read not performed")
-        cpuState.setXRegWithFlags(read)
+        cpuState.setXRegWithFlags(operationState.getMemoryRead())
     }
 
     override fun requiresCycle() = false
@@ -89,15 +84,14 @@ object IncrementX : Effect() {
 object StoreAccumulator : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        memory.set(operationState.memoryRead!!.toInt(), cpuState.aReg)
+        memory[operationState.getMemoryRead().toInt()] = cpuState.aReg
     }
 }
 
 object CompareToAccumulator : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        val read = operationState.memoryRead ?: throw Error("Read not performed")
-        cpuState.setComparisonFlags(cpuState.aReg, read)
+        cpuState.setComparisonFlags(cpuState.aReg, operationState.getMemoryRead())
     }
 
     override fun requiresCycle() = false
