@@ -7,7 +7,7 @@ import net.chompsoftware.knes.toInt16
 class OperationState(
     var pipelinePosition: Int,
     var memoryRead: UByte? = null,
-    var locationWrite: Int? = null,
+    var location: Int? = null,
     var argument1: UByte? = null,
     var argument2: UByte? = null,
     var cyclesRemaining: Int = 0
@@ -18,8 +18,8 @@ class OperationState(
         return memoryRead ?: throw Error("memoryRead was not set")
     }
 
-    fun getLocationWrite(): Int {
-        return locationWrite ?: throw Error("locationWrite was not set")
+    fun getLocation(): Int {
+        return location ?: throw Error("location was not set")
     }
 
     fun getArgument1(): UByte {
@@ -33,7 +33,7 @@ class OperationState(
     fun reset() {
         pipelinePosition = 0
         memoryRead = null
-        locationWrite = null
+        location = null
         argument1 = null
         argument2 = null
         cyclesRemaining = 0
@@ -105,10 +105,10 @@ class AbsoluteMemoryReadOperation(vararg postEffects: Effect) : VariableLengthPi
 )
 
 @ExperimentalUnsignedTypes
-class AbsoluteMemoryWriteOperation(vararg postEffects: Effect) : VariableLengthPipeline(
+class AbsoluteMemoryLocationOperation(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadArgument1,
     ReadArgument2,
-    AbsoluteWrite,
+    AbsoluteLocation,
     *postEffects
 )
 
@@ -140,6 +140,10 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //Increment
     INX to SingleEffectPipeline(IncrementX),
+
+    //Jump
+    JMP_AB to AbsoluteMemoryLocationOperation(Jump),
+
     //Load Accumulator
     LDA_I to ImmediateMemoryOperation(ReadIntoAccumulator),
     LDA_AB to AbsoluteMemoryReadOperation(ReadIntoAccumulator),
@@ -151,7 +155,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //Store
     STA_Z to ZeroPageWriteOperation(StoreAccumulator),
-    STA_AB to AbsoluteMemoryWriteOperation(StoreAccumulator),
+    STA_AB to AbsoluteMemoryLocationOperation(StoreAccumulator),
 
     //Transfer
     TAX to SingleEffectPipeline(TransferAccumulatorToX),

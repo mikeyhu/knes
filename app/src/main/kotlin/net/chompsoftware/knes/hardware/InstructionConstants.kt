@@ -14,6 +14,9 @@ const val CMP_I: UByte = 0xc9u //Memory with Accumulator
 //Increment
 const val INX: UByte = 0xe8u
 
+//Jump
+const val JMP_AB: UByte = 0x4cu
+
 //Load Accumulator
 const val LDA_I: UByte = 0xa9u
 const val LDA_AB: UByte = 0xadu
