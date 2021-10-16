@@ -36,4 +36,33 @@ class ComparisonOperationsTest {
             }
         }
     }
+
+    @Nested
+    inner class CPY : ParameterizedTestData() {
+        @ParameterizedTest
+        @MethodSource("checkComparisonNegativeZeroCarryFlags")
+        fun `CPY Immediate - Compare Y`(data: ComparisonWithNegativeZeroCarryCheck) {
+            val memory = BasicMemory(setupMemory(CPY_I, data.input, NOP))
+
+            val interrogator = HardwareInterrogator(CpuState(yReg = data.existing), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, CPY_I)
+                }
+                cycle {
+                    memoryRead(1, data.input)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+                isCarryFlag(data.carryFlag)
+            }
+        }
+    }
 }

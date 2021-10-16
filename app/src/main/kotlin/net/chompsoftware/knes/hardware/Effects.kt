@@ -94,15 +94,6 @@ object StoreAccumulator : Effect() {
     }
 }
 
-object CompareToAccumulator : Effect() {
-    @ExperimentalUnsignedTypes
-    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        cpuState.setComparisonFlags(cpuState.aReg, operationState.getMemoryRead())
-    }
-
-    override fun requiresCycle() = false
-}
-
 object NoOperation : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
