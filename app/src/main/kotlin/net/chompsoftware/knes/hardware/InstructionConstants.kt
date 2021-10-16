@@ -1,18 +1,19 @@
 package net.chompsoftware.knes.hardware
 
+//Branch
+const val BEQ: UByte = 0xf0u //On equal
+const val BNE: UByte = 0xd0u //On not equal
+const val BPL: UByte = 0x10u //On plus
+
 //Clear
 const val CLD: UByte = 0xd8u //Decimal
+
+//Compare
+const val CMP_I: UByte = 0xc9u //Memory with Accumulator
 
 //Decrement
 const val DEX: UByte = 0xcau //X
 const val DEY: UByte = 0x88u //Y
-
-//Branch
-const val BEQ: UByte = 0xf0u //On equal
-const val BNE: UByte = 0xd0u //On not equal
-
-//Compare
-const val CMP_I: UByte = 0xc9u //Memory with Accumulator
 
 //Increment
 const val INX: UByte = 0xe8u

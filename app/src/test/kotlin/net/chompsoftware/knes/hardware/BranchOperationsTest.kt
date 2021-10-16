@@ -196,4 +196,99 @@ class BranchOperationsTest {
             }
         }
     }
+
+    @Nested
+    inner class BPL {
+        @Test
+        fun `BPL Branch on not equal should not branch is negativeFlag is true`() {
+            val memory = BasicMemory(setupMemory(BPL, 0x10u, NOP))
+
+            val interrogator = HardwareInterrogator(CpuState(isNegativeFlag = true), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, BPL)
+                }
+                cycle {
+                    memoryRead(1, 0x10u)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+            }
+        }
+
+        @Test
+        fun `BPL Branch on not equal should branch is negativeFlag is false`() {
+            val memory = BasicMemory(setupMemory(BPL, 0x10u, NOP))
+
+            val interrogator = HardwareInterrogator(CpuState(isNegativeFlag = false), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, BPL)
+                }
+                cycle {
+                    memoryRead(1, 0x10u)
+                }
+                cycle {}
+            }
+
+            interrogator.assertCpuState {
+                programCounter(0x2 + 0x10)
+            }
+        }
+
+        @Test
+        fun `BPL Branch on not equal should branch backwards if negativeFlag is false and location is greater that 0x80`() {
+            val memory = BasicMemory(setupMemory(NOP, BPL, 0xfdu, NOP))
+
+            val interrogator = HardwareInterrogator(CpuState(programCounter = 1, isNegativeFlag = false), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(1, BPL)
+                }
+                cycle {
+                    memoryRead(2, 0xfdu)
+                }
+                cycle {}
+            }
+
+            interrogator.assertCpuState {
+                programCounter(0x3 - 0x3) // 3 - (0xff - 0xfd)
+            }
+        }
+
+        @Test
+        fun `BPL Branch on not equal should take an extra cycle if crossing a page boundary when branching`() {
+            val memory = BasicMemory(setupMemory(BPL, 0x10u, NOP, memoryOffset = 0xf0))
+
+            val interrogator = HardwareInterrogator(CpuState(programCounter = 0xf0, isNegativeFlag = false), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0xf0, BPL)
+                }
+                cycle {
+                    memoryRead(0xf1, 0x10u)
+                }
+                cycle {}
+                cycle {}
+            }
+
+            interrogator.assertCpuState {
+                programCounter(0xf2 + 0x10)
+            }
+        }
+    }
 }

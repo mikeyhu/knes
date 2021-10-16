@@ -33,3 +33,7 @@ object BranchOnNotEqual : BranchOnEvaluation() {
 object BranchOnEqual : BranchOnEvaluation() {
     override fun branchEvaluation(cpuState: CpuState) = cpuState.isZeroFlag
 }
+
+object BranchOnPLus : BranchOnEvaluation() {
+    override fun branchEvaluation(cpuState: CpuState) = !cpuState.isNegativeFlag
+}

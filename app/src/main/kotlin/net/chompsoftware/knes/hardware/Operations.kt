@@ -131,6 +131,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //Branch
     BEQ to ImmediateMemoryOperation(BranchOnEqual),
     BNE to ImmediateMemoryOperation(BranchOnNotEqual),
+    BPL to ImmediateMemoryOperation(BranchOnPLus),
 
     //Clear
     CLD to SingleEffectPipeline(ClearDecimal),
