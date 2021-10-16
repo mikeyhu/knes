@@ -32,6 +32,7 @@ const val STA_Z: UByte = 0x85u //Accumulator in memory
 //Transfer
 const val TAX: UByte = 0xaau //Accumulator to X
 const val TXA: UByte = 0x8au //X to Accumulator
+const val TXS: UByte = 0x9au //X to Stack Register
 
 
 

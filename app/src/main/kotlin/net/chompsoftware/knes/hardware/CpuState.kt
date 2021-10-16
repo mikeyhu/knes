@@ -4,6 +4,7 @@ data class CpuState(
     var programCounter: Int = 0,
     var aReg: UByte = 0x0u,
     var xReg: UByte = 0x0u,
+    var stackReg: UByte = 0x0u,
     var isNegativeFlag: Boolean = false,
     var isZeroFlag: Boolean = false,
     var isCarryFlag: Boolean = false,

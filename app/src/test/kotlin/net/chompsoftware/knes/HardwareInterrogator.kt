@@ -79,6 +79,11 @@ class HardwareInterrogator(private val cpuState: CpuState, private val memory: M
             checkState.xReg = expected
         }
 
+        fun stackReg(expected: UByte) {
+            assertEquals(expected, cpuState.stackReg, "assertStackPointer")
+            checkState.stackReg = expected
+        }
+
         fun isNegativeFlag(expected: Boolean) {
             assertEquals(expected, cpuState.isNegativeFlag, "assertIsNegativeFlag")
             checkState.isNegativeFlag = expected
@@ -89,7 +94,7 @@ class HardwareInterrogator(private val cpuState: CpuState, private val memory: M
             checkState.isZeroFlag = expected
         }
 
-        fun isCarryFlag(expected:Boolean) {
+        fun isCarryFlag(expected: Boolean) {
             assertEquals(expected, cpuState.isCarryFlag, "assertIsCarryFlag")
             checkState.isCarryFlag = expected
         }

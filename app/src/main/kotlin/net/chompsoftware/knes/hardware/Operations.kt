@@ -1,7 +1,6 @@
 package net.chompsoftware.knes.hardware
 
-import net.chompsoftware.knes.hardware.effects.BranchOnEqual
-import net.chompsoftware.knes.hardware.effects.BranchOnNotEqual
+import net.chompsoftware.knes.hardware.effects.*
 import net.chompsoftware.knes.toHex
 import net.chompsoftware.knes.toInt16
 
@@ -141,6 +140,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //Transfer
     TAX to SingleEffectPipeline(TransferAccumulatorToX),
     TXA to SingleEffectPipeline(TransferXToAccumulator),
+    TXS to SingleEffectPipeline(TransferXToStackRegister),
 )
 
 @ExperimentalUnsignedTypes
