@@ -11,17 +11,19 @@ abstract class BranchOnEvaluation : Effect() {
 
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        val read = operationState.memoryRead ?: throw Error("Read not performed")
-        val location: Int = if (read >= 0x80u)
-            -0x100 + read.toInt()
-        else read.toInt()
         if (branchEvaluation(cpuState)) {
-            cpuState.programCounter += location
-            operationState.cyclesRemaining += 1
+            val read = operationState.getMemoryRead()
+            val location: Int = if (read >= 0x80u) -0x100 + read.toInt() else read.toInt()
+            val nextLocation = cpuState.programCounter + location
+            val extraCycles = if (boundaryCrossed(cpuState.programCounter, nextLocation)) 2 else 1
+            cpuState.programCounter = nextLocation
+            operationState.cyclesRemaining += extraCycles
         }
     }
 
     override fun requiresCycle() = false
+
+    private fun boundaryCrossed(previous: Int, next: Int) = previous.shr(8) != next.shr(8)
 }
 
 object BranchOnNotEqual : BranchOnEvaluation() {
