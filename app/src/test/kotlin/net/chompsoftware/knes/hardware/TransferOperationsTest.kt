@@ -13,7 +13,7 @@ class TransferOperationsTest : ParameterizedTestData() {
     fun `TAX - Transfer Accumulator to X`(data:InputWithNegativeZeroCheck) {
         val memory = BasicMemory(setupMemory(TAX, NOP))
 
-        val interrogator = HardwareInterrogator(CpuState(aReg = data.input.toUInt()), memory)
+        val interrogator = HardwareInterrogator(CpuState(aReg = data.input), memory)
 
         interrogator.processInstruction()
 
@@ -37,7 +37,7 @@ class TransferOperationsTest : ParameterizedTestData() {
     fun `TXA - Transfer X to Accumulator`(data:InputWithNegativeZeroCheck) {
         val memory = BasicMemory(setupMemory(TXA, NOP))
 
-        val interrogator = HardwareInterrogator(CpuState(xReg = data.input.toUInt()), memory)
+        val interrogator = HardwareInterrogator(CpuState(xReg = data.input), memory)
 
         interrogator.processInstruction()
 

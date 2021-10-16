@@ -19,7 +19,7 @@ class MathOperationsTest : ParameterizedTestData() {
     fun `INX - Increment X`(initial: String, expected: String, negativeFlag: Boolean, zeroFlag: Boolean) {
         val memory = BasicMemory(setupMemory(INX, NOP))
 
-        val interrogator = HardwareInterrogator(CpuState(xReg = initial.toHexUInt()), memory)
+        val interrogator = HardwareInterrogator(CpuState(xReg = initial.toHexUByte()), memory)
 
         interrogator.processInstruction()
 

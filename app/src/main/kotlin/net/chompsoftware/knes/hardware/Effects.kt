@@ -68,28 +68,28 @@ object ReadIntoX : Effect() {
 object TransferAccumulatorToX : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        cpuState.setXRegWithFlags(cpuState.getAReg())
+        cpuState.setXRegWithFlags(cpuState.aReg)
     }
 }
 
 object TransferXToAccumulator : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        cpuState.setARegWithFlags(cpuState.getXReg())
+        cpuState.setARegWithFlags(cpuState.xReg)
     }
 }
 
 object IncrementX : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        cpuState.setXRegWithFlags((cpuState.getXReg() + 1u).toUByte())
+        cpuState.setXRegWithFlags((cpuState.xReg + 1u).toUByte())
     }
 }
 
 object StoreAccumulator : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        memory.set(operationState.memoryRead!!.toInt(), cpuState.aReg.toUByte())
+        memory.set(operationState.memoryRead!!.toInt(), cpuState.aReg)
     }
 }
 
@@ -97,7 +97,7 @@ object CompareToAccumulator : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         val read = operationState.memoryRead ?: throw Error("Read not performed")
-        cpuState.setComparisonFlags(cpuState.aReg.toUByte(), read)
+        cpuState.setComparisonFlags(cpuState.aReg, read)
     }
 
     override fun requiresCycle() = false

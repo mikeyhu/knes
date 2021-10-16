@@ -15,7 +15,7 @@ class ComparisonOperationsTest {
         fun `CMP Immediate`(data: ComparisonWithNegativeZeroCarryCheck) {
             val memory = BasicMemory(setupMemory(CMP_I, data.input, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = data.existing.toUInt()), memory)
+            val interrogator = HardwareInterrogator(CpuState(aReg = data.existing), memory)
 
             interrogator.processInstruction()
 

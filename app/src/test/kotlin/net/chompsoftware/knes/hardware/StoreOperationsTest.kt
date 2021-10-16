@@ -14,7 +14,7 @@ class StoreOperationsTest {
         fun `STA ZeroPage`() {
             val memory = BasicMemory(setupMemory(STA_Z, 0x03u, NOP, 0x00u))
 
-            val aReg = 0x01u
+            val aReg:UByte = 0x01u
 
             val interrogator = HardwareInterrogator(CpuState(aReg = aReg), memory)
 
@@ -28,7 +28,7 @@ class StoreOperationsTest {
                     memoryRead(1, 0x03u)
                 }
                 cycle {
-                    memoryWrite(3, aReg.toUByte())
+                    memoryWrite(3, aReg)
                 }
             }
 
