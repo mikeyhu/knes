@@ -142,6 +142,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //Clear
     CLC to SingleEffectPipeline(ClearCarry),
     CLD to SingleEffectPipeline(ClearDecimal),
+    CLV to SingleEffectPipeline(ClearOverflow),
 
     //Compare
     CMP_I to ImmediateMemoryOperation(CompareToAccumulator),

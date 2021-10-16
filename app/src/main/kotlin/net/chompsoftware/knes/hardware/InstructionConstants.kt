@@ -14,6 +14,7 @@ const val BPL: UByte = 0x10u //On plus
 //Clear
 const val CLC: UByte = 0x18u //Carry
 const val CLD: UByte = 0xd8u //Decimal
+const val CLV: UByte = 0xb8u //Overflow
 
 //Compare
 const val CMP_I: UByte = 0xc9u //Memory with Accumulator

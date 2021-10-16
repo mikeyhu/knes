@@ -51,4 +51,26 @@ class FlagOperationsTest {
             isCarryFlag(false)
         }
     }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `CLV - clear Overflow`(flagValue: Boolean) {
+        val memory = BasicMemory(setupMemory(CLV, NOP))
+
+        val interrogator = HardwareInterrogator(CpuState(isOverflowFlag = flagValue), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, CLV)
+            }
+            cycle {}
+        }
+
+        interrogator.assertCpuState {
+            programCounter(1)
+            isOverflowFlag(false)
+        }
+    }
 }

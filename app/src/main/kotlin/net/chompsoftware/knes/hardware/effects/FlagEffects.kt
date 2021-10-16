@@ -19,3 +19,10 @@ object ClearDecimal : Effect() {
         cpuState.isDecimalFlag = false
     }
 }
+
+object ClearOverflow : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        cpuState.isOverflowFlag = false
+    }
+}
