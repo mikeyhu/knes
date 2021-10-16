@@ -3,6 +3,8 @@ package net.chompsoftware.knes.hardware
 //Clear
 const val CLD: UByte = 0xd8u //Decimal
 
+//Decrement
+const val DEX: UByte = 0xcau //X
 
 //Branch
 const val BEQ: UByte = 0xf0u //On equal

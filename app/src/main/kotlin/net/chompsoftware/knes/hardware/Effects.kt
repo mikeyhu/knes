@@ -78,13 +78,6 @@ object ReadIntoX : Effect() {
     override fun requiresCycle() = false
 }
 
-object IncrementX : Effect() {
-    @ExperimentalUnsignedTypes
-    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        cpuState.setXRegWithFlags((cpuState.xReg + 1u).toUByte())
-    }
-}
-
 object StoreAccumulator : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
