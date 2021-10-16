@@ -103,6 +103,12 @@ object CompareToAccumulator : Effect() {
     override fun requiresCycle() = false
 }
 
+object NoOperation : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+    }
+}
+
 
 
 

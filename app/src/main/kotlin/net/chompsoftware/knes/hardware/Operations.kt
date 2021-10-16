@@ -153,6 +153,9 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //Jump
     JMP_AB to AbsoluteMemoryLocationOperation(Jump),
 
+    //No Operation
+    NOP to SingleEffectPipeline(NoOperation),
+
     //Load Accumulator
     LDA_I to ImmediateMemoryOperation(ReadIntoAccumulator),
     LDA_AB to AbsoluteMemoryReadOperation(ReadIntoAccumulator),
