@@ -26,14 +26,27 @@ abstract class BranchOnEvaluation : Effect() {
     private fun boundaryCrossed(previous: Int, next: Int) = previous.shr(8) != next.shr(8)
 }
 
-object BranchOnNotEqual : BranchOnEvaluation() {
-    override fun branchEvaluation(cpuState: CpuState) = !cpuState.isZeroFlag
+object BranchOnCarryClear : BranchOnEvaluation() {
+    override fun branchEvaluation(cpuState: CpuState) = !cpuState.isCarryFlag
+}
+
+object BranchOnCarrySet : BranchOnEvaluation() {
+    override fun branchEvaluation(cpuState: CpuState) = cpuState.isCarryFlag
 }
 
 object BranchOnEqual : BranchOnEvaluation() {
     override fun branchEvaluation(cpuState: CpuState) = cpuState.isZeroFlag
 }
 
+object BranchOnMinus : BranchOnEvaluation() {
+    override fun branchEvaluation(cpuState: CpuState) = cpuState.isNegativeFlag
+}
+
+object BranchOnNotEqual : BranchOnEvaluation() {
+    override fun branchEvaluation(cpuState: CpuState) = !cpuState.isZeroFlag
+}
+
 object BranchOnPLus : BranchOnEvaluation() {
     override fun branchEvaluation(cpuState: CpuState) = !cpuState.isNegativeFlag
 }
+

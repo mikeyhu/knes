@@ -4,7 +4,10 @@ package net.chompsoftware.knes.hardware
 const val ADC_I: UByte = 0x69u
 
 //Branch
+const val BCC: UByte = 0x90u //On carry clear
+const val BCS: UByte = 0xb0u //On carry set
 const val BEQ: UByte = 0xf0u //On equal
+const val BMI: UByte = 0x30u //On minus
 const val BNE: UByte = 0xd0u //On not equal
 const val BPL: UByte = 0x10u //On plus
 

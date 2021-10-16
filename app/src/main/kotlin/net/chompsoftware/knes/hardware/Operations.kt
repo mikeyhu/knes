@@ -132,7 +132,10 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     ADC_I to ImmediateMemoryOperation(AddWithCarry),
 
     //Branch
+    BCC to ImmediateMemoryOperation(BranchOnCarryClear),
+    BCS to ImmediateMemoryOperation(BranchOnCarrySet),
     BEQ to ImmediateMemoryOperation(BranchOnEqual),
+    BMI to ImmediateMemoryOperation(BranchOnMinus),
     BNE to ImmediateMemoryOperation(BranchOnNotEqual),
     BPL to ImmediateMemoryOperation(BranchOnPLus),
 
