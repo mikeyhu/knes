@@ -1,5 +1,9 @@
 package net.chompsoftware.knes.hardware
 
+//Clear
+const val CLD: UByte = 0xd8u //Decimal
+
+
 //Branch
 const val BEQ: UByte = 0xf0u //On equal
 const val BNE: UByte = 0xd0u //On not equal
@@ -33,7 +37,7 @@ const val TXA: UByte = 0x8au //X to Accumulator
 
 
 
-const val CLD: UByte = 0xd8u
+
 
 
 

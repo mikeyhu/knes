@@ -6,7 +6,8 @@ data class CpuState(
     var xReg: UByte = 0x0u,
     var isNegativeFlag: Boolean = false,
     var isZeroFlag: Boolean = false,
-    var isCarryFlag: Boolean = false
+    var isCarryFlag: Boolean = false,
+    var isDecimalFlag: Boolean = false
 ) {
     fun programCounterWithIncrement(): Int {
         return programCounter++

@@ -41,7 +41,7 @@ object Operation : EffectPipeline() {
         val instruction = memory[cpuState.programCounterWithIncrement()]
 
         return instructionMap.getOrElse(instruction) {
-            throw NotImplementedError("Instruction ${instruction.toHex()} not found.")
+            throw NotImplementedError("Instruction ${instruction.toHex()} not found at ${(cpuState.programCounter - 1).toHex()}")
         }
     }
 }
@@ -71,7 +71,6 @@ open class EffectPipeline(vararg var effects: Effect) {
         return null
     }
 }
-
 
 @ExperimentalUnsignedTypes
 class ImmediateMemoryOperation(vararg postEffects: Effect) : EffectPipeline(
@@ -105,6 +104,9 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //Branch
     BEQ to ImmediateMemoryOperation(BranchOnEqual),
     BNE to ImmediateMemoryOperation(BranchOnNotEqual),
+
+    //Clear
+    CLD to EffectPipeline(ClearDecimal),
 
     //Compare
     CMP_I to ImmediateMemoryOperation(CompareToAccumulator),

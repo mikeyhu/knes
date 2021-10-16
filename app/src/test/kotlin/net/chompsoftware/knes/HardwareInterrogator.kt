@@ -94,6 +94,11 @@ class HardwareInterrogator(private val cpuState: CpuState, private val memory: M
             checkState.isCarryFlag = expected
         }
 
+        fun isDecimalFlag(expected: Boolean) {
+            assertEquals(expected, cpuState.isDecimalFlag, "assertIsDecimalFlag")
+            checkState.isDecimalFlag = expected
+        }
+
         fun assertNothingElseChanged() {
             assertEquals(checkState, cpuState, "Unexpected CpuState change occurred,")
         }
