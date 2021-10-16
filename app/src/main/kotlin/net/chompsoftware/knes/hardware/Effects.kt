@@ -78,6 +78,15 @@ object ReadIntoX : Effect() {
     override fun requiresCycle() = false
 }
 
+object ReadIntoY : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        cpuState.setYRegWithFlags(operationState.getMemoryRead())
+    }
+
+    override fun requiresCycle() = false
+}
+
 object StoreAccumulator : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {

@@ -5,6 +5,7 @@ const val CLD: UByte = 0xd8u //Decimal
 
 //Decrement
 const val DEX: UByte = 0xcau //X
+const val DEY: UByte = 0x88u //Y
 
 //Branch
 const val BEQ: UByte = 0xf0u //On equal
@@ -27,6 +28,10 @@ const val LDA_Z: UByte = 0xa5u
 //Load X
 const val LDX_I: UByte = 0xa2u
 const val LDX_AB: UByte = 0xaeu
+
+//Load Y
+const val LDY_I: UByte = 0xa0u
+const val LDY_AB: UByte = 0xacu
 
 //No Operation
 const val NOP: UByte = 0xeau

@@ -140,6 +140,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //Decrement
     DEX to SingleEffectPipeline(DecrementX),
+    DEY to SingleEffectPipeline(DecrementY),
 
     //Increment
     INX to SingleEffectPipeline(IncrementX),
@@ -152,6 +153,9 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     LDA_AB to AbsoluteMemoryReadOperation(ReadIntoAccumulator),
     LDA_Z to ZeroPageReadOperation(ReadIntoAccumulator),
     LDX_I to ImmediateMemoryOperation(ReadIntoX),
+    LDY_I to ImmediateMemoryOperation(ReadIntoY),
+    LDY_AB to AbsoluteMemoryReadOperation(ReadIntoY),
+
 
     //Load X
     LDX_AB to AbsoluteMemoryReadOperation(ReadIntoX),

@@ -12,6 +12,13 @@ object DecrementX : Effect() {
     }
 }
 
+object DecrementY : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        cpuState.setYRegWithFlags((cpuState.yReg - 1u).toUByte())
+    }
+}
+
 object IncrementX : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {

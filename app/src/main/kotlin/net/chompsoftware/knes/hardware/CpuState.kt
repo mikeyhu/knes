@@ -4,6 +4,7 @@ data class CpuState(
     var programCounter: Int = 0,
     var aReg: UByte = 0x0u,
     var xReg: UByte = 0x0u,
+    var yReg: UByte = 0x0u,
     var stackReg: UByte = 0x0u,
     var isNegativeFlag: Boolean = false,
     var isZeroFlag: Boolean = false,
@@ -22,6 +23,12 @@ data class CpuState(
 
     fun setXRegWithFlags(value: UByte) {
         xReg = value
+        isNegativeFlag = tweakNegative(value)
+        isZeroFlag = tweakZero(value)
+    }
+
+    fun setYRegWithFlags(value: UByte) {
+        yReg = value
         isNegativeFlag = tweakNegative(value)
         isZeroFlag = tweakZero(value)
     }

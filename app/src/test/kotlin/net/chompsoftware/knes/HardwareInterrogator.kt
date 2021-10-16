@@ -79,6 +79,11 @@ class HardwareInterrogator(private val cpuState: CpuState, private val memory: M
             checkState.xReg = expected
         }
 
+        fun yReg(expected: UByte) {
+            assertEquals(expected, cpuState.yReg, "assertYReg")
+            checkState.yReg = expected
+        }
+
         fun stackReg(expected: UByte) {
             assertEquals(expected, cpuState.stackReg, "assertStackPointer")
             checkState.stackReg = expected

@@ -161,4 +161,66 @@ class LoadOperationsTest {
             }
         }
     }
+
+    @Nested
+    inner class LDY : ParameterizedTestData() {
+
+        @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
+        @MethodSource("checkNegativeZeroFlags")
+        fun `LDY Immediate`(data:InputWithNegativeZeroCheck) {
+            val memory = BasicMemory(setupMemory(LDY_I, data.input))
+
+            val interrogator = HardwareInterrogator(CpuState(), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LDY_I)
+                }
+                cycle {
+                    memoryRead(1, data.input)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+                yReg(data.input)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
+        }
+
+        @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
+        @MethodSource("checkNegativeZeroFlags")
+        fun `LDY Absolute`(data:InputWithNegativeZeroCheck) {
+            val memory = BasicMemory(setupMemory(LDY_AB, 0x04u, 0x00u, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(CpuState(), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LDY_AB)
+                }
+                cycle {
+                    memoryRead(1, 0x4u)
+                }
+                cycle {
+                    memoryRead(2, 0x0u)
+                }
+                cycle {
+                    memoryRead(4, data.input)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(3)
+                yReg(data.input)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
+        }
+    }
 }
