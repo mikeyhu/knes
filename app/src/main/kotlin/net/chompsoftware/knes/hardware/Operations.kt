@@ -36,7 +36,12 @@ class OperationState(
 }
 
 @ExperimentalUnsignedTypes
-object Operation : EffectPipeline() {
+interface EffectPipeline {
+    fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline?
+}
+
+@ExperimentalUnsignedTypes
+object Operation : EffectPipeline {
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline {
         val instruction = memory[cpuState.programCounterWithIncrement()]
 
@@ -47,8 +52,8 @@ object Operation : EffectPipeline() {
 }
 
 @ExperimentalUnsignedTypes
-open class EffectPipeline(vararg var effects: Effect) {
-    open fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline? {
+open class VariableLengthPipeline(vararg val effects: Effect) : EffectPipeline {
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline? {
         if (effects.size < operationState.pipelinePosition)
             throw Error("Pipeline past end of effects")
         if (operationState.cyclesRemaining > 0) {
@@ -73,13 +78,21 @@ open class EffectPipeline(vararg var effects: Effect) {
 }
 
 @ExperimentalUnsignedTypes
-class ImmediateMemoryOperation(vararg postEffects: Effect) : EffectPipeline(
+class SingleEffectPipeline(val effect: Effect) : EffectPipeline {
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline? {
+        effect.run(cpuState, memory, operationState)
+        return null
+    }
+}
+
+@ExperimentalUnsignedTypes
+class ImmediateMemoryOperation(vararg postEffects: Effect) : VariableLengthPipeline(
     ImmediateRead,
     *postEffects
 )
 
 @ExperimentalUnsignedTypes
-class AbsoluteMemoryOperation(vararg postEffects: Effect) : EffectPipeline(
+class AbsoluteMemoryOperation(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadArgument1,
     ReadArgument2,
     AbsoluteRead,
@@ -87,14 +100,14 @@ class AbsoluteMemoryOperation(vararg postEffects: Effect) : EffectPipeline(
 )
 
 @ExperimentalUnsignedTypes
-class ZeroPageReadOperation(vararg postEffects: Effect) : EffectPipeline(
+class ZeroPageReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadArgument1,
     ZeroPageRead,
     *postEffects
 )
 
 @ExperimentalUnsignedTypes
-class ZeroPageWriteOperation(vararg postEffects: Effect) : EffectPipeline(
+class ZeroPageWriteOperation(vararg postEffects: Effect) : VariableLengthPipeline(
     ImmediateRead,
     *postEffects
 )
@@ -106,13 +119,13 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     BNE to ImmediateMemoryOperation(BranchOnNotEqual),
 
     //Clear
-    CLD to EffectPipeline(ClearDecimal),
+    CLD to SingleEffectPipeline(ClearDecimal),
 
     //Compare
     CMP_I to ImmediateMemoryOperation(CompareToAccumulator),
 
     //Increment
-    INX to EffectPipeline(IncrementX),
+    INX to SingleEffectPipeline(IncrementX),
     //Load Accumulator
     LDA_I to ImmediateMemoryOperation(ReadIntoAccumulator),
     LDA_AB to AbsoluteMemoryOperation(ReadIntoAccumulator),
@@ -126,8 +139,8 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     STA_Z to ZeroPageWriteOperation(StoreAccumulator),
 
     //Transfer
-    TAX to EffectPipeline(TransferAccumulatorToX),
-    TXA to EffectPipeline(TransferXToAccumulator),
+    TAX to SingleEffectPipeline(TransferAccumulatorToX),
+    TXA to SingleEffectPipeline(TransferXToAccumulator),
 )
 
 @ExperimentalUnsignedTypes
