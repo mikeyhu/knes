@@ -57,6 +57,7 @@ const val STA_AB: UByte = 0x8du
 
 //Transfer
 const val TAX: UByte = 0xaau //Accumulator to X
+const val TAY: UByte = 0xa8u //Accumulator to Y
 const val TXA: UByte = 0x8au //X to Accumulator
 const val TXS: UByte = 0x9au //X to Stack Register
 const val TYA: UByte = 0x98u //Y to Accumulator
