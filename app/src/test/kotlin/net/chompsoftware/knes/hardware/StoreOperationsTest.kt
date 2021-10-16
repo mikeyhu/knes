@@ -5,7 +5,7 @@ import net.chompsoftware.knes.setupMemory
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
-
+@ExperimentalUnsignedTypes
 class StoreOperationsTest {
 
     @Nested
@@ -14,7 +14,7 @@ class StoreOperationsTest {
         fun `STA ZeroPage`() {
             val memory = BasicMemory(setupMemory(STA_Z, 0x03u, NOP, 0x00u))
 
-            val aReg:UByte = 0x01u
+            val aReg: UByte = 0x01u
 
             val interrogator = HardwareInterrogator(CpuState(aReg = aReg), memory)
 
@@ -34,6 +34,36 @@ class StoreOperationsTest {
 
             interrogator.assertCpuState {
                 programCounter(2)
+            }
+        }
+
+        @Test
+        fun `STA Absolute`() {
+            val memory = BasicMemory(setupMemory(STA_AB, 0x01u, 0x04u, NOP, 0x00u))
+
+            val aReg: UByte = 0x01u
+
+            val interrogator = HardwareInterrogator(CpuState(aReg = aReg), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, STA_AB)
+                }
+                cycle {
+                    memoryRead(1, 0x01u)
+                }
+                cycle {
+                    memoryRead(2, 0x04u)
+                }
+                cycle {
+                    memoryWrite(0x401, aReg)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(3)
             }
         }
     }

@@ -28,6 +28,7 @@ const val NOP: UByte = 0xeau
 
 //Store
 const val STA_Z: UByte = 0x85u //Accumulator in memory
+const val STA_AB: UByte = 0x8du
 
 //Transfer
 const val TAX: UByte = 0xaau //Accumulator to X

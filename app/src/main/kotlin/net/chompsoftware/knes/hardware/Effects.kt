@@ -27,11 +27,29 @@ object ZeroPageRead : Effect() {
     }
 }
 
+object ZeroPageWrite : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        operationState.locationWrite = operationState.getMemoryRead().toInt()
+    }
+
+    override fun requiresCycle() = false
+}
+
 object AbsoluteRead : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         operationState.memoryRead = memory[operationState.absolutePosition()]
     }
+}
+
+object AbsoluteWrite : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        operationState.locationWrite = operationState.absolutePosition()
+    }
+
+    override fun requiresCycle() = false
 }
 
 object ImmediateRead : Effect() {
@@ -70,7 +88,7 @@ object IncrementX : Effect() {
 object StoreAccumulator : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        memory[operationState.getMemoryRead().toInt()] = cpuState.aReg
+        memory[operationState.getLocationWrite()] = cpuState.aReg
     }
 }
 

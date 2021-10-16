@@ -6,15 +6,20 @@ import net.chompsoftware.knes.toInt16
 
 class OperationState(
     var pipelinePosition: Int,
-    var memoryRead: UByte?,
-    var argument1: UByte?,
-    var argument2: UByte?,
+    var memoryRead: UByte? = null,
+    var locationWrite: Int? = null,
+    var argument1: UByte? = null,
+    var argument2: UByte? = null,
     var cyclesRemaining: Int = 0
 ) {
     fun absolutePosition() = toInt16(getArgument1(), getArgument2())
 
     fun getMemoryRead(): UByte {
         return memoryRead ?: throw Error("memoryRead was not set")
+    }
+
+    fun getLocationWrite(): Int {
+        return locationWrite ?: throw Error("locationWrite was not set")
     }
 
     fun getArgument1(): UByte {
@@ -28,6 +33,7 @@ class OperationState(
     fun reset() {
         pipelinePosition = 0
         memoryRead = null
+        locationWrite = null
         argument1 = null
         argument2 = null
         cyclesRemaining = 0
@@ -91,10 +97,18 @@ class ImmediateMemoryOperation(vararg postEffects: Effect) : VariableLengthPipel
 )
 
 @ExperimentalUnsignedTypes
-class AbsoluteMemoryOperation(vararg postEffects: Effect) : VariableLengthPipeline(
+class AbsoluteMemoryReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadArgument1,
     ReadArgument2,
     AbsoluteRead,
+    *postEffects
+)
+
+@ExperimentalUnsignedTypes
+class AbsoluteMemoryWriteOperation(vararg postEffects: Effect) : VariableLengthPipeline(
+    ReadArgument1,
+    ReadArgument2,
+    AbsoluteWrite,
     *postEffects
 )
 
@@ -108,6 +122,7 @@ class ZeroPageReadOperation(vararg postEffects: Effect) : VariableLengthPipeline
 @ExperimentalUnsignedTypes
 class ZeroPageWriteOperation(vararg postEffects: Effect) : VariableLengthPipeline(
     ImmediateRead,
+    ZeroPageWrite,
     *postEffects
 )
 
@@ -127,15 +142,16 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     INX to SingleEffectPipeline(IncrementX),
     //Load Accumulator
     LDA_I to ImmediateMemoryOperation(ReadIntoAccumulator),
-    LDA_AB to AbsoluteMemoryOperation(ReadIntoAccumulator),
+    LDA_AB to AbsoluteMemoryReadOperation(ReadIntoAccumulator),
     LDA_Z to ZeroPageReadOperation(ReadIntoAccumulator),
     LDX_I to ImmediateMemoryOperation(ReadIntoX),
 
     //Load X
-    LDX_AB to AbsoluteMemoryOperation(ReadIntoX),
+    LDX_AB to AbsoluteMemoryReadOperation(ReadIntoX),
 
     //Store
     STA_Z to ZeroPageWriteOperation(StoreAccumulator),
+    STA_AB to AbsoluteMemoryWriteOperation(StoreAccumulator),
 
     //Transfer
     TAX to SingleEffectPipeline(TransferAccumulatorToX),
