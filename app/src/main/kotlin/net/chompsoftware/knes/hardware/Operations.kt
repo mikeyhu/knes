@@ -134,6 +134,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     BPL to ImmediateMemoryOperation(BranchOnPLus),
 
     //Clear
+    CLC to SingleEffectPipeline(ClearCarry),
     CLD to SingleEffectPipeline(ClearDecimal),
 
     //Compare

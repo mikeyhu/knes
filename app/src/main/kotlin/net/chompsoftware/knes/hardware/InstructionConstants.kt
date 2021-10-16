@@ -6,6 +6,7 @@ const val BNE: UByte = 0xd0u //On not equal
 const val BPL: UByte = 0x10u //On plus
 
 //Clear
+const val CLC: UByte = 0x18u //Carry
 const val CLD: UByte = 0xd8u //Decimal
 
 //Compare

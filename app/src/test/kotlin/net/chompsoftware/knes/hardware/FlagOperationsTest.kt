@@ -29,4 +29,26 @@ class FlagOperationsTest {
             isDecimalFlag(false)
         }
     }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `CLC - clear Carry`(flagValue: Boolean) {
+        val memory = BasicMemory(setupMemory(CLC, NOP))
+
+        val interrogator = HardwareInterrogator(CpuState(isCarryFlag = flagValue), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, CLC)
+            }
+            cycle {}
+        }
+
+        interrogator.assertCpuState {
+            programCounter(1)
+            isCarryFlag(false)
+        }
+    }
 }
