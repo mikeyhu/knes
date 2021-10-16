@@ -77,4 +77,28 @@ class TransferOperationsTest : ParameterizedTestData() {
             stackReg(0x10u)
         }
     }
+
+    @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
+    @MethodSource("checkNegativeZeroFlags")
+    fun `TYA - Transfer Y to Accumulator`(data: InputWithNegativeZeroCheck) {
+        val memory = BasicMemory(setupMemory(TYA, NOP))
+
+        val interrogator = HardwareInterrogator(CpuState(yReg = data.input), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, TYA)
+            }
+            cycle {}
+        }
+
+        interrogator.assertCpuState {
+            programCounter(1)
+            aReg(data.input)
+            isNegativeFlag(data.negativeFlag)
+            isZeroFlag(data.zeroFlag)
+        }
+    }
 }

@@ -168,6 +168,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     TAX to SingleEffectPipeline(TransferAccumulatorToX),
     TXA to SingleEffectPipeline(TransferXToAccumulator),
     TXS to SingleEffectPipeline(TransferXToStackRegister),
+    TYA to SingleEffectPipeline(TransferYToAccumulator),
 )
 
 @ExperimentalUnsignedTypes

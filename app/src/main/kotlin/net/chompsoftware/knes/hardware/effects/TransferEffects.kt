@@ -20,6 +20,13 @@ object TransferXToAccumulator : Effect() {
     }
 }
 
+object TransferYToAccumulator : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        cpuState.setARegWithFlags(cpuState.yReg)
+    }
+}
+
 object TransferXToStackRegister : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
