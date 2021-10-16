@@ -15,6 +15,15 @@ object CompareToAccumulator : Effect() {
     override fun requiresCycle() = false
 }
 
+object CompareToX : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        cpuState.setComparisonFlags(cpuState.xReg, operationState.getMemoryRead())
+    }
+
+    override fun requiresCycle() = false
+}
+
 object CompareToY : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {

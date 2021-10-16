@@ -146,6 +146,8 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //Compare
     CMP_I to ImmediateMemoryOperation(CompareToAccumulator),
 
+    CPX_I to ImmediateMemoryOperation(CompareToX),
+
     CPY_I to ImmediateMemoryOperation(CompareToY),
 
     //Decrement

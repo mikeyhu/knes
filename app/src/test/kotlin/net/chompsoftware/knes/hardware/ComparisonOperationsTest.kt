@@ -38,6 +38,35 @@ class ComparisonOperationsTest {
     }
 
     @Nested
+    inner class CPX : ParameterizedTestData() {
+        @ParameterizedTest
+        @MethodSource("checkComparisonNegativeZeroCarryFlags")
+        fun `CPX Immediate - Compare X`(data: ComparisonWithNegativeZeroCarryCheck) {
+            val memory = BasicMemory(setupMemory(CPX_I, data.input, NOP))
+
+            val interrogator = HardwareInterrogator(CpuState(xReg = data.existing), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, CPX_I)
+                }
+                cycle {
+                    memoryRead(1, data.input)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+                isCarryFlag(data.carryFlag)
+            }
+        }
+    }
+
+    @Nested
     inner class CPY : ParameterizedTestData() {
         @ParameterizedTest
         @MethodSource("checkComparisonNegativeZeroCarryFlags")
