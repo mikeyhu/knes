@@ -128,6 +128,9 @@ class ZeroPageWriteOperation(vararg postEffects: Effect) : VariableLengthPipelin
 
 @ExperimentalUnsignedTypes
 val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
+    //AddWithCarry
+    ADC_I to ImmediateMemoryOperation(AddWithCarry),
+
     //Branch
     BEQ to ImmediateMemoryOperation(BranchOnEqual),
     BNE to ImmediateMemoryOperation(BranchOnNotEqual),

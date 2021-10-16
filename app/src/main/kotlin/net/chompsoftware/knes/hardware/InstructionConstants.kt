@@ -1,5 +1,8 @@
 package net.chompsoftware.knes.hardware
 
+//Add With Carry
+const val ADC_I: UByte = 0x69u
+
 //Branch
 const val BEQ: UByte = 0xf0u //On equal
 const val BNE: UByte = 0xd0u //On not equal

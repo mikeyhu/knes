@@ -94,6 +94,12 @@ class HardwareInterrogator(private val cpuState: CpuState, private val memory: M
             checkState.isNegativeFlag = expected
         }
 
+
+        fun isOverflowFlag(expected: Boolean) {
+            assertEquals(expected, cpuState.isOverflowFlag, "assertIsOverflowFlag")
+            checkState.isOverflowFlag = expected
+        }
+
         fun isZeroFlag(expected: Boolean) {
             assertEquals(expected, cpuState.isZeroFlag, "assertIsZeroFlag")
             checkState.isZeroFlag = expected

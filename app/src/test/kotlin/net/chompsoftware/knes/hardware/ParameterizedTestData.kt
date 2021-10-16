@@ -24,6 +24,16 @@ open class ParameterizedTestData {
                 ComparisonWithNegativeZeroCarryCheck(0x12u, 0x11u, true, false, false),
             )
         }
+
+        @JvmStatic
+        fun checkAddWithCarryFlags(): Stream<AddWithCarryCheck> {
+            return Stream.of(
+                AddWithCarryCheck(0x0fu, 0x01u, false, 0x10u, false, false, false),
+                AddWithCarryCheck(0x7fu, 0x0u, false, 0x7fu, false, false, false),
+                AddWithCarryCheck(0x7fu, 0x0u, true, 0x80u, true, true, false),
+                AddWithCarryCheck(0x80u, 0x0u, false, 0x80u, true, false, false),
+            )
+        }
     }
 }
 
@@ -33,5 +43,15 @@ data class ComparisonWithNegativeZeroCarryCheck(
     val existing: UByte,
     val negativeFlag: Boolean,
     val zeroFlag: Boolean,
+    val carryFlag: Boolean
+)
+
+data class AddWithCarryCheck(
+    val aReg: UByte,
+    val memory: UByte,
+    val carry: Boolean,
+    val expected: UByte,
+    val negativeFlag: Boolean,
+    val overflowFlag: Boolean,
     val carryFlag: Boolean
 )
