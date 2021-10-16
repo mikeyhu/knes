@@ -19,6 +19,9 @@ const val CMP_I: UByte = 0xc9u //Memory with Accumulator
 const val DEX: UByte = 0xcau //X
 const val DEY: UByte = 0x88u //Y
 
+//Exclusive OR
+const val EOR_I: UByte = 0x49u
+
 //Increment
 const val INX: UByte = 0xe8u
 

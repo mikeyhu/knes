@@ -34,10 +34,20 @@ open class ParameterizedTestData {
                 AddWithCarryCheck(0x80u, 0x0u, false, 0x80u, true, false, false),
             )
         }
+
+        @JvmStatic
+        fun checkExclusiveOrFlags(): Stream<ExclusiveOrCheck> {
+            return Stream.of(
+                ExclusiveOrCheck(0x0fu, 0xffu, 0xf0u, true, false),
+                ExclusiveOrCheck(0xf0u, 0xffu, 0x0fu, false, false),
+                ExclusiveOrCheck(0xffu, 0xffu, 0x00u, false, true),
+            )
+        }
     }
 }
 
 data class InputWithNegativeZeroCheck(val input: UByte, val negativeFlag: Boolean, val zeroFlag: Boolean)
+
 data class ComparisonWithNegativeZeroCarryCheck(
     val input: UByte,
     val existing: UByte,
@@ -54,4 +64,12 @@ data class AddWithCarryCheck(
     val negativeFlag: Boolean,
     val overflowFlag: Boolean,
     val carryFlag: Boolean
+)
+
+data class ExclusiveOrCheck(
+    val aReg: UByte,
+    val memory: UByte,
+    val expected: UByte,
+    val negativeFlag: Boolean,
+    val zeroFlag: Boolean
 )

@@ -147,6 +147,9 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     DEX to SingleEffectPipeline(DecrementX),
     DEY to SingleEffectPipeline(DecrementY),
 
+    //Exclusive Or
+    EOR_I to ImmediateMemoryOperation(ExclusiveOr),
+
     //Increment
     INX to SingleEffectPipeline(IncrementX),
 

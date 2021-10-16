@@ -13,8 +13,6 @@ class MathOperationsTest : ParameterizedTestData() {
 
     @Nested
     inner class ADC : ParameterizedTestData() {
-
-
         @ParameterizedTest
         @MethodSource("checkAddWithCarryFlags")
         fun `ADC Immediate`(data: AddWithCarryCheck) {
@@ -98,6 +96,37 @@ class MathOperationsTest : ParameterizedTestData() {
             yReg(expected.toHexUByte())
             isNegativeFlag(negativeFlag)
             isZeroFlag(zeroFlag)
+        }
+    }
+
+    @Nested
+    inner class EOR : ParameterizedTestData() {
+        @ParameterizedTest
+        @MethodSource("checkExclusiveOrFlags")
+
+        fun `EOR Immediate - Exclusive OR`(data: ExclusiveOrCheck) {
+            val memory = BasicMemory(setupMemory(EOR_I, data.memory))
+
+            val interrogator = HardwareInterrogator(CpuState(aReg = data.aReg), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, EOR_I)
+                }
+                cycle {
+                    memoryRead(1, data.memory)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+                aReg(data.expected)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+
+            }
         }
     }
 
