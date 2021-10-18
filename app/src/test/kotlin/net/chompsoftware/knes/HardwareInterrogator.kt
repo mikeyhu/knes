@@ -124,8 +124,12 @@ class HardwareInterrogator(private val cpuState: CpuState, private val memory: M
 
 @ExperimentalUnsignedTypes
 sealed class Activity {
-    data class MemoryReadActivity(val position: Int, val returned: UByte) : Activity()
-    data class MemoryWriteActivity(val position: Int, val set: UByte) : Activity()
+    data class MemoryReadActivity(val position: Int, val returned: UByte) : Activity() {
+        override fun toString() = "MemoryReadActivity(position=${position.toHex()}, returned=${returned.toHex()})"
+    }
+    data class MemoryWriteActivity(val position: Int, val set: UByte) : Activity() {
+        override fun toString() = "MemoryWriteActivity(position=${position.toHex()}, set=${set.toHex()})"
+    }
 }
 
 @ExperimentalUnsignedTypes

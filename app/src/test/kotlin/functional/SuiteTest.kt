@@ -1,5 +1,6 @@
 package functional
 
+import net.chompsoftware.knes.HardwareLogger
 import net.chompsoftware.knes.hardware.*
 import net.chompsoftware.knes.toHex
 import org.junit.jupiter.api.Test
@@ -34,16 +35,13 @@ class SuiteTest {
             fail(message)
         }
 
+        val hardware = HardwareLogger(cpuState, memory)
+
         do {
             val counter = cpuState.programCounter
             try {
-                val effectState = OperationState(0, null, null, null)
-                var nextPipeline: EffectPipeline? = Operation.run(cpuState, memory, effectState)
-
-                while (nextPipeline != null) {
-                    nextPipeline = nextPipeline.run(cpuState, memory, effectState)
-                }
-
+                val operationState = OperationState(0)
+                hardware.processInstruction(operationState)
             } catch (error: Error) {
                 reportThenFail("failed at ${counter.toHex()} with $error")
             }

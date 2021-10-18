@@ -35,6 +35,38 @@ class ComparisonOperationsTest {
                 isCarryFlag(data.carryFlag)
             }
         }
+
+        @ParameterizedTest
+        @MethodSource("checkComparisonNegativeZeroCarryFlags")
+        fun `CMP Absolute`(data: ComparisonWithNegativeZeroCarryCheck) {
+            val memory = BasicMemory(setupMemory(CMP_AB, 0x04u, 0x00u, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(CpuState(aReg = data.existing), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, CMP_AB)
+                }
+                cycle {
+                    memoryRead(1, 0x04u)
+                }
+                cycle {
+                    memoryRead(2, 0x00u)
+                }
+                cycle {
+                    memoryRead(4, data.input)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(3)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+                isCarryFlag(data.carryFlag)
+            }
+        }
     }
 
     @Nested

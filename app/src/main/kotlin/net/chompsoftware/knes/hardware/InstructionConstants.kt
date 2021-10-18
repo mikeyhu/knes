@@ -18,6 +18,7 @@ const val CLV: UByte = 0xb8u //Overflow
 
 //Compare
 const val CMP_I: UByte = 0xc9u //Memory with Accumulator
+const val CMP_AB: UByte = 0xcdu
 
 const val CPX_I: UByte = 0xe0u //Memory with X
 
@@ -51,6 +52,9 @@ const val LDY_AB: UByte = 0xacu
 
 //No Operation
 const val NOP: UByte = 0xeau
+
+//Push and Pull Stack Operations
+const val PHA: UByte = 0x48u
 
 //Store
 const val STA_Z: UByte = 0x85u //Accumulator in memory

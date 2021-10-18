@@ -91,6 +91,19 @@ class SingleEffectPipeline(val effect: Effect) : EffectPipeline {
 }
 
 @ExperimentalUnsignedTypes
+class DelayedSingleEffectPipeline(val effect: Effect, val delay: Int) : EffectPipeline {
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline? {
+        if (operationState.pipelinePosition < delay) {
+            operationState.pipelinePosition++
+            return this
+        }
+        effect.run(cpuState, memory, operationState)
+        operationState.reset()
+        return null
+    }
+}
+
+@ExperimentalUnsignedTypes
 class ImmediateMemoryOperation(vararg postEffects: Effect) : VariableLengthPipeline(
     ImmediateRead,
     *postEffects
@@ -146,6 +159,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //Compare
     CMP_I to ImmediateMemoryOperation(CompareToAccumulator),
+    CMP_AB to AbsoluteMemoryReadOperation(CompareToAccumulator),
 
     CPX_I to ImmediateMemoryOperation(CompareToX),
 
@@ -178,6 +192,9 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //Load X
     LDX_AB to AbsoluteMemoryReadOperation(ReadIntoX),
+
+    //Push and Pull Stack Operations
+    PHA to DelayedSingleEffectPipeline(PushAccumulator, delay = 1),
 
     //Store
     STA_Z to ZeroPageWriteOperation(StoreAccumulator),

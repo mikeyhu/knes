@@ -1,5 +1,7 @@
 package net.chompsoftware.knes.hardware
 
+import net.chompsoftware.knes.toHex
+
 data class CpuState(
     var programCounter: Int = 0,
     var aReg: UByte = 0x0u,
@@ -42,6 +44,14 @@ data class CpuState(
 
     private fun tweakNegative(value: UByte) = value.and(NEGATIVE_BYTE_POSITION) > 0u
     private fun tweakZero(value: UByte) = value == ZERO_BYTE
+
+    override fun toString(): String {
+        return "CpuState(pc=${programCounter.paddedToHex()}, aReg=${aReg.paddedToHex()}, xReg=${xReg.paddedToHex()}, yReg=${yReg.paddedToHex()}, stackReg=${stackReg.paddedToHex()}, negative=${isNegativeFlag}, zero=${isZeroFlag}, overflow=${isOverflowFlag}, carry=${isCarryFlag}, decimal=${isDecimalFlag})"
+    }
+
+    private fun Int.paddedToHex() = this.toHex().padEnd(5)
+
+    private fun UByte.paddedToHex() = this.toHex().padEnd(4)
 }
 
 const val NEGATIVE_BYTE_POSITION: UByte = 0x80u
