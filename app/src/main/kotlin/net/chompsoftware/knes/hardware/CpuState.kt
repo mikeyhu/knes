@@ -12,7 +12,9 @@ data class CpuState(
     var isZeroFlag: Boolean = false,
     var isCarryFlag: Boolean = false,
     var isDecimalFlag: Boolean = false,
-    var isOverflowFlag: Boolean = false
+    var isOverflowFlag: Boolean = false,
+    var isBreakCommandFlag: Boolean = false,
+    var isInterruptDisabledFlag: Boolean = false
 ) {
     fun programCounterWithIncrement(): Int {
         return programCounter++

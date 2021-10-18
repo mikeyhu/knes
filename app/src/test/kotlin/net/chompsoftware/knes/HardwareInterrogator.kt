@@ -115,6 +115,16 @@ class HardwareInterrogator(private val cpuState: CpuState, private val memory: M
             checkState.isDecimalFlag = expected
         }
 
+        fun isBreakCommandFlag(expected: Boolean) {
+            assertEquals(expected, cpuState.isBreakCommandFlag, "assertIsBreakCommandFlag")
+            checkState.isBreakCommandFlag = expected
+        }
+
+        fun isInterruptDisabledFlag(expected: Boolean) {
+            assertEquals(expected, cpuState.isInterruptDisabledFlag, "assertIsInterruptDisabledFlag")
+            checkState.isInterruptDisabledFlag = expected
+        }
+
         fun assertNothingElseChanged() {
             assertEquals(checkState, cpuState, "Unexpected CpuState change occurred,")
         }

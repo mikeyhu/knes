@@ -10,6 +10,8 @@ const val BEQ: UByte = 0xf0u //On equal
 const val BMI: UByte = 0x30u //On minus
 const val BNE: UByte = 0xd0u //On not equal
 const val BPL: UByte = 0x10u //On plus
+const val BVC: UByte = 0x50u //On overflow clear
+const val BVS: UByte = 0x70u //On overflow set
 
 //Clear
 const val CLC: UByte = 0x18u //Carry
@@ -56,6 +58,7 @@ const val NOP: UByte = 0xeau
 //Push and Pull Stack Operations
 const val PHA: UByte = 0x48u // Push Accumulator
 const val PLA: UByte = 0x68u // Pull Accumulator
+const val PLP: UByte = 0x28u // Pull Processor Status
 
 //Store
 const val STA_Z: UByte = 0x85u //Accumulator in memory

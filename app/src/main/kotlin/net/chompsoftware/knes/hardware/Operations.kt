@@ -151,6 +151,8 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     BMI to ImmediateMemoryOperation(BranchOnMinus),
     BNE to ImmediateMemoryOperation(BranchOnNotEqual),
     BPL to ImmediateMemoryOperation(BranchOnPLus),
+    BVC to ImmediateMemoryOperation(BranchOnOverflowClear),
+    BVS to ImmediateMemoryOperation(BranchOnOverflowSet),
 
     //Clear
     CLC to SingleEffectPipeline(ClearCarry),
@@ -196,6 +198,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //Push and Pull Stack Operations
     PHA to DelayedSingleEffectPipeline(PushAccumulator, delay = 1),
     PLA to DelayedSingleEffectPipeline(PullAccumulator, delay = 2),
+    PLP to DelayedSingleEffectPipeline(PullProcessorStatus, delay = 2),
 
     //Store
     STA_Z to ZeroPageWriteOperation(StoreAccumulator),

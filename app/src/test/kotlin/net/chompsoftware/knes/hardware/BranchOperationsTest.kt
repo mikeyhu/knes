@@ -482,4 +482,100 @@ class BranchOperationsTest {
             }
         }
     }
+
+    @Nested
+    inner class BVC {
+        @Test
+        fun `BVC Branch on overflow clear should not branch is overflowFlag is true`() {
+            val memory = BasicMemory(setupMemory(BVC, 0x10u, NOP))
+
+            val interrogator = HardwareInterrogator(CpuState(isOverflowFlag = true), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, BVC)
+                }
+                cycle {
+                    memoryRead(1, 0x10u)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+            }
+        }
+
+        @Test
+        fun `BVC Branch on overflow clear should branch is carryFlag is false`() {
+            val memory = BasicMemory(setupMemory(BVC, 0x10u, NOP))
+
+            val interrogator = HardwareInterrogator(CpuState(isOverflowFlag = false), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, BVC)
+                }
+                cycle {
+                    memoryRead(1, 0x10u)
+                }
+                cycle {}
+            }
+
+            interrogator.assertCpuState {
+                programCounter(0x2 + 0x10)
+            }
+        }
+    }
+
+    @Nested
+    inner class BVS {
+        @Test
+        fun `BVS Branch on overflow set should not branch is overflowFlag is false`() {
+            val memory = BasicMemory(setupMemory(BVS, 0x10u, NOP))
+
+            val interrogator = HardwareInterrogator(CpuState(isOverflowFlag = false), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, BVS)
+                }
+                cycle {
+                    memoryRead(1, 0x10u)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+            }
+        }
+
+        @Test
+        fun `BVS Branch on overflow set should branch is carryFlag is true`() {
+            val memory = BasicMemory(setupMemory(BVS, 0x10u, NOP))
+
+            val interrogator = HardwareInterrogator(CpuState(isOverflowFlag = true), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, BVS)
+                }
+                cycle {
+                    memoryRead(1, 0x10u)
+                }
+                cycle {}
+            }
+
+            interrogator.assertCpuState {
+                programCounter(0x2 + 0x10)
+            }
+        }
+    }
 }

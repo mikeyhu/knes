@@ -50,3 +50,11 @@ object BranchOnPLus : BranchOnEvaluation() {
     override fun branchEvaluation(cpuState: CpuState) = !cpuState.isNegativeFlag
 }
 
+object BranchOnOverflowClear : BranchOnEvaluation() {
+    override fun branchEvaluation(cpuState: CpuState) = !cpuState.isOverflowFlag
+}
+
+object BranchOnOverflowSet : BranchOnEvaluation() {
+    override fun branchEvaluation(cpuState: CpuState) = cpuState.isOverflowFlag
+}
+
