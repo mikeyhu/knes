@@ -54,7 +54,8 @@ const val LDY_AB: UByte = 0xacu
 const val NOP: UByte = 0xeau
 
 //Push and Pull Stack Operations
-const val PHA: UByte = 0x48u
+const val PHA: UByte = 0x48u // Push Accumulator
+const val PLA: UByte = 0x68u // Pull Accumulator
 
 //Store
 const val STA_Z: UByte = 0x85u //Accumulator in memory
@@ -63,9 +64,11 @@ const val STA_AB: UByte = 0x8du
 //Transfer
 const val TAX: UByte = 0xaau //Accumulator to X
 const val TAY: UByte = 0xa8u //Accumulator to Y
+const val TSX: UByte = 0xbau //Stack to X
 const val TXA: UByte = 0x8au //X to Accumulator
 const val TXS: UByte = 0x9au //X to Stack Register
 const val TYA: UByte = 0x98u //Y to Accumulator
+
 
 
 

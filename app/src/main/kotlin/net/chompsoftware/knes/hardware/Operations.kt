@@ -195,6 +195,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //Push and Pull Stack Operations
     PHA to DelayedSingleEffectPipeline(PushAccumulator, delay = 1),
+    PLA to DelayedSingleEffectPipeline(PullAccumulator, delay = 2),
 
     //Store
     STA_Z to ZeroPageWriteOperation(StoreAccumulator),
@@ -203,6 +204,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //Transfer
     TAX to SingleEffectPipeline(TransferAccumulatorToX),
     TAY to SingleEffectPipeline(TransferAccumulatorToY),
+    TSX to SingleEffectPipeline(TransferStackRegisterToX),
     TXA to SingleEffectPipeline(TransferXToAccumulator),
     TXS to SingleEffectPipeline(TransferXToStackRegister),
     TYA to SingleEffectPipeline(TransferYToAccumulator),

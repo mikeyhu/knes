@@ -40,3 +40,10 @@ object TransferXToStackRegister : Effect() {
         cpuState.stackReg = cpuState.xReg
     }
 }
+
+object TransferStackRegisterToX : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        cpuState.setXRegWithFlags(cpuState.stackReg)
+    }
+}

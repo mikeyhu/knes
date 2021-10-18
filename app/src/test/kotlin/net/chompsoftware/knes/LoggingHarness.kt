@@ -2,15 +2,13 @@ package net.chompsoftware.knes
 
 import net.chompsoftware.knes.hardware.*
 
+private const val ENABLE_LOGGING = true
+private val LOGGING_RANGES: List<Pair<Int, Int>> = listOf(
+//    0x5d0 to 0x6d0
+)
 
 @ExperimentalUnsignedTypes
-class HardwareLogger(private val cpuState: CpuState, private val memory: Memory) {
-
-    val ENABLE_LOGGING = true
-    val LOGGING_RANGES = listOf(
-        0x5d0 to 0x6d0
-    )
-
+class LoggingHarness(private val cpuState: CpuState, private val memory: Memory) {
     private var cycleLog: MutableList<MutableList<Activity>> = mutableListOf()
 
     private val trackingMemory: Memory by lazy {
@@ -35,7 +33,7 @@ class HardwareLogger(private val cpuState: CpuState, private val memory: Memory)
         cycleLog = mutableListOf()
     }
 
-    fun inLoggingRange(counter: Int) = LOGGING_RANGES.any { (low, high) ->
+    private fun inLoggingRange(counter: Int) = LOGGING_RANGES.any { (low, high) ->
         counter in low until high
     }
 
