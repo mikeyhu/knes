@@ -57,6 +57,7 @@ const val NOP: UByte = 0xeau
 
 //Push and Pull Stack Operations
 const val PHA: UByte = 0x48u // Push Accumulator
+const val PHP: UByte = 0x08u // Push Processor Status
 const val PLA: UByte = 0x68u // Pull Accumulator
 const val PLP: UByte = 0x28u // Pull Processor Status
 

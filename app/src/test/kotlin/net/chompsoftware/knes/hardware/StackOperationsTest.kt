@@ -119,14 +119,14 @@ class StackOperationsTest {
             "0xffu, true,  true,  true,  true,  true,  true,  true"
         )
         fun `PLP - Pull Processor status from the stack`(
-            value:String,
-            negativeFlag:Boolean,
-            overflowFlag:Boolean,
-            breakCommandFlag:Boolean,
-            decimalFlag:Boolean,
-            interruptDisabledFlag:Boolean,
-            zeroFlag:Boolean,
-            carryFlag:Boolean
+            value: String,
+            negativeFlag: Boolean,
+            overflowFlag: Boolean,
+            breakCommandFlag: Boolean,
+            decimalFlag: Boolean,
+            interruptDisabledFlag: Boolean,
+            zeroFlag: Boolean,
+            carryFlag: Boolean
         ) {
             val memory = BasicMemory(setupMemory(PLP, NOP))
 
@@ -161,6 +161,66 @@ class StackOperationsTest {
                 isBreakCommandFlag(breakCommandFlag)
                 isOverflowFlag(overflowFlag)
                 isInterruptDisabledFlag(interruptDisabledFlag)
+            }
+        }
+
+        @ParameterizedTest
+        @CsvSource(
+            "0x30u, false, false, false, false, false, false, false",
+            "0x31u, false, false, false, false, false, false, true",
+            "0x32u, false, false, false, false, false, true,  false",
+            "0x34u, false, false, false, false, true,  false, false",
+            "0x38u, false, false, false, true,  false, false, false",
+            "0x30u, false, false, true,  false, false, false, false",
+            "0x70u, false, true,  false, false, false, false, false",
+            "0xb0u, true,  false, false, false, false, false, false",
+            "0xffu, true,  true,  true,  true,  true,  true,  true"
+        )
+        // These always have bit 5 and break (bit 4) set
+        fun `PHP - Push Processor status to the stack`(
+            value: String,
+            negativeFlag: Boolean,
+            overflowFlag: Boolean,
+            breakCommandFlag: Boolean,
+            decimalFlag: Boolean,
+            interruptDisabledFlag: Boolean,
+            zeroFlag: Boolean,
+            carryFlag: Boolean
+        ) {
+            val memory = BasicMemory(setupMemory(PHP, NOP))
+
+            val stackRegister: UByte = 0xffu
+            val expectedStackPosition = 0x1ff
+            val expectedStackRegister: UByte = 0xfeu
+
+            val interrogator = HardwareInterrogator(
+                CpuState(
+                    stackReg = stackRegister,
+                    isNegativeFlag = negativeFlag,
+                    isCarryFlag = carryFlag,
+                    isZeroFlag = zeroFlag,
+                    isDecimalFlag = decimalFlag,
+                    isBreakCommandFlag = breakCommandFlag,
+                    isOverflowFlag = overflowFlag,
+                    isInterruptDisabledFlag = interruptDisabledFlag
+                ), memory
+            )
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, PHP)
+                }
+                cycle {}
+                cycle {
+                    memoryWrite(expectedStackPosition, value.toHexUByte())
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(1)
+                stackReg(expectedStackRegister)
             }
         }
     }

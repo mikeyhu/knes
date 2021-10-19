@@ -197,6 +197,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //Push and Pull Stack Operations
     PHA to DelayedSingleEffectPipeline(PushAccumulator, delay = 1),
+    PHP to DelayedSingleEffectPipeline(PushProcessorStatus, delay = 1),
     PLA to DelayedSingleEffectPipeline(PullAccumulator, delay = 2),
     PLP to DelayedSingleEffectPipeline(PullProcessorStatus, delay = 2),
 
