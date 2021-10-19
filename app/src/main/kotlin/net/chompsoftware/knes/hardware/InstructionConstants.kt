@@ -35,6 +35,7 @@ const val EOR_I: UByte = 0x49u
 
 //Increment
 const val INX: UByte = 0xe8u
+const val INY: UByte = 0xc8u
 
 //Jump
 const val JMP_AB: UByte = 0x4cu

@@ -43,6 +43,13 @@ object IncrementX : Effect() {
     }
 }
 
+object IncrementY : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        cpuState.setYRegWithFlags((cpuState.yReg + 1u).toUByte())
+    }
+}
+
 object ExclusiveOr : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {

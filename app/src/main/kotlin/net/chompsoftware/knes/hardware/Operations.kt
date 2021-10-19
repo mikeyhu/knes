@@ -176,6 +176,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //Increment
     INX to SingleEffectPipeline(IncrementX),
+    INY to SingleEffectPipeline(IncrementY),
 
     //Jump
     JMP_AB to AbsoluteMemoryLocationOperation(Jump),
