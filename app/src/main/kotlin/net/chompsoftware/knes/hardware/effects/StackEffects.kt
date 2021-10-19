@@ -63,3 +63,19 @@ object PushProcessorStatus : Effect() {
 
     private fun Boolean.isTrue(check: UByte): UByte = if (this) check else 0u
 }
+
+object PushProgramCounterLow : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        memory[((cpuState.stackReg--) + 0x100u).toInt()] =
+            (cpuState.programCounter - 1).toUInt().and(0xffu).toUByte()
+    }
+}
+
+object PushProgramCounterHigh : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        memory[((cpuState.stackReg--) + 0x100u).toInt()] =
+            (cpuState.programCounter - 1).toUInt().and(0xff00u).shr(8).toUByte()
+    }
+}

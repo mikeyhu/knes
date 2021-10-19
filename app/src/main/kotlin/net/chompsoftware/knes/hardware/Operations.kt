@@ -121,7 +121,7 @@ class AbsoluteMemoryReadOperation(vararg postEffects: Effect) : VariableLengthPi
 class AbsoluteMemoryLocationOperation(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadArgument1,
     ReadArgument2,
-    AbsoluteLocation,
+    ArgumentsToLocation,
     *postEffects
 )
 
@@ -136,6 +136,17 @@ class ZeroPageReadOperation(vararg postEffects: Effect) : VariableLengthPipeline
 class ZeroPageWriteOperation(vararg postEffects: Effect) : VariableLengthPipeline(
     ImmediateRead,
     ZeroPageWrite,
+    *postEffects
+)
+
+@ExperimentalUnsignedTypes
+class IndirectOperation(vararg postEffects: Effect) : VariableLengthPipeline(
+    ReadArgument1,
+    ReadArgument2,
+    ArgumentsToLocation,
+    ReadIndirect1,
+    ReadIndirect2,
+    ArgumentsToLocation,
     *postEffects
 )
 
@@ -180,6 +191,13 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //Jump
     JMP_AB to AbsoluteMemoryLocationOperation(Jump),
+    JMP_IN to IndirectOperation(Jump),
+    JSR_AB to AbsoluteMemoryLocationOperation(
+        NoOperation,
+        PushProgramCounterHigh,
+        PushProgramCounterLow,
+        Jump
+    ),
 
     //No Operation
     NOP to SingleEffectPipeline(NoOperation),

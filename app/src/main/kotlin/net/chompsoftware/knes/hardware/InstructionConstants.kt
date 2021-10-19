@@ -39,6 +39,8 @@ const val INY: UByte = 0xc8u
 
 //Jump
 const val JMP_AB: UByte = 0x4cu
+const val JMP_IN: UByte = 0x6cu
+const val JSR_AB: UByte = 0x20u
 
 //Load Accumulator
 const val LDA_I: UByte = 0xa9u

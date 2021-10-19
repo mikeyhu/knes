@@ -43,7 +43,7 @@ object AbsoluteRead : Effect() {
     }
 }
 
-object AbsoluteLocation : Effect() {
+object ArgumentsToLocation : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         operationState.location = operationState.absolutePosition()
@@ -56,6 +56,20 @@ object ImmediateRead : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         operationState.memoryRead = memory[cpuState.programCounterWithIncrement()]
+    }
+}
+
+object ReadIndirect1 : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        operationState.argument1 = memory[operationState.getLocation()]
+    }
+}
+
+object ReadIndirect2 : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        operationState.argument2 = memory[operationState.getLocation()+1]
     }
 }
 
