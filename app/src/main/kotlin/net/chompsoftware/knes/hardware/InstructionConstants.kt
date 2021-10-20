@@ -64,6 +64,9 @@ const val PHP: UByte = 0x08u // Push Processor Status
 const val PLA: UByte = 0x68u // Pull Accumulator
 const val PLP: UByte = 0x28u // Pull Processor Status
 
+//Return
+const val RTS: UByte = 0x60u //from subroutine
+
 //Store
 const val STA_Z: UByte = 0x85u //Accumulator in memory
 const val STA_AB: UByte = 0x8du

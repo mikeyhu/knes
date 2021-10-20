@@ -220,6 +220,17 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     PLA to DelayedSingleEffectPipeline(PullAccumulator, delay = 2),
     PLP to DelayedSingleEffectPipeline(PullProcessorStatus, delay = 2),
 
+    //Return
+    RTS to VariableLengthPipeline(
+        NoOperation,
+        NoOperation,
+        PullProgramCounterLow,
+        PullProgramCounterHigh,
+        ArgumentsToLocation,
+        Jump,
+        IncrementProgramCounter
+    ),
+
     //Store
     STA_Z to ZeroPageWriteOperation(StoreAccumulator),
     STA_AB to AbsoluteMemoryLocationOperation(StoreAccumulator),

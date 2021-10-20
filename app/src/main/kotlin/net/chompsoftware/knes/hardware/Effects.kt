@@ -114,6 +114,13 @@ object NoOperation : Effect() {
     }
 }
 
+object IncrementProgramCounter : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        cpuState.programCounterWithIncrement()
+    }
+}
+
 
 
 

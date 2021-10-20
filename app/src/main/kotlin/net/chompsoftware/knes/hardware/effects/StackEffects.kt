@@ -79,3 +79,17 @@ object PushProgramCounterHigh : Effect() {
             (cpuState.programCounter - 1).toUInt().and(0xff00u).shr(8).toUByte()
     }
 }
+
+object PullProgramCounterLow : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        operationState.argument1 = memory[((++cpuState.stackReg) + 0x100u).toInt()]
+    }
+}
+
+object PullProgramCounterHigh : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        operationState.argument2 = memory[((++cpuState.stackReg) + 0x100u).toInt()]
+    }
+}
