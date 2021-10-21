@@ -49,7 +49,13 @@ data class CpuState(
     private fun tweakZero(value: UByte) = value == ZERO_BYTE
 
     override fun toString(): String {
-        return "CpuState(pc=${programCounter.paddedToHex()}, aReg=${aReg.paddedToHex()}, xReg=${xReg.paddedToHex()}, yReg=${yReg.paddedToHex()}, stackReg=${stackReg.paddedToHex()}, negative=${isNegativeFlag}, zero=${isZeroFlag}, overflow=${isOverflowFlag}, carry=${isCarryFlag}, decimal=${isDecimalFlag})"
+        return "CpuState(pc=${programCounter.paddedToHex()}, " +
+                "aReg=${aReg.paddedToHex()}, xReg=${xReg.paddedToHex()}, " +
+                "yReg=${yReg.paddedToHex()}, stackReg=${stackReg.paddedToHex()}, " +
+                "negative=${isNegativeFlag}, zero=${isZeroFlag}, " +
+                "overflow=${isOverflowFlag}, carry=${isCarryFlag}, " +
+                "decimal=${isDecimalFlag}, break=${isBreakCommandFlag}, " +
+                "interrupt=${isInterruptDisabledFlag})"
     }
 
     private fun Int.paddedToHex() = this.toHex().padEnd(5)

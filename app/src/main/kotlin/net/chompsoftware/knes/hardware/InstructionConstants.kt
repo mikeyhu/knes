@@ -70,6 +70,7 @@ const val PLA: UByte = 0x68u // Pull Accumulator
 const val PLP: UByte = 0x28u // Pull Processor Status
 
 //Return
+const val RTI: UByte = 0x40u //from break
 const val RTS: UByte = 0x60u //from subroutine
 
 //Store

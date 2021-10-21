@@ -243,6 +243,15 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     PLP to DelayedSingleEffectPipeline(PullProcessorStatus, delay = 2),
 
     //Return
+    RTI to VariableLengthPipeline(
+        PullProcessorStatus,
+        PullProgramCounterLow,
+        PullProgramCounterHigh,
+        ArgumentsToLocation,
+        NoOperation,
+        ClearBreak,
+        Jump
+    ),
     RTS to VariableLengthPipeline(
         NoOperation,
         NoOperation,

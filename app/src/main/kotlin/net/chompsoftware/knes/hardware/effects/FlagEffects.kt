@@ -26,3 +26,10 @@ object ClearOverflow : Effect() {
         cpuState.isOverflowFlag = false
     }
 }
+
+object ClearBreak : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        cpuState.isBreakCommandFlag = false
+    }
+}

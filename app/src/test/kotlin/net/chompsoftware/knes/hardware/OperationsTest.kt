@@ -52,7 +52,7 @@ class OperationsTest {
                 memoryWrite(0x1ff, 0x00u)
             }
             cycle {
-                memoryWrite(0x1fe, 0x02u)//?
+                memoryWrite(0x1fe, 0x02u)
             }
             cycle {
                 memoryWrite(0x1fd, 0x30u)
@@ -70,6 +70,46 @@ class OperationsTest {
             programCounter(0x1234)
             stackReg(0xfcu)
             isInterruptDisabledFlag(true)
+        }
+    }
+
+    @Test
+    fun `RTI - Return from break`() {
+        val memory = BasicMemory(setupMemory(RTI, NOP))
+
+        memory[0x1fd] = 0x30u
+        memory[0x1fe] = 0x34u
+        memory[0x1ff] = 0x12u
+
+        val interrogator = HardwareInterrogator(
+            CpuState(
+                stackReg = 0xfcu
+            ), memory
+        )
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, RTI)
+            }
+            cycle {
+                memoryRead(0x1fd, 0x30u)
+            }
+            cycle {
+                memoryRead(0x1fe, 0x34u)
+            }
+            cycle {
+                memoryRead(0x1ff, 0x12u)
+            }
+            cycle {}
+            cycle {}
+        }
+
+        interrogator.assertCpuState {
+            programCounter(0x1234)
+            stackReg(0xffu)
+            isBreakCommandFlag(false)
         }
     }
 }
