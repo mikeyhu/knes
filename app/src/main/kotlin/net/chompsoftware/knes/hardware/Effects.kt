@@ -1,5 +1,7 @@
 package net.chompsoftware.knes.hardware
 
+import net.chompsoftware.knes.pageBoundaryCrossed
+
 abstract class Effect {
     @ExperimentalUnsignedTypes
     abstract fun run(cpuState: CpuState, memory: Memory, operationState: OperationState)
@@ -43,6 +45,19 @@ object AbsoluteRead : Effect() {
     }
 }
 
+object AbsoluteReadWithXOffset : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        val initialLocation = operationState.absolutePosition()
+        val finalLocation = initialLocation + cpuState.xReg.toInt()
+        operationState.memoryRead = memory[finalLocation]
+        if (pageBoundaryCrossed(initialLocation, finalLocation)) {
+            operationState.cyclesRemaining += 1
+        }
+
+    }
+}
+
 object ArgumentsToLocation : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
@@ -69,7 +84,7 @@ object ReadIndirect1 : Effect() {
 object ReadIndirect2 : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        operationState.argument2 = memory[operationState.getLocation()+1]
+        operationState.argument2 = memory[operationState.getLocation() + 1]
     }
 }
 
@@ -108,6 +123,13 @@ object StoreAccumulator : Effect() {
     }
 }
 
+object StoreX : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        memory[operationState.getLocation()] = cpuState.xReg
+    }
+}
+
 object NoOperation : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
@@ -120,6 +142,16 @@ object IncrementProgramCounter : Effect() {
         cpuState.programCounterWithIncrement()
     }
 }
+
+object LocationFromBreak : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        operationState.location = cpuState.breakLocation
+    }
+
+    override fun requiresCycle() = false
+}
+
 
 
 

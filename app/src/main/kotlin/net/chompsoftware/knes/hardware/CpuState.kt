@@ -8,6 +8,7 @@ data class CpuState(
     var xReg: UByte = 0x0u,
     var yReg: UByte = 0x0u,
     var stackReg: UByte = 0x0u,
+    var breakLocation: Int = 0,
     var isNegativeFlag: Boolean = false,
     var isZeroFlag: Boolean = false,
     var isCarryFlag: Boolean = false,

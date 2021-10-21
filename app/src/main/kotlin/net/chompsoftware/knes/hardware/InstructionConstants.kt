@@ -13,6 +13,9 @@ const val BPL: UByte = 0x10u //On plus
 const val BVC: UByte = 0x50u //On overflow clear
 const val BVS: UByte = 0x70u //On overflow set
 
+//Break
+const val BRK: UByte = 0x00u
+
 //Clear
 const val CLC: UByte = 0x18u //Carry
 const val CLD: UByte = 0xd8u //Decimal
@@ -44,8 +47,9 @@ const val JSR_AB: UByte = 0x20u
 
 //Load Accumulator
 const val LDA_I: UByte = 0xa9u
-const val LDA_AB: UByte = 0xadu
 const val LDA_Z: UByte = 0xa5u
+const val LDA_AB: UByte = 0xadu
+const val LDA_ABX: UByte = 0xbdu
 
 //Load X
 const val LDX_I: UByte = 0xa2u
@@ -70,6 +74,9 @@ const val RTS: UByte = 0x60u //from subroutine
 //Store
 const val STA_Z: UByte = 0x85u //Accumulator in memory
 const val STA_AB: UByte = 0x8du
+
+const val STX_Z: UByte = 0x86u //X in memory
+const val STX_AB: UByte = 0x8eu
 
 //Transfer
 const val TAX: UByte = 0xaau //Accumulator to X

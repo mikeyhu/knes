@@ -118,6 +118,14 @@ class AbsoluteMemoryReadOperation(vararg postEffects: Effect) : VariableLengthPi
 )
 
 @ExperimentalUnsignedTypes
+class AbsoluteXMemoryReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
+    ReadArgument1,
+    ReadArgument2,
+    AbsoluteReadWithXOffset,
+    *postEffects
+)
+
+@ExperimentalUnsignedTypes
 class AbsoluteMemoryLocationOperation(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadArgument1,
     ReadArgument2,
@@ -165,6 +173,18 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     BVC to ImmediateMemoryOperation(BranchOnOverflowClear),
     BVS to ImmediateMemoryOperation(BranchOnOverflowSet),
 
+    //Break
+    BRK to VariableLengthPipeline(
+        PushProgramCounterHigh(1),
+        PushProgramCounterLow(1),
+        PushProcessorStatus(interruptOverride = false),
+        LocationFromBreak,
+        ReadIndirect1,
+        ReadIndirect2,
+        ArgumentsToLocation,
+        JumpWithBreak
+    ),
+
     //Clear
     CLC to SingleEffectPipeline(ClearCarry),
     CLD to SingleEffectPipeline(ClearDecimal),
@@ -194,8 +214,8 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     JMP_IN to IndirectOperation(Jump),
     JSR_AB to AbsoluteMemoryLocationOperation(
         NoOperation,
-        PushProgramCounterHigh,
-        PushProgramCounterLow,
+        PushProgramCounterHigh(-1),
+        PushProgramCounterLow(-1),
         Jump
     ),
 
@@ -204,8 +224,9 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //Load Accumulator
     LDA_I to ImmediateMemoryOperation(ReadIntoAccumulator),
-    LDA_AB to AbsoluteMemoryReadOperation(ReadIntoAccumulator),
     LDA_Z to ZeroPageReadOperation(ReadIntoAccumulator),
+    LDA_AB to AbsoluteMemoryReadOperation(ReadIntoAccumulator),
+    LDA_ABX to AbsoluteXMemoryReadOperation(ReadIntoAccumulator),
     LDX_I to ImmediateMemoryOperation(ReadIntoX),
     LDY_I to ImmediateMemoryOperation(ReadIntoY),
     LDY_AB to AbsoluteMemoryReadOperation(ReadIntoY),
@@ -216,7 +237,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //Push and Pull Stack Operations
     PHA to DelayedSingleEffectPipeline(PushAccumulator, delay = 1),
-    PHP to DelayedSingleEffectPipeline(PushProcessorStatus, delay = 1),
+    PHP to DelayedSingleEffectPipeline(PushProcessorStatus(false), delay = 1),
     PLA to DelayedSingleEffectPipeline(PullAccumulator, delay = 2),
     PLP to DelayedSingleEffectPipeline(PullProcessorStatus, delay = 2),
 
@@ -234,6 +255,8 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //Store
     STA_Z to ZeroPageWriteOperation(StoreAccumulator),
     STA_AB to AbsoluteMemoryLocationOperation(StoreAccumulator),
+    STX_Z to ZeroPageWriteOperation(StoreX),
+    STX_AB to AbsoluteMemoryLocationOperation(StoreX),
 
     //Transfer
     TAX to SingleEffectPipeline(TransferAccumulatorToX),

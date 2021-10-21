@@ -46,14 +46,16 @@ object PullProcessorStatus : Effect() {
     private fun UByte.isSetFor(mask: UByte) = this.and(mask) == mask
 }
 
-object PushProcessorStatus : Effect() {
+class PushProcessorStatus(
+    val interruptOverride: Boolean = false
+) : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
 
         val processorStatus = 0x20u + //bit 5 always set
                 cpuState.isCarryFlag.isTrue(CpuStatusPositions.CARRY_BYTE_POSITION) +
                 cpuState.isZeroFlag.isTrue(CpuStatusPositions.ZERO_BYTE_POSITION) +
-                cpuState.isInterruptDisabledFlag.isTrue(CpuStatusPositions.INTERRUPT_BYTE_POSITION) +
+                cpuState.isInterruptDisabledFlag.isTrue(CpuStatusPositions.INTERRUPT_BYTE_POSITION, interruptOverride) +
                 cpuState.isDecimalFlag.isTrue(CpuStatusPositions.DECIMAL_BYTE_POSITION) +
                 CpuStatusPositions.BREAK_BYTE_POSITION + //always set
                 cpuState.isOverflowFlag.isTrue(CpuStatusPositions.OVERFLOW_BYTE_POSITION) +
@@ -62,21 +64,22 @@ object PushProcessorStatus : Effect() {
     }
 
     private fun Boolean.isTrue(check: UByte): UByte = if (this) check else 0u
+    private fun Boolean.isTrue(check: UByte, override:Boolean): UByte = if (this || override) check else 0u
 }
 
-object PushProgramCounterLow : Effect() {
+class PushProgramCounterLow(val alterBeforeWrite:Int) : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         memory[((cpuState.stackReg--) + 0x100u).toInt()] =
-            (cpuState.programCounter - 1).toUInt().and(0xffu).toUByte()
+            (cpuState.programCounter + alterBeforeWrite).toUInt().and(0xffu).toUByte()
     }
 }
 
-object PushProgramCounterHigh : Effect() {
+class PushProgramCounterHigh(val alterBeforeWrite:Int) : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         memory[((cpuState.stackReg--) + 0x100u).toInt()] =
-            (cpuState.programCounter - 1).toUInt().and(0xff00u).shr(8).toUByte()
+            (cpuState.programCounter + alterBeforeWrite).toUInt().and(0xff00u).shr(8).toUByte()
     }
 }
 

@@ -1,7 +1,9 @@
 package functional
 
 import net.chompsoftware.knes.LoggingHarness
-import net.chompsoftware.knes.hardware.*
+import net.chompsoftware.knes.hardware.BasicMemory
+import net.chompsoftware.knes.hardware.CpuState
+import net.chompsoftware.knes.hardware.OperationState
 import net.chompsoftware.knes.toHex
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
@@ -18,11 +20,14 @@ class SuiteTest {
         val memory = BasicMemory(suiteFile)
 
         val cpuState = CpuState(
-            programCounter = 0x400
+            programCounter = 0x400,
+            breakLocation = 0xfffe
         )
 
         var operationsDone = 0
         val start = System.nanoTime()
+
+        val harness = LoggingHarness(cpuState, memory, maxSize = 10)
 
         val report = {
             val finish = System.nanoTime()
@@ -32,10 +37,9 @@ class SuiteTest {
 
         val reportThenFail = { message: String ->
             report()
+            harness.printLog()
             fail(message)
         }
-
-        val harness = LoggingHarness(cpuState, memory)
 
         do {
             val counter = cpuState.programCounter
@@ -47,7 +51,6 @@ class SuiteTest {
             }
             operationsDone++
             if (counter == cpuState.programCounter) {
-                println(cpuState)
                 reportThenFail("hit trap at ${counter.toHex()}")
             }
         } while (counter != cpuState.programCounter)

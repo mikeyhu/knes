@@ -14,7 +14,7 @@ class LoadOperationsTest {
     inner class LDA : ParameterizedTestData() {
         @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
         @MethodSource("checkNegativeZeroFlags")
-        fun `LDA Immediate`(data:InputWithNegativeZeroCheck) {
+        fun `LDA Immediate`(data: InputWithNegativeZeroCheck) {
             val memory = BasicMemory(setupMemory(LDA_I, data.input))
 
             val interrogator = HardwareInterrogator(CpuState(), memory)
@@ -40,7 +40,7 @@ class LoadOperationsTest {
 
         @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
         @MethodSource("checkNegativeZeroFlags")
-        fun `LDA Absolute`(data:InputWithNegativeZeroCheck) {
+        fun `LDA Absolute`(data: InputWithNegativeZeroCheck) {
             val memory = BasicMemory(setupMemory(LDA_AB, 0x04u, 0x00u, NOP, data.input))
 
             val interrogator = HardwareInterrogator(CpuState(), memory)
@@ -72,7 +72,84 @@ class LoadOperationsTest {
 
         @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
         @MethodSource("checkNegativeZeroFlags")
-        fun `LDA ZeroPage`(data:InputWithNegativeZeroCheck) {
+        fun `LDA Absolute X`(data: InputWithNegativeZeroCheck) {
+            val memory = BasicMemory(setupMemory(LDA_ABX, 0x04u, 0x00u, NOP, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(
+                CpuState(
+                    xReg = 0x01u
+                ), memory
+            )
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LDA_ABX)
+                }
+                cycle {
+                    memoryRead(1, 0x4u)
+                }
+                cycle {
+                    memoryRead(2, 0x0u)
+                }
+                cycle {
+                    memoryRead(5, data.input)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(3)
+                aReg(data.input)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
+        }
+
+        @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
+        @MethodSource("checkNegativeZeroFlags")
+        fun `LDA Absolute X crossing page boundary`(data: InputWithNegativeZeroCheck) {
+            val memory = BasicMemory(setupMemory(LDA_ABX, 0x10u, 0x00u, NOP))
+
+            memory[0x10f] = data.input
+
+            val interrogator = HardwareInterrogator(
+                CpuState(
+                    xReg = 0xffu
+                ), memory
+            )
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LDA_ABX)
+                }
+                cycle {
+                    memoryRead(1, 0x10u)
+                }
+                cycle {
+                    memoryRead(2, 0x0u)
+                }
+                cycle {
+                    memoryRead(0x10f, data.input)
+                }
+                cycle {
+
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(3)
+                aReg(data.input)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
+        }
+
+        @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
+        @MethodSource("checkNegativeZeroFlags")
+        fun `LDA ZeroPage`(data: InputWithNegativeZeroCheck) {
             val memory = BasicMemory(setupMemory(LDA_Z, 0x03u, NOP, data.input))
 
             val interrogator = HardwareInterrogator(CpuState(), memory)
@@ -105,7 +182,7 @@ class LoadOperationsTest {
 
         @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
         @MethodSource("checkNegativeZeroFlags")
-        fun `LDX Immediate`(data:InputWithNegativeZeroCheck) {
+        fun `LDX Immediate`(data: InputWithNegativeZeroCheck) {
             val memory = BasicMemory(setupMemory(LDX_I, data.input))
 
             val interrogator = HardwareInterrogator(CpuState(), memory)
@@ -131,7 +208,7 @@ class LoadOperationsTest {
 
         @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
         @MethodSource("checkNegativeZeroFlags")
-        fun `LDX Absolute`(data:InputWithNegativeZeroCheck) {
+        fun `LDX Absolute`(data: InputWithNegativeZeroCheck) {
             val memory = BasicMemory(setupMemory(LDX_AB, 0x04u, 0x00u, NOP, data.input))
 
             val interrogator = HardwareInterrogator(CpuState(), memory)
@@ -167,7 +244,7 @@ class LoadOperationsTest {
 
         @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
         @MethodSource("checkNegativeZeroFlags")
-        fun `LDY Immediate`(data:InputWithNegativeZeroCheck) {
+        fun `LDY Immediate`(data: InputWithNegativeZeroCheck) {
             val memory = BasicMemory(setupMemory(LDY_I, data.input))
 
             val interrogator = HardwareInterrogator(CpuState(), memory)
@@ -193,7 +270,7 @@ class LoadOperationsTest {
 
         @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
         @MethodSource("checkNegativeZeroFlags")
-        fun `LDY Absolute`(data:InputWithNegativeZeroCheck) {
+        fun `LDY Absolute`(data: InputWithNegativeZeroCheck) {
             val memory = BasicMemory(setupMemory(LDY_AB, 0x04u, 0x00u, NOP, data.input))
 
             val interrogator = HardwareInterrogator(CpuState(), memory)
