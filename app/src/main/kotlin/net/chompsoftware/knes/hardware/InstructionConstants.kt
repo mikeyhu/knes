@@ -54,6 +54,7 @@ const val LDA_ABX: UByte = 0xbdu
 //Load X
 const val LDX_I: UByte = 0xa2u
 const val LDX_AB: UByte = 0xaeu
+const val LDX_Z: UByte = 0xa6u
 
 //Load Y
 const val LDY_I: UByte = 0xa0u

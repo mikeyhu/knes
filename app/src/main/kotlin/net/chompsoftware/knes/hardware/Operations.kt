@@ -228,6 +228,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     LDA_AB to AbsoluteMemoryReadOperation(ReadIntoAccumulator),
     LDA_ABX to AbsoluteXMemoryReadOperation(ReadIntoAccumulator),
     LDX_I to ImmediateMemoryOperation(ReadIntoX),
+    LDX_Z to ZeroPageReadOperation(ReadIntoX),
     LDY_I to ImmediateMemoryOperation(ReadIntoY),
     LDY_AB to AbsoluteMemoryReadOperation(ReadIntoY),
 
