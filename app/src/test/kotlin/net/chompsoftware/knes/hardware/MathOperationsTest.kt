@@ -104,7 +104,7 @@ class MathOperationsTest : ParameterizedTestData() {
         @ParameterizedTest
         @MethodSource("checkExclusiveOrFlags")
 
-        fun `EOR Immediate - Exclusive OR`(data: ExclusiveOrCheck) {
+        fun `EOR Immediate - Exclusive OR`(data: RegisterMemoryExpectedCheck) {
             val memory = BasicMemory(setupMemory(EOR_I, data.memory))
 
             val interrogator = HardwareInterrogator(CpuState(aReg = data.aReg), memory)
@@ -183,6 +183,35 @@ class MathOperationsTest : ParameterizedTestData() {
             yReg(expected.toHexUByte())
             isNegativeFlag(negativeFlag)
             isZeroFlag(zeroFlag)
+        }
+    }
+
+    @Nested
+    inner class ORA : ParameterizedTestData() {
+        @ParameterizedTest
+        @MethodSource("checkOrFlags")
+        fun `ORA Immediate`(data: RegisterMemoryExpectedCheck) {
+            val memory = BasicMemory(setupMemory(ORA_I, data.memory))
+
+            val interrogator = HardwareInterrogator(CpuState(aReg = data.aReg), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, ORA_I)
+                }
+                cycle {
+                    memoryRead(1, data.memory)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+                aReg(data.expected)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
         }
     }
 }

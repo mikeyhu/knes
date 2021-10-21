@@ -58,3 +58,12 @@ object ExclusiveOr : Effect() {
 
     override fun requiresCycle() = false
 }
+
+object OrWithAccumulator : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        cpuState.setARegWithFlags(cpuState.aReg.or(operationState.getMemoryRead()))
+    }
+
+    override fun requiresCycle() = false
+}

@@ -236,6 +236,9 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //Load X
     LDX_AB to AbsoluteMemoryReadOperation(ReadIntoX),
 
+    //Or
+    ORA_I to ImmediateMemoryOperation(OrWithAccumulator),
+
     //Push and Pull Stack Operations
     PHA to DelayedSingleEffectPipeline(PushAccumulator, delay = 1),
     PHP to DelayedSingleEffectPipeline(PushProcessorStatus(false), delay = 1),

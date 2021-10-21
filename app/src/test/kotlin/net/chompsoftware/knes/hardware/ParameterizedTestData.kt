@@ -36,11 +36,21 @@ open class ParameterizedTestData {
         }
 
         @JvmStatic
-        fun checkExclusiveOrFlags(): Stream<ExclusiveOrCheck> {
+        fun checkExclusiveOrFlags(): Stream<RegisterMemoryExpectedCheck> {
             return Stream.of(
-                ExclusiveOrCheck(0x0fu, 0xffu, 0xf0u, true, false),
-                ExclusiveOrCheck(0xf0u, 0xffu, 0x0fu, false, false),
-                ExclusiveOrCheck(0xffu, 0xffu, 0x00u, false, true),
+                RegisterMemoryExpectedCheck(0x0fu, 0xffu, 0xf0u, true, false),
+                RegisterMemoryExpectedCheck(0xf0u, 0xffu, 0x0fu, false, false),
+                RegisterMemoryExpectedCheck(0xffu, 0xffu, 0x00u, false, true),
+            )
+        }
+
+        @JvmStatic
+        fun checkOrFlags(): Stream<RegisterMemoryExpectedCheck> {
+            return Stream.of(
+                RegisterMemoryExpectedCheck(0x0fu, 0xf0u, 0xffu, true, false),
+                RegisterMemoryExpectedCheck(0xf0u, 0xffu, 0xffu, true, false),
+                RegisterMemoryExpectedCheck(0x00u, 0x00u, 0x00u, false, true),
+                RegisterMemoryExpectedCheck(0x0fu, 0x10u, 0x1fu, false, false),
             )
         }
     }
@@ -66,7 +76,7 @@ data class AddWithCarryCheck(
     val carryFlag: Boolean
 )
 
-data class ExclusiveOrCheck(
+data class RegisterMemoryExpectedCheck(
     val aReg: UByte,
     val memory: UByte,
     val expected: UByte,

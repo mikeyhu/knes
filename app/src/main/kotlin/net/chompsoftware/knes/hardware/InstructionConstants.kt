@@ -63,6 +63,9 @@ const val LDY_AB: UByte = 0xacu
 //No Operation
 const val NOP: UByte = 0xeau
 
+//Or with Accumulator
+const val ORA_I: UByte = 0x09u
+
 //Push and Pull Stack Operations
 const val PHA: UByte = 0x48u // Push Accumulator
 const val PHP: UByte = 0x08u // Push Processor Status
