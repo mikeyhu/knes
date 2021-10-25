@@ -267,6 +267,77 @@ class LoadOperationsTest {
             }
         }
 
+        @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
+        @MethodSource("checkNegativeZeroFlags")
+        fun `LDX ZeroPage plus Y`(data: InputWithNegativeZeroCheck) {
+            val memory = BasicMemory(setupMemory(LDX_ZY, 0x03u, NOP, NOP, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(
+                CpuState(
+                    yReg = 0x2u
+                ), memory
+            )
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LDX_ZY)
+                }
+                cycle {
+                    memoryRead(1, 0x3u)
+                }
+                cycle {
+                    memoryRead(5, data.input)
+                }
+                cycle {
+
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+                xReg(data.input)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
+        }
+
+        @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
+        @MethodSource("checkNegativeZeroFlags")
+        fun `LDX ZeroPage plus Y should wrap`(data: InputWithNegativeZeroCheck) {
+            val memory = BasicMemory(setupMemory(LDX_ZY, 0x04u, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(
+                CpuState(
+                    yReg = 0xffu
+                ), memory
+            )
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LDX_ZY)
+                }
+                cycle {
+                    memoryRead(1, 0x4u)
+                }
+                cycle {
+                    memoryRead(3, data.input)
+                }
+                cycle {
+
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+                xReg(data.input)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
+        }
     }
 
     @Nested

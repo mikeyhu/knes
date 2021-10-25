@@ -134,9 +134,24 @@ class AbsoluteMemoryLocationOperation(vararg postEffects: Effect) : VariableLeng
 )
 
 @ExperimentalUnsignedTypes
+class AbsoluteYMemoryLocationOperation(vararg postEffects: Effect) : VariableLengthPipeline(
+    ReadArgument1,
+    ReadArgument2,
+    ArgumentsToLocationWithYOffset,
+    *postEffects
+)
+
+@ExperimentalUnsignedTypes
 class ZeroPageReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadArgument1,
     ZeroPageRead,
+    *postEffects
+)
+
+@ExperimentalUnsignedTypes
+class ZeroPageYReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
+    ReadArgument1,
+    ZeroPageYRead,
     *postEffects
 )
 
@@ -189,6 +204,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     CLC to SingleEffectPipeline(ClearCarry),
     CLD to SingleEffectPipeline(ClearDecimal),
     CLV to SingleEffectPipeline(ClearOverflow),
+    CLI to SingleEffectPipeline(ClearInterrupt),
 
     //Compare
     CMP_I to ImmediateMemoryOperation(CompareToAccumulator),
@@ -235,6 +251,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //Load X
     LDX_AB to AbsoluteMemoryReadOperation(ReadIntoX),
+    LDX_ZY to ZeroPageYReadOperation(ReadIntoX),
 
     //Or
     ORA_I to ImmediateMemoryOperation(OrWithAccumulator),
@@ -265,9 +282,15 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
         IncrementProgramCounter
     ),
 
+    //Set
+    SEC to SingleEffectPipeline(SetCarry),
+    SEI to SingleEffectPipeline(SetInterrupt),
+    SED to SingleEffectPipeline(SetDecimal),
+
     //Store
     STA_Z to ZeroPageWriteOperation(StoreAccumulator),
     STA_AB to AbsoluteMemoryLocationOperation(StoreAccumulator),
+    STA_ABY to AbsoluteYMemoryLocationOperation(StoreAccumulator),
     STX_Z to ZeroPageWriteOperation(StoreX),
     STX_AB to AbsoluteMemoryLocationOperation(StoreX),
 

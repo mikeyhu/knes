@@ -20,6 +20,7 @@ const val BRK: UByte = 0x00u
 const val CLC: UByte = 0x18u //Carry
 const val CLD: UByte = 0xd8u //Decimal
 const val CLV: UByte = 0xb8u //Overflow
+const val CLI: UByte = 0x58u //Interrupt
 
 //Compare
 const val CMP_I: UByte = 0xc9u //Memory with Accumulator
@@ -55,6 +56,7 @@ const val LDA_ABX: UByte = 0xbdu
 const val LDX_I: UByte = 0xa2u
 const val LDX_AB: UByte = 0xaeu
 const val LDX_Z: UByte = 0xa6u
+const val LDX_ZY: UByte = 0xb6u
 
 //Load Y
 const val LDY_I: UByte = 0xa0u
@@ -76,9 +78,15 @@ const val PLP: UByte = 0x28u // Pull Processor Status
 const val RTI: UByte = 0x40u //from break
 const val RTS: UByte = 0x60u //from subroutine
 
+//Set
+const val SEC: UByte = 0x38u //carry
+const val SEI: UByte = 0x78u //interrupt
+const val SED: UByte = 0xf8u //decimal
+
 //Store
 const val STA_Z: UByte = 0x85u //Accumulator in memory
 const val STA_AB: UByte = 0x8du
+const val STA_ABY: UByte = 0x99u
 
 const val STX_Z: UByte = 0x86u //X in memory
 const val STX_AB: UByte = 0x8eu

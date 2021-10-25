@@ -73,4 +73,92 @@ class FlagOperationsTest {
             isOverflowFlag(false)
         }
     }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `CLI - clear Interrupt`(flagValue: Boolean) {
+        val memory = BasicMemory(setupMemory(CLI, NOP))
+
+        val interrogator = HardwareInterrogator(CpuState(isInterruptDisabledFlag = flagValue), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, CLI)
+            }
+            cycle {}
+        }
+
+        interrogator.assertCpuState {
+            programCounter(1)
+            isInterruptDisabledFlag(false)
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `SEC - set Carry`(flagValue: Boolean) {
+        val memory = BasicMemory(setupMemory(SEC, NOP))
+
+        val interrogator = HardwareInterrogator(CpuState(isCarryFlag = flagValue), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, SEC)
+            }
+            cycle {}
+        }
+
+        interrogator.assertCpuState {
+            programCounter(1)
+            isCarryFlag(true)
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `SEI - set Interrupt`(flagValue: Boolean) {
+        val memory = BasicMemory(setupMemory(SEI, NOP))
+
+        val interrogator = HardwareInterrogator(CpuState(isInterruptDisabledFlag = flagValue), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, SEI)
+            }
+            cycle {}
+        }
+
+        interrogator.assertCpuState {
+            programCounter(1)
+            isInterruptDisabledFlag(true)
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `SED - set decimal`(flagValue: Boolean) {
+        val memory = BasicMemory(setupMemory(SED, NOP))
+
+        val interrogator = HardwareInterrogator(CpuState(isDecimalFlag = flagValue), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, SED)
+            }
+            cycle {}
+        }
+
+        interrogator.assertCpuState {
+            programCounter(1)
+            isDecimalFlag(true)
+        }
+    }
 }

@@ -66,6 +66,37 @@ class StoreOperationsTest {
                 programCounter(3)
             }
         }
+
+        @Test
+        fun `STA Absolute with Y offset`() {
+            val memory = BasicMemory(setupMemory(STA_ABY, 0x01u, 0x04u, NOP, 0x00u))
+
+            val aReg: UByte = 0x01u
+
+            val interrogator = HardwareInterrogator(CpuState(aReg = aReg, yReg = 0x02u), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, STA_ABY)
+                }
+                cycle {
+                    memoryRead(1, 0x01u)
+                }
+                cycle {
+                    memoryRead(2, 0x04u)
+                }
+                cycle {}
+                cycle {
+                    memoryWrite(0x403, aReg)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(3)
+            }
+        }
     }
 
     @Nested
