@@ -129,6 +129,62 @@ class StoreOperationsTest {
         }
 
         @Test
+        fun `STX ZeroPage Y Offset`() {
+            val memory = BasicMemory(setupMemory(STX_ZY, 0x02u, NOP, 0x00u))
+
+            val xReg: UByte = 0x01u
+
+            val interrogator = HardwareInterrogator(CpuState(xReg = xReg, yReg= 0x01u), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, STX_ZY)
+                }
+                cycle {
+                    memoryRead(1, 0x02u)
+                }
+                cycle {}
+                cycle {
+                    memoryWrite(3, xReg)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+            }
+        }
+
+        @Test
+        fun `STX ZeroPage Y Offset should wrap`() {
+            val memory = BasicMemory(setupMemory(STX_ZY, 0x04u, NOP, 0x00u))
+
+            val xReg: UByte = 0x01u
+
+            val interrogator = HardwareInterrogator(CpuState(xReg = xReg, yReg= 0xffu), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, STX_ZY)
+                }
+                cycle {
+                    memoryRead(1, 0x04u)
+                }
+                cycle {}
+                cycle {
+                    memoryWrite(3, xReg)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+            }
+        }
+
+        @Test
         fun `STX Absolute`() {
             val memory = BasicMemory(setupMemory(STX_AB, 0x01u, 0x04u, NOP, 0x00u))
 

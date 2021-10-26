@@ -171,6 +171,13 @@ class ZeroPageWriteOperation(vararg postEffects: Effect) : VariableLengthPipelin
 )
 
 @ExperimentalUnsignedTypes
+class ZeroPageYWriteOperation(vararg postEffects: Effect) : VariableLengthPipeline(
+    ImmediateRead,
+    ZeroPageYWrite,
+    *postEffects
+)
+
+@ExperimentalUnsignedTypes
 class IndirectOperation(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadArgument1,
     ReadArgument2,
@@ -252,15 +259,17 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     LDA_Z to ZeroPageReadOperation(ReadIntoAccumulator),
     LDA_AB to AbsoluteMemoryReadOperation(ReadIntoAccumulator),
     LDA_ABX to AbsoluteXMemoryReadOperation(ReadIntoAccumulator),
-    LDX_I to ImmediateMemoryOperation(ReadIntoX),
-    LDX_Z to ZeroPageReadOperation(ReadIntoX),
-    LDY_I to ImmediateMemoryOperation(ReadIntoY),
-    LDY_AB to AbsoluteMemoryReadOperation(ReadIntoY),
-
 
     //Load X
+    LDX_I to ImmediateMemoryOperation(ReadIntoX),
     LDX_AB to AbsoluteMemoryReadOperation(ReadIntoX),
+    LDX_ABY to AbsoluteYMemoryReadOperation(ReadIntoX),
+    LDX_Z to ZeroPageReadOperation(ReadIntoX),
     LDX_ZY to ZeroPageYReadOperation(ReadIntoX),
+
+    //load Y
+    LDY_I to ImmediateMemoryOperation(ReadIntoY),
+    LDY_AB to AbsoluteMemoryReadOperation(ReadIntoY),
 
     //Or
     ORA_I to ImmediateMemoryOperation(OrWithAccumulator),
@@ -301,6 +310,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     STA_AB to AbsoluteMemoryLocationOperation(StoreAccumulator),
     STA_ABY to AbsoluteYMemoryLocationOperation(StoreAccumulator),
     STX_Z to ZeroPageWriteOperation(StoreX),
+    STX_ZY to ZeroPageYWriteOperation(StoreX),
     STX_AB to AbsoluteMemoryLocationOperation(StoreX),
 
     //Transfer

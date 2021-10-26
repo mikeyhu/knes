@@ -46,6 +46,13 @@ object ZeroPageWrite : Effect() {
     override fun requiresCycle() = false
 }
 
+object ZeroPageYWrite : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        operationState.location = ((operationState.getMemoryRead() + cpuState.yReg) % 0x100u).toInt()
+    }
+}
+
 object AbsoluteRead : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {

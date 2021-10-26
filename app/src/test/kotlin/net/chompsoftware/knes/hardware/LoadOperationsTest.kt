@@ -240,6 +240,38 @@ class LoadOperationsTest {
 
         @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
         @MethodSource("checkNegativeZeroFlags")
+        fun `LDX Absolute Y offset`(data: InputWithNegativeZeroCheck) {
+            val memory = BasicMemory(setupMemory(LDX_ABY, 0x02u, 0x00u, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(CpuState(yReg = 0x02u), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LDX_ABY)
+                }
+                cycle {
+                    memoryRead(1, 0x2u)
+                }
+                cycle {
+                    memoryRead(2, 0x0u)
+                }
+                cycle {
+                    memoryRead(4, data.input)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(3)
+                xReg(data.input)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
+        }
+
+        @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
+        @MethodSource("checkNegativeZeroFlags")
         fun `LDX ZeroPage`(data: InputWithNegativeZeroCheck) {
             val memory = BasicMemory(setupMemory(LDX_Z, 0x03u, NOP, data.input))
 
