@@ -126,6 +126,14 @@ class AbsoluteXMemoryReadOperation(vararg postEffects: Effect) : VariableLengthP
 )
 
 @ExperimentalUnsignedTypes
+class AbsoluteYMemoryReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
+    ReadArgument1,
+    ReadArgument2,
+    AbsoluteReadWithYOffset,
+    *postEffects
+)
+
+@ExperimentalUnsignedTypes
 class AbsoluteMemoryLocationOperation(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadArgument1,
     ReadArgument2,
@@ -209,6 +217,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //Compare
     CMP_I to ImmediateMemoryOperation(CompareToAccumulator),
     CMP_AB to AbsoluteMemoryReadOperation(CompareToAccumulator),
+    CMP_ABY to AbsoluteYMemoryReadOperation(CompareToAccumulator),
 
     CPX_I to ImmediateMemoryOperation(CompareToX),
 

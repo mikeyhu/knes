@@ -67,6 +67,72 @@ class ComparisonOperationsTest {
                 isCarryFlag(data.carryFlag)
             }
         }
+
+        @ParameterizedTest
+        @MethodSource("checkComparisonNegativeZeroCarryFlags")
+        fun `CMP Absolute Y`(data: ComparisonWithNegativeZeroCarryCheck) {
+            val memory = BasicMemory(setupMemory(CMP_ABY, 0x04u, 0x00u, NOP, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(CpuState(aReg = data.existing, yReg=0x01u), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, CMP_ABY)
+                }
+                cycle {
+                    memoryRead(1, 0x04u)
+                }
+                cycle {
+                    memoryRead(2, 0x00u)
+                }
+                cycle {
+                    memoryRead(5, data.input)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(3)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+                isCarryFlag(data.carryFlag)
+            }
+        }
+
+        @ParameterizedTest
+        @MethodSource("checkComparisonNegativeZeroCarryFlags")
+        fun `CMP Absolute Y crossing page boundary`(data: ComparisonWithNegativeZeroCarryCheck) {
+            val memory = BasicMemory(setupMemory(CMP_ABY, 0xffu, 0x00u))
+            memory[0x100] = data.input
+
+            val interrogator = HardwareInterrogator(CpuState(aReg = data.existing, yReg=0x01u), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, CMP_ABY)
+                }
+                cycle {
+                    memoryRead(1, 0xffu)
+                }
+                cycle {
+                    memoryRead(2, 0x00u)
+                }
+                cycle {
+                    memoryRead(0x100, data.input)
+                }
+                cycle {}
+            }
+
+            interrogator.assertCpuState {
+                programCounter(3)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+                isCarryFlag(data.carryFlag)
+            }
+        }
     }
 
     @Nested

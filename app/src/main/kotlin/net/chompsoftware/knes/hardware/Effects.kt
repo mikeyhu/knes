@@ -62,7 +62,18 @@ object AbsoluteReadWithXOffset : Effect() {
         if (pageBoundaryCrossed(initialLocation, finalLocation)) {
             operationState.cyclesRemaining += 1
         }
+    }
+}
 
+object AbsoluteReadWithYOffset : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        val initialLocation = operationState.absolutePosition()
+        val finalLocation = initialLocation + cpuState.yReg.toInt()
+        operationState.memoryRead = memory[finalLocation]
+        if (pageBoundaryCrossed(initialLocation, finalLocation)) {
+            operationState.cyclesRemaining += 1
+        }
     }
 }
 
