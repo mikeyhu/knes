@@ -70,6 +70,38 @@ class ComparisonOperationsTest {
 
         @ParameterizedTest
         @MethodSource("checkComparisonNegativeZeroCarryFlags")
+        fun `CMP Absolute X`(data: ComparisonWithNegativeZeroCarryCheck) {
+            val memory = BasicMemory(setupMemory(CMP_ABX, 0x04u, 0x00u, NOP, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(CpuState(aReg = data.existing, xReg=0x01u), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, CMP_ABX)
+                }
+                cycle {
+                    memoryRead(1, 0x04u)
+                }
+                cycle {
+                    memoryRead(2, 0x00u)
+                }
+                cycle {
+                    memoryRead(5, data.input)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(3)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+                isCarryFlag(data.carryFlag)
+            }
+        }
+
+        @ParameterizedTest
+        @MethodSource("checkComparisonNegativeZeroCarryFlags")
         fun `CMP Absolute Y`(data: ComparisonWithNegativeZeroCarryCheck) {
             val memory = BasicMemory(setupMemory(CMP_ABY, 0x04u, 0x00u, NOP, NOP, data.input))
 
