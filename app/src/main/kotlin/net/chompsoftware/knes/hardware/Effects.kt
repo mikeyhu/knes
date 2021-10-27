@@ -37,6 +37,14 @@ object ZeroPageYRead : Effect() {
     }
 }
 
+object ZeroPageXRead : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        operationState.memoryRead = memory[((operationState.getArgument1() + cpuState.xReg) % 0x100u).toInt()]
+        operationState.cyclesRemaining += 1
+    }
+}
+
 object ZeroPageWrite : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
@@ -91,6 +99,13 @@ object ArgumentsToLocation : Effect() {
     }
 
     override fun requiresCycle() = false
+}
+
+object ArgumentsToLocationWithXOffset : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        operationState.location = operationState.absolutePosition() + cpuState.xReg.toInt()
+    }
 }
 
 object ArgumentsToLocationWithYOffset : Effect() {
