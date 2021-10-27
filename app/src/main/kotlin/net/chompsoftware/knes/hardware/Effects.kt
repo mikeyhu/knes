@@ -54,6 +54,13 @@ object ZeroPageWrite : Effect() {
     override fun requiresCycle() = false
 }
 
+object ZeroPageXWrite : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        operationState.location = ((operationState.getMemoryRead() + cpuState.xReg) % 0x100u).toInt()
+    }
+}
+
 object ZeroPageYWrite : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
@@ -175,6 +182,13 @@ object StoreX : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         memory[operationState.getLocation()] = cpuState.xReg
+    }
+}
+
+object StoreY : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        memory[operationState.getLocation()] = cpuState.yReg
     }
 }
 

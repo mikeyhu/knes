@@ -186,6 +186,13 @@ class ZeroPageWriteOperation(vararg postEffects: Effect) : VariableLengthPipelin
 )
 
 @ExperimentalUnsignedTypes
+class ZeroPageXWriteOperation(vararg postEffects: Effect) : VariableLengthPipeline(
+    ImmediateRead,
+    ZeroPageXWrite,
+    *postEffects
+)
+
+@ExperimentalUnsignedTypes
 class ZeroPageYWriteOperation(vararg postEffects: Effect) : VariableLengthPipeline(
     ImmediateRead,
     ZeroPageYWrite,
@@ -329,9 +336,14 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     STA_AB to AbsoluteMemoryLocationOperation(StoreAccumulator),
     STA_ABX to AbsoluteXMemoryLocationOperation(StoreAccumulator),
     STA_ABY to AbsoluteYMemoryLocationOperation(StoreAccumulator),
+
     STX_Z to ZeroPageWriteOperation(StoreX),
     STX_ZY to ZeroPageYWriteOperation(StoreX),
     STX_AB to AbsoluteMemoryLocationOperation(StoreX),
+
+    STY_Z to ZeroPageWriteOperation(StoreY),
+    STY_ZX to ZeroPageXWriteOperation(StoreY),
+    STY_AB to AbsoluteMemoryLocationOperation(StoreY),
 
     //Transfer
     TAX to SingleEffectPipeline(TransferAccumulatorToX),

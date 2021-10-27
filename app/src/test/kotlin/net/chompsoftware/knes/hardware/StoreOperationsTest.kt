@@ -245,4 +245,120 @@ class StoreOperationsTest {
             }
         }
     }
+
+    @Nested
+    inner class STY {
+        @Test
+        fun `STY ZeroPage`() {
+            val memory = BasicMemory(setupMemory(STY_Z, 0x03u, NOP, 0x00u))
+
+            val yReg: UByte = 0x01u
+
+            val interrogator = HardwareInterrogator(CpuState(yReg = yReg), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, STY_Z)
+                }
+                cycle {
+                    memoryRead(1, 0x03u)
+                }
+                cycle {
+                    memoryWrite(3, yReg)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+            }
+        }
+
+        @Test
+        fun `STY ZeroPage X Offset`() {
+            val memory = BasicMemory(setupMemory(STY_ZX, 0x02u, NOP, 0x00u))
+
+            val yReg: UByte = 0x05u
+
+            val interrogator = HardwareInterrogator(CpuState(yReg = yReg, xReg=0x01u), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, STY_ZX)
+                }
+                cycle {
+                    memoryRead(1, 0x02u)
+                }
+                cycle {}
+                cycle {
+                    memoryWrite(3, yReg)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+            }
+        }
+
+        @Test
+        fun `STY ZeroPage X Offset should wrap`() {
+            val memory = BasicMemory(setupMemory(STY_ZX, 0x04u, NOP, 0x00u))
+
+            val yReg: UByte = 0x01u
+
+            val interrogator = HardwareInterrogator(CpuState(yReg = yReg, xReg= 0xffu), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, STY_ZX)
+                }
+                cycle {
+                    memoryRead(1, 0x04u)
+                }
+                cycle {}
+                cycle {
+                    memoryWrite(3, yReg)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+            }
+        }
+
+        @Test
+        fun `STY Absolute`() {
+            val memory = BasicMemory(setupMemory(STY_AB, 0x01u, 0x04u, NOP, 0x00u))
+
+            val yReg: UByte = 0x01u
+
+            val interrogator = HardwareInterrogator(CpuState(yReg = yReg), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, STY_AB)
+                }
+                cycle {
+                    memoryRead(1, 0x01u)
+                }
+                cycle {
+                    memoryRead(2, 0x04u)
+                }
+                cycle {
+                    memoryWrite(0x401, yReg)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(3)
+            }
+        }
+    }
 }
