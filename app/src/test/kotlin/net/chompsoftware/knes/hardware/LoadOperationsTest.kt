@@ -499,7 +499,7 @@ class LoadOperationsTest {
 
             interrogator.assertCpuState {
                 programCounter(3)
-                aReg(data.input)
+                yReg(data.input)
                 isNegativeFlag(data.negativeFlag)
                 isZeroFlag(data.zeroFlag)
             }

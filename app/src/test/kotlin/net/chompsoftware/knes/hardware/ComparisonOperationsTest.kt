@@ -165,6 +165,65 @@ class ComparisonOperationsTest {
                 isCarryFlag(data.carryFlag)
             }
         }
+
+        @ParameterizedTest
+        @MethodSource("checkComparisonNegativeZeroCarryFlags")
+        fun `CMP ZeroPage`(data: ComparisonWithNegativeZeroCarryCheck) {
+            val memory = BasicMemory(setupMemory(CMP_Z, 0x04u, NOP, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(CpuState(aReg = data.existing), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, CMP_Z)
+                }
+                cycle {
+                    memoryRead(1, 0x04u)
+                }
+                cycle {
+                    memoryRead(4, data.input)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+                isCarryFlag(data.carryFlag)
+            }
+        }
+
+        @ParameterizedTest
+        @MethodSource("checkComparisonNegativeZeroCarryFlags")
+        fun `CMP ZeroPage X`(data: ComparisonWithNegativeZeroCarryCheck) {
+            val memory = BasicMemory(setupMemory(CMP_ZX, 0x04u, NOP, NOP, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(CpuState(aReg = data.existing, xReg=0x01u), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, CMP_ZX)
+                }
+                cycle {
+                    memoryRead(1, 0x04u)
+                }
+                cycle {
+                    memoryRead(5, data.input)
+                }
+                cycle {}
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+                isCarryFlag(data.carryFlag)
+            }
+        }
     }
 
     @Nested
