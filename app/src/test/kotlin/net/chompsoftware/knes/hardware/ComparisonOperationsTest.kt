@@ -253,6 +253,67 @@ class ComparisonOperationsTest {
                 isCarryFlag(data.carryFlag)
             }
         }
+
+        @ParameterizedTest
+        @MethodSource("checkComparisonNegativeZeroCarryFlags")
+        fun `CPX Absolute`(data: ComparisonWithNegativeZeroCarryCheck) {
+            val memory = BasicMemory(setupMemory(CPX_AB, 0x04u, 0x00u, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(CpuState(xReg = data.existing), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, CPX_AB)
+                }
+                cycle {
+                    memoryRead(1, 0x04u)
+                }
+                cycle {
+                    memoryRead(2, 0x00u)
+                }
+                cycle {
+                    memoryRead(4, data.input)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(3)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+                isCarryFlag(data.carryFlag)
+            }
+        }
+
+        @ParameterizedTest
+        @MethodSource("checkComparisonNegativeZeroCarryFlags")
+        fun `CPX ZeroPage`(data: ComparisonWithNegativeZeroCarryCheck) {
+            val memory = BasicMemory(setupMemory(CPX_Z, 0x04u, NOP, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(CpuState(xReg = data.existing), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, CPX_Z)
+                }
+                cycle {
+                    memoryRead(1, 0x04u)
+                }
+                cycle {
+                    memoryRead(4, data.input)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+                isCarryFlag(data.carryFlag)
+            }
+        }
     }
 
     @Nested
@@ -272,6 +333,67 @@ class ComparisonOperationsTest {
                 }
                 cycle {
                     memoryRead(1, data.input)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+                isCarryFlag(data.carryFlag)
+            }
+        }
+
+        @ParameterizedTest
+        @MethodSource("checkComparisonNegativeZeroCarryFlags")
+        fun `CPY Absolute`(data: ComparisonWithNegativeZeroCarryCheck) {
+            val memory = BasicMemory(setupMemory(CPY_AB, 0x04u, 0x00u, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(CpuState(yReg = data.existing), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, CPY_AB)
+                }
+                cycle {
+                    memoryRead(1, 0x04u)
+                }
+                cycle {
+                    memoryRead(2, 0x00u)
+                }
+                cycle {
+                    memoryRead(4, data.input)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(3)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+                isCarryFlag(data.carryFlag)
+            }
+        }
+
+        @ParameterizedTest
+        @MethodSource("checkComparisonNegativeZeroCarryFlags")
+        fun `CPY ZeroPage`(data: ComparisonWithNegativeZeroCarryCheck) {
+            val memory = BasicMemory(setupMemory(CPY_Z, 0x04u, NOP, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(CpuState(yReg = data.existing), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, CPY_Z)
+                }
+                cycle {
+                    memoryRead(1, 0x04u)
+                }
+                cycle {
+                    memoryRead(4, data.input)
                 }
             }
 

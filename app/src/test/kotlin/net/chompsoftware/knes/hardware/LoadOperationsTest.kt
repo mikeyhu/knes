@@ -211,6 +211,42 @@ class LoadOperationsTest {
                 isZeroFlag(data.zeroFlag)
             }
         }
+
+        @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
+        @MethodSource("checkNegativeZeroFlags")
+        fun `LDA ZeroPage plus X`(data: InputWithNegativeZeroCheck) {
+            val memory = BasicMemory(setupMemory(LDA_ZX, 0x03u, NOP, NOP, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(
+                CpuState(
+                    xReg = 0x2u
+                ), memory
+            )
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LDA_ZX)
+                }
+                cycle {
+                    memoryRead(1, 0x3u)
+                }
+                cycle {
+                    memoryRead(5, data.input)
+                }
+                cycle {
+
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+                aReg(data.input)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
+        }
     }
 
     @Nested
@@ -499,6 +535,35 @@ class LoadOperationsTest {
 
             interrogator.assertCpuState {
                 programCounter(3)
+                yReg(data.input)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
+        }
+
+        @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
+        @MethodSource("checkNegativeZeroFlags")
+        fun `LDY ZeroPage`(data: InputWithNegativeZeroCheck) {
+            val memory = BasicMemory(setupMemory(LDY_Z, 0x03u, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(CpuState(), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LDY_Z)
+                }
+                cycle {
+                    memoryRead(1, 0x3u)
+                }
+                cycle {
+                    memoryRead(3, data.input)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
                 yReg(data.input)
                 isNegativeFlag(data.negativeFlag)
                 isZeroFlag(data.zeroFlag)

@@ -252,8 +252,12 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     CMP_ZX to ZeroPageXReadOperation(CompareToAccumulator),
 
     CPX_I to ImmediateMemoryOperation(CompareToX),
+    CPX_AB to AbsoluteMemoryReadOperation(CompareToX),
+    CPX_Z to ZeroPageReadOperation(CompareToX),
 
     CPY_I to ImmediateMemoryOperation(CompareToY),
+    CPY_AB to AbsoluteMemoryReadOperation(CompareToY),
+    CPY_Z to ZeroPageReadOperation(CompareToY),
 
     //Decrement
     DEX to SingleEffectPipeline(DecrementX),
@@ -282,6 +286,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //Load Accumulator
     LDA_I to ImmediateMemoryOperation(ReadIntoAccumulator),
     LDA_Z to ZeroPageReadOperation(ReadIntoAccumulator),
+    LDA_ZX to ZeroPageXReadOperation(ReadIntoAccumulator),
     LDA_AB to AbsoluteMemoryReadOperation(ReadIntoAccumulator),
     LDA_ABX to AbsoluteXMemoryReadOperation(ReadIntoAccumulator),
     LDA_ABY to AbsoluteYMemoryReadOperation(ReadIntoAccumulator),
@@ -297,6 +302,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     LDY_I to ImmediateMemoryOperation(ReadIntoY),
     LDY_AB to AbsoluteMemoryReadOperation(ReadIntoY),
     LDY_ABX to AbsoluteXMemoryReadOperation(ReadIntoY),
+    LDY_Z to ZeroPageReadOperation(ReadIntoY),
     LDY_ZX to ZeroPageXReadOperation(ReadIntoY),
 
     //Or
