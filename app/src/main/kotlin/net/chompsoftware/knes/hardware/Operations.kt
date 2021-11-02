@@ -265,6 +265,11 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //Exclusive Or
     EOR_I to ImmediateMemoryOperation(ExclusiveOr),
+    EOR_AB to AbsoluteMemoryReadOperation(ExclusiveOr),
+    EOR_ABX to AbsoluteXMemoryReadOperation(ExclusiveOr),
+    EOR_ABY to AbsoluteYMemoryReadOperation(ExclusiveOr),
+    EOR_Z to ZeroPageReadOperation(ExclusiveOr),
+    EOR_ZX to ZeroPageXReadOperation(ExclusiveOr),
 
     //Increment
     INX to SingleEffectPipeline(IncrementX),
@@ -307,6 +312,11 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //Or
     ORA_I to ImmediateMemoryOperation(OrWithAccumulator),
+    ORA_AB to AbsoluteMemoryReadOperation(OrWithAccumulator),
+    ORA_ABX to AbsoluteXMemoryReadOperation(OrWithAccumulator),
+    ORA_ABY to AbsoluteYMemoryReadOperation(OrWithAccumulator),
+    ORA_Z to ZeroPageReadOperation(OrWithAccumulator),
+    ORA_ZX to ZeroPageXReadOperation(OrWithAccumulator),
 
     //Push and Pull Stack Operations
     PHA to DelayedSingleEffectPipeline(PushAccumulator, delay = 1),
