@@ -214,6 +214,11 @@ class IndirectOperation(vararg postEffects: Effect) : VariableLengthPipeline(
 val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //AddWithCarry
     ADC_I to ImmediateMemoryOperation(AddWithCarry),
+    ADC_AB to AbsoluteMemoryReadOperation(AddWithCarry),
+    ADC_ABX to AbsoluteXMemoryReadOperation(AddWithCarry),
+    ADC_ABY to AbsoluteYMemoryReadOperation(AddWithCarry),
+    ADC_Z to ZeroPageReadOperation(AddWithCarry),
+    ADC_ZX to ZeroPageXReadOperation(AddWithCarry),
 
     //Branch
     BCC to ImmediateMemoryOperation(BranchOnCarryClear),
