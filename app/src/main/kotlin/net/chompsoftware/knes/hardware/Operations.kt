@@ -341,6 +341,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //Store
     STA_Z to ZeroPageWriteOperation(StoreAccumulator),
+    STA_ZX to ZeroPageXWriteOperation(StoreAccumulator),
     STA_AB to AbsoluteMemoryLocationOperation(StoreAccumulator),
     STA_ABX to AbsoluteXMemoryLocationOperation(StoreAccumulator),
     STA_ABY to AbsoluteYMemoryLocationOperation(StoreAccumulator),

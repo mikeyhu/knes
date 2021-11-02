@@ -68,6 +68,34 @@ class StoreOperationsTest {
         }
 
         @Test
+        fun `STA ZeroPage X Offset`() {
+            val memory = BasicMemory(setupMemory(STA_ZX, 0x02u, NOP, 0x00u))
+
+            val aReg: UByte = 0x05u
+
+            val interrogator = HardwareInterrogator(CpuState(aReg = aReg, xReg=0x01u), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, STA_ZX)
+                }
+                cycle {
+                    memoryRead(1, 0x02u)
+                }
+                cycle {}
+                cycle {
+                    memoryWrite(3, aReg)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+            }
+        }
+
+        @Test
         fun `STA Absolute with X offset`() {
             val memory = BasicMemory(setupMemory(STA_ABX, 0x01u, 0x04u, NOP, 0x00u))
 
