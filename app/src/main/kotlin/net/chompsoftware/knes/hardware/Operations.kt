@@ -1,239 +1,11 @@
 package net.chompsoftware.knes.hardware
 
 import net.chompsoftware.knes.hardware.effects.*
-import net.chompsoftware.knes.toHex
-import net.chompsoftware.knes.toInt16
-
-class OperationState(
-    var pipelinePosition: Int,
-    var memoryRead: UByte? = null,
-    var location: Int? = null,
-    var argument1: UByte? = null,
-    var argument2: UByte? = null,
-    var cyclesRemaining: Int = 0
-) {
-    fun absolutePosition() = toInt16(getArgument1(), getArgument2())
-
-    fun getMemoryRead(): UByte {
-        return memoryRead ?: throw Error("memoryRead was not set")
-    }
-
-    fun getLocation(): Int {
-        return location ?: throw Error("location was not set")
-    }
-
-    fun getArgument1(): UByte {
-        return argument1 ?: throw Error("argument1 was not set")
-    }
-
-    fun getArgument2(): UByte {
-        return argument2 ?: throw Error("argument2 was not set")
-    }
-
-    fun reset() {
-        pipelinePosition = 0
-        memoryRead = null
-        location = null
-        argument1 = null
-        argument2 = null
-        cyclesRemaining = 0
-    }
-}
-
-@ExperimentalUnsignedTypes
-interface EffectPipeline {
-    fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline?
-}
-
-@ExperimentalUnsignedTypes
-object Operation : EffectPipeline {
-    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline {
-        val instruction = memory[cpuState.programCounterWithIncrement()]
-
-        return instructionMap.getOrElse(instruction) {
-            throw NotImplementedError("Instruction ${instruction.toHex()} not found at ${(cpuState.programCounter - 1).toHex()}")
-        }
-    }
-}
-
-@ExperimentalUnsignedTypes
-open class VariableLengthPipeline(vararg val effects: Effect) : EffectPipeline {
-    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline? {
-        if (effects.size < operationState.pipelinePosition)
-            throw Error("Pipeline past end of effects")
-        if (operationState.cyclesRemaining > 0) {
-            operationState.cyclesRemaining -= 1
-            return nextEffectPipeline(operationState)
-        }
-        effects[operationState.pipelinePosition].run(cpuState, memory, operationState)
-        operationState.pipelinePosition++
-        while (effects.size > operationState.pipelinePosition && !effects[operationState.pipelinePosition].requiresCycle()) {
-            effects[operationState.pipelinePosition].run(cpuState, memory, operationState)
-            operationState.pipelinePosition++
-        }
-        return nextEffectPipeline(operationState)
-    }
-
-    private fun nextEffectPipeline(operationState: OperationState): EffectPipeline? {
-        if (effects.size > operationState.pipelinePosition || operationState.cyclesRemaining > 0)
-            return this
-        operationState.reset()
-        return null
-    }
-}
-
-@ExperimentalUnsignedTypes
-class SingleEffectPipeline(val effect: Effect) : EffectPipeline {
-    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline? {
-        effect.run(cpuState, memory, operationState)
-        return null
-    }
-}
-
-@ExperimentalUnsignedTypes
-class DelayedSingleEffectPipeline(val effect: Effect, val delay: Int) : EffectPipeline {
-    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline? {
-        if (operationState.pipelinePosition < delay) {
-            operationState.pipelinePosition++
-            return this
-        }
-        effect.run(cpuState, memory, operationState)
-        operationState.reset()
-        return null
-    }
-}
-
-@ExperimentalUnsignedTypes
-class ImmediateMemoryOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ImmediateRead,
-    *postEffects
-)
-
-@ExperimentalUnsignedTypes
-class AbsoluteMemoryReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ReadArgument1,
-    ReadArgument2,
-    AbsoluteRead,
-    *postEffects
-)
-
-@ExperimentalUnsignedTypes
-class AbsoluteXMemoryReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ReadArgument1,
-    ReadArgument2,
-    AbsoluteReadWithXOffset,
-    *postEffects
-)
-
-@ExperimentalUnsignedTypes
-class AbsoluteYMemoryReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ReadArgument1,
-    ReadArgument2,
-    AbsoluteReadWithYOffset,
-    *postEffects
-)
-
-@ExperimentalUnsignedTypes
-class AbsoluteMemoryLocationOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ReadArgument1,
-    ReadArgument2,
-    ArgumentsToLocation,
-    *postEffects
-)
-
-@ExperimentalUnsignedTypes
-class AbsoluteXMemoryLocationOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ReadArgument1,
-    ReadArgument2,
-    ArgumentsToLocationWithXOffset,
-    *postEffects
-)
-
-@ExperimentalUnsignedTypes
-class AbsoluteYMemoryLocationOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ReadArgument1,
-    ReadArgument2,
-    ArgumentsToLocationWithYOffset,
-    *postEffects
-)
-
-@ExperimentalUnsignedTypes
-class ZeroPageReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ReadArgument1,
-    ZeroPageRead,
-    *postEffects
-)
-
-@ExperimentalUnsignedTypes
-class ZeroPageXReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ReadArgument1,
-    ZeroPageXRead,
-    *postEffects
-)
-
-@ExperimentalUnsignedTypes
-class ZeroPageYReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ReadArgument1,
-    ZeroPageYRead,
-    *postEffects
-)
-
-@ExperimentalUnsignedTypes
-class ZeroPageWriteOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ImmediateRead,
-    ZeroPageWrite,
-    *postEffects
-)
-
-@ExperimentalUnsignedTypes
-class ZeroPageXWriteOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ImmediateRead,
-    ZeroPageXWrite,
-    *postEffects
-)
-
-@ExperimentalUnsignedTypes
-class ZeroPageYWriteOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ImmediateRead,
-    ZeroPageYWrite,
-    *postEffects
-)
-
-@ExperimentalUnsignedTypes
-class IndirectIndexedReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ReadArgument1,
-    Argument1ToLocation,
-    ReadIndirect1,
-    ReadIndirect2,
-    AbsoluteReadWithYOffset,
-    *postEffects
-)
-
-@ExperimentalUnsignedTypes
-class IndirectIndexedMemoryLocationOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ReadArgument1,
-    Argument1ToLocation,
-    ReadIndirect1,
-    ReadIndirect2,
-    ArgumentsToLocationWithYOffset,
-    *postEffects
-)
-
-@ExperimentalUnsignedTypes
-class IndirectOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ReadArgument1,
-    ReadArgument2,
-    ArgumentsToLocation,
-    ReadIndirect1,
-    ReadIndirect2,
-    ArgumentsToLocation,
-    *postEffects
-)
 
 @ExperimentalUnsignedTypes
 val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //AddWithCarry
-    ADC_I to ImmediateMemoryOperation(AddWithCarry),
+    ADC_I to ImmediateMemoryReadOperation(AddWithCarry),
     ADC_AB to AbsoluteMemoryReadOperation(AddWithCarry),
     ADC_ABX to AbsoluteXMemoryReadOperation(AddWithCarry),
     ADC_ABY to AbsoluteYMemoryReadOperation(AddWithCarry),
@@ -241,14 +13,14 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     ADC_ZX to ZeroPageXReadOperation(AddWithCarry),
 
     //Branch
-    BCC to ImmediateMemoryOperation(BranchOnCarryClear),
-    BCS to ImmediateMemoryOperation(BranchOnCarrySet),
-    BEQ to ImmediateMemoryOperation(BranchOnEqual),
-    BMI to ImmediateMemoryOperation(BranchOnMinus),
-    BNE to ImmediateMemoryOperation(BranchOnNotEqual),
-    BPL to ImmediateMemoryOperation(BranchOnPLus),
-    BVC to ImmediateMemoryOperation(BranchOnOverflowClear),
-    BVS to ImmediateMemoryOperation(BranchOnOverflowSet),
+    BCC to ImmediateMemoryReadOperation(BranchOnCarryClear),
+    BCS to ImmediateMemoryReadOperation(BranchOnCarrySet),
+    BEQ to ImmediateMemoryReadOperation(BranchOnEqual),
+    BMI to ImmediateMemoryReadOperation(BranchOnMinus),
+    BNE to ImmediateMemoryReadOperation(BranchOnNotEqual),
+    BPL to ImmediateMemoryReadOperation(BranchOnPLus),
+    BVC to ImmediateMemoryReadOperation(BranchOnOverflowClear),
+    BVS to ImmediateMemoryReadOperation(BranchOnOverflowSet),
 
     //Break
     BRK to VariableLengthPipeline(
@@ -256,8 +28,8 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
         PushProgramCounterLow(1),
         PushProcessorStatus(interruptOverride = false),
         LocationFromBreak,
-        ReadIndirect1,
-        ReadIndirect2,
+        ReadLocationLow,
+        ReadLocationHigh,
         ArgumentsToLocation,
         JumpWithBreak
     ),
@@ -269,7 +41,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     CLI to SingleEffectPipeline(ClearInterrupt),
 
     //Compare
-    CMP_I to ImmediateMemoryOperation(CompareToAccumulator),
+    CMP_I to ImmediateMemoryReadOperation(CompareToAccumulator),
     CMP_AB to AbsoluteMemoryReadOperation(CompareToAccumulator),
     CMP_ABX to AbsoluteXMemoryReadOperation(CompareToAccumulator),
     CMP_ABY to AbsoluteYMemoryReadOperation(CompareToAccumulator),
@@ -278,11 +50,11 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     CMP_IIY to IndirectIndexedReadOperation(CompareToAccumulator),
 
 
-    CPX_I to ImmediateMemoryOperation(CompareToX),
+    CPX_I to ImmediateMemoryReadOperation(CompareToX),
     CPX_AB to AbsoluteMemoryReadOperation(CompareToX),
     CPX_Z to ZeroPageReadOperation(CompareToX),
 
-    CPY_I to ImmediateMemoryOperation(CompareToY),
+    CPY_I to ImmediateMemoryReadOperation(CompareToY),
     CPY_AB to AbsoluteMemoryReadOperation(CompareToY),
     CPY_Z to ZeroPageReadOperation(CompareToY),
 
@@ -291,7 +63,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     DEY to SingleEffectPipeline(DecrementY),
 
     //Exclusive Or
-    EOR_I to ImmediateMemoryOperation(ExclusiveOr),
+    EOR_I to ImmediateMemoryReadOperation(ExclusiveOr),
     EOR_AB to AbsoluteMemoryReadOperation(ExclusiveOr),
     EOR_ABX to AbsoluteXMemoryReadOperation(ExclusiveOr),
     EOR_ABY to AbsoluteYMemoryReadOperation(ExclusiveOr),
@@ -316,7 +88,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     NOP to SingleEffectPipeline(NoOperation),
 
     //Load Accumulator
-    LDA_I to ImmediateMemoryOperation(ReadIntoAccumulator),
+    LDA_I to ImmediateMemoryReadOperation(ReadIntoAccumulator),
     LDA_Z to ZeroPageReadOperation(ReadIntoAccumulator),
     LDA_ZX to ZeroPageXReadOperation(ReadIntoAccumulator),
     LDA_AB to AbsoluteMemoryReadOperation(ReadIntoAccumulator),
@@ -325,21 +97,21 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     LDA_IIY to IndirectIndexedReadOperation(ReadIntoAccumulator),
 
     //Load X
-    LDX_I to ImmediateMemoryOperation(ReadIntoX),
+    LDX_I to ImmediateMemoryReadOperation(ReadIntoX),
     LDX_AB to AbsoluteMemoryReadOperation(ReadIntoX),
     LDX_ABY to AbsoluteYMemoryReadOperation(ReadIntoX),
     LDX_Z to ZeroPageReadOperation(ReadIntoX),
     LDX_ZY to ZeroPageYReadOperation(ReadIntoX),
 
     //load Y
-    LDY_I to ImmediateMemoryOperation(ReadIntoY),
+    LDY_I to ImmediateMemoryReadOperation(ReadIntoY),
     LDY_AB to AbsoluteMemoryReadOperation(ReadIntoY),
     LDY_ABX to AbsoluteXMemoryReadOperation(ReadIntoY),
     LDY_Z to ZeroPageReadOperation(ReadIntoY),
     LDY_ZX to ZeroPageXReadOperation(ReadIntoY),
 
     //Or
-    ORA_I to ImmediateMemoryOperation(OrWithAccumulator),
+    ORA_I to ImmediateMemoryReadOperation(OrWithAccumulator),
     ORA_AB to AbsoluteMemoryReadOperation(OrWithAccumulator),
     ORA_ABX to AbsoluteXMemoryReadOperation(OrWithAccumulator),
     ORA_ABY to AbsoluteYMemoryReadOperation(OrWithAccumulator),

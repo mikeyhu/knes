@@ -86,13 +86,13 @@ class PushProgramCounterHigh(val alterBeforeWrite:Int) : Effect() {
 object PullProgramCounterLow : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        operationState.argument1 = memory[((++cpuState.stackReg) + 0x100u).toInt()]
+        operationState.argumentLow = memory[((++cpuState.stackReg) + 0x100u).toInt()]
     }
 }
 
 object PullProgramCounterHigh : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        operationState.argument2 = memory[((++cpuState.stackReg) + 0x100u).toInt()]
+        operationState.argumentHigh = memory[((++cpuState.stackReg) + 0x100u).toInt()]
     }
 }
