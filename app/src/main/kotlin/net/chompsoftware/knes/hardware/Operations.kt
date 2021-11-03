@@ -200,6 +200,26 @@ class ZeroPageYWriteOperation(vararg postEffects: Effect) : VariableLengthPipeli
 )
 
 @ExperimentalUnsignedTypes
+class IndirectIndexedReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
+    ReadArgument1,
+    Argument1ToLocation,
+    ReadIndirect1,
+    ReadIndirect2,
+    AbsoluteReadWithYOffset,
+    *postEffects
+)
+
+@ExperimentalUnsignedTypes
+class IndirectIndexedMemoryLocationOperation(vararg postEffects: Effect) : VariableLengthPipeline(
+    ReadArgument1,
+    Argument1ToLocation,
+    ReadIndirect1,
+    ReadIndirect2,
+    ArgumentsToLocationWithYOffset,
+    *postEffects
+)
+
+@ExperimentalUnsignedTypes
 class IndirectOperation(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadArgument1,
     ReadArgument2,
@@ -255,6 +275,8 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     CMP_ABY to AbsoluteYMemoryReadOperation(CompareToAccumulator),
     CMP_Z to ZeroPageReadOperation(CompareToAccumulator),
     CMP_ZX to ZeroPageXReadOperation(CompareToAccumulator),
+    CMP_IIY to IndirectIndexedReadOperation(CompareToAccumulator),
+
 
     CPX_I to ImmediateMemoryOperation(CompareToX),
     CPX_AB to AbsoluteMemoryReadOperation(CompareToX),
@@ -300,6 +322,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     LDA_AB to AbsoluteMemoryReadOperation(ReadIntoAccumulator),
     LDA_ABX to AbsoluteXMemoryReadOperation(ReadIntoAccumulator),
     LDA_ABY to AbsoluteYMemoryReadOperation(ReadIntoAccumulator),
+    LDA_IIY to IndirectIndexedReadOperation(ReadIntoAccumulator),
 
     //Load X
     LDX_I to ImmediateMemoryOperation(ReadIntoX),
@@ -360,6 +383,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     STA_AB to AbsoluteMemoryLocationOperation(StoreAccumulator),
     STA_ABX to AbsoluteXMemoryLocationOperation(StoreAccumulator),
     STA_ABY to AbsoluteYMemoryLocationOperation(StoreAccumulator),
+    STA_IIY to IndirectIndexedMemoryLocationOperation(StoreAccumulator),
 
     STX_Z to ZeroPageWriteOperation(StoreX),
     STX_ZY to ZeroPageYWriteOperation(StoreX),

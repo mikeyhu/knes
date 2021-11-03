@@ -108,6 +108,15 @@ object ArgumentsToLocation : Effect() {
     override fun requiresCycle() = false
 }
 
+object Argument1ToLocation : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        operationState.location = operationState.getArgument1().toInt()
+    }
+
+    override fun requiresCycle() = false
+}
+
 object ArgumentsToLocationWithXOffset : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
