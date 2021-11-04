@@ -1,5 +1,6 @@
 package net.chompsoftware.knes
 
+import net.chompsoftware.knes.hardware.effects.CpuStatusComparisons
 
 fun UByte.toHex() = "0x" + this.toString(16)
 fun UInt.toHex() = "0x" + this.toString(16)
@@ -21,3 +22,7 @@ fun setupMemory(vararg bytes: UByte, size: Int = 0x8000, memoryOffset: Int = 0):
     bytes.copyInto(array, memoryOffset, 0, bytes.size)
     return array
 }
+
+fun UByte.isZero() = this == CpuStatusComparisons.ZERO_FLAG
+fun UByte.isNegative() = (this and CpuStatusComparisons.NEGATIVE_FLAG) > 0u
+fun UInt.isCarry() = this.shr(8) > 0u

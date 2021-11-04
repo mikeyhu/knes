@@ -1,5 +1,7 @@
 package net.chompsoftware.knes.hardware
 
+import net.chompsoftware.knes.isNegative
+import net.chompsoftware.knes.isZero
 import net.chompsoftware.knes.toHex
 
 data class CpuState(
@@ -23,20 +25,20 @@ data class CpuState(
 
     fun setARegWithFlags(value: UByte) {
         aReg = value
-        isNegativeFlag = tweakNegative(value)
-        isZeroFlag = tweakZero(value)
+        isNegativeFlag = value.isNegative()
+        isZeroFlag = value.isZero()
     }
 
     fun setXRegWithFlags(value: UByte) {
         xReg = value
-        isNegativeFlag = tweakNegative(value)
-        isZeroFlag = tweakZero(value)
+        isNegativeFlag = value.isNegative()
+        isZeroFlag = value.isZero()
     }
 
     fun setYRegWithFlags(value: UByte) {
         yReg = value
-        isNegativeFlag = tweakNegative(value)
-        isZeroFlag = tweakZero(value)
+        isNegativeFlag = value.isNegative()
+        isZeroFlag = value.isZero()
     }
 
     fun setComparisonFlags(existing: UByte, compareTo: UByte) {
@@ -44,9 +46,6 @@ data class CpuState(
         isNegativeFlag = existing < compareTo
         isCarryFlag = existing >= compareTo
     }
-
-    private fun tweakNegative(value: UByte) = value.and(NEGATIVE_BYTE_POSITION) > 0u
-    private fun tweakZero(value: UByte) = value == ZERO_BYTE
 
     override fun toString(): String {
         return "CpuState(pc=${programCounter.paddedToHex()}, " +
@@ -63,8 +62,6 @@ data class CpuState(
     private fun UByte.paddedToHex() = this.toHex().padEnd(4)
 }
 
-const val NEGATIVE_BYTE_POSITION: UByte = 0x80u
-const val ZERO_BYTE: UByte = 0x0u
 
 
 

@@ -12,6 +12,9 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     ADC_Z to ZeroPageReadPipeline(AddWithCarry),
     ADC_ZX to ZeroPageXReadPipeline(AddWithCarry),
 
+    //ArithmeticShiftLeft
+    ASL_NONE to SingleEffectPipeline(ArithmeticShiftLeft),
+
     //BitWithAccumulator
     BIT_AB to AbsoluteReadPipeline(BitWithAccumulator),
     BIT_Z to ZeroPageReadPipeline(BitWithAccumulator),

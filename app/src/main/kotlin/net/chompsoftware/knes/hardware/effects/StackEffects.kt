@@ -16,6 +16,11 @@ object CpuStatusPositions {
     const val NEGATIVE_BYTE_POSITION: UByte = 0x80u
 }
 
+object CpuStatusComparisons {
+    const val ZERO_FLAG: UByte = 0x0u
+    const val NEGATIVE_FLAG: UByte = 0x80u
+}
+
 object PushAccumulator : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {

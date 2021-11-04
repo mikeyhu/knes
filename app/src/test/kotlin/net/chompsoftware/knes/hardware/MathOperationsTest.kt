@@ -752,4 +752,33 @@ class MathOperationsTest : ParameterizedTestData() {
             }
         }
     }
+
+    @Nested
+    inner class ASL : ParameterizedTestData() {
+        @ParameterizedTest
+        @MethodSource("checkAslFlags")
+        fun `ASL Accumulator`(data: ArithmeticShiftLeftCheck) {
+            val memory = BasicMemory(setupMemory(ASL_NONE))
+
+            val interrogator = HardwareInterrogator(CpuState(aReg = data.input), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, ASL_NONE)
+                }
+                cycle {}
+            }
+
+            interrogator.assertCpuState {
+                programCounter(1)
+                aReg(data.output)
+                isCarryFlag(data.carryFlag)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
+        }
+
+    }
 }

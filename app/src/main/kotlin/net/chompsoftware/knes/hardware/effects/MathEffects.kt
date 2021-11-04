@@ -4,6 +4,9 @@ import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.Effect
 import net.chompsoftware.knes.hardware.Memory
 import net.chompsoftware.knes.hardware.OperationState
+import net.chompsoftware.knes.isCarry
+import net.chompsoftware.knes.isNegative
+import net.chompsoftware.knes.isZero
 
 object AddWithCarry : Effect() {
     @ExperimentalUnsignedTypes
@@ -20,6 +23,18 @@ object AddWithCarry : Effect() {
     }
 
     override fun requiresCycle() = false
+}
+
+object ArithmeticShiftLeft : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        val shifted = cpuState.aReg.toUInt().shl(1)
+        val shiftedByte = shifted.and(0xffu).toUByte()
+        cpuState.aReg = shiftedByte
+        cpuState.isCarryFlag = shifted.isCarry()
+        cpuState.isNegativeFlag = shiftedByte.isNegative()
+        cpuState.isZeroFlag = shiftedByte.isZero()
+    }
 }
 
 object BitWithAccumulator : Effect() {
