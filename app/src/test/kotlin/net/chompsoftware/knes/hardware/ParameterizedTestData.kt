@@ -53,6 +53,18 @@ open class ParameterizedTestData {
                 RegisterMemoryExpectedCheck(0x0fu, 0x10u, 0x1fu, false, false),
             )
         }
+
+        @JvmStatic
+        fun checkBitFlags(): Stream<RegisterMemoryExpectedCheck> {
+            return Stream.of(
+                RegisterMemoryExpectedCheck(0xffu, 0xf0u, 0xffu, true, false, true),
+                RegisterMemoryExpectedCheck(0xffu, 0xffu, 0xffu, true, false, true),
+                RegisterMemoryExpectedCheck(0x01u, 0x01u, 0x01u, false, false, false),
+                RegisterMemoryExpectedCheck(0x10u, 0x01u, 0x10u, false, true, false),
+                RegisterMemoryExpectedCheck(0x01u, 0xffu, 0x01u, true, false, true),
+                RegisterMemoryExpectedCheck(0x01u, 0x10u, 0x01u, false, true, false),
+            )
+        }
     }
 }
 
@@ -81,5 +93,6 @@ data class RegisterMemoryExpectedCheck(
     val memory: UByte,
     val expected: UByte,
     val negativeFlag: Boolean,
-    val zeroFlag: Boolean
+    val zeroFlag: Boolean,
+    val overflowFlag: Boolean = false
 )

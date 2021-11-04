@@ -22,6 +22,20 @@ object AddWithCarry : Effect() {
     override fun requiresCycle() = false
 }
 
+object BitWithAccumulator : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        val memoryValue = operationState.getMemoryRead()
+        val andByte:UByte = cpuState.aReg and memoryValue
+        cpuState.isZeroFlag = andByte == UByte.MIN_VALUE
+
+        cpuState.isNegativeFlag = memoryValue and CpuStatusPositions.NEGATIVE_BYTE_POSITION > 0u
+        cpuState.isOverflowFlag = memoryValue and CpuStatusPositions.OVERFLOW_BYTE_POSITION > 0u
+    }
+
+    override fun requiresCycle() = false
+}
+
 object DecrementX : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {

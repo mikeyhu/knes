@@ -686,4 +686,70 @@ class MathOperationsTest : ParameterizedTestData() {
             }
         }
     }
+
+    @Nested
+    inner class BIT : ParameterizedTestData() {
+        @ParameterizedTest
+        @MethodSource("checkBitFlags")
+        fun `BIT ZeroPage`(data: RegisterMemoryExpectedCheck) {
+            val memory = BasicMemory(setupMemory(BIT_Z, 0x03u, NOP, data.memory))
+
+            val interrogator = HardwareInterrogator(CpuState(aReg = data.aReg), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, BIT_Z)
+                }
+                cycle {
+                    memoryRead(1, 0x03u)
+                }
+                cycle {
+                    memoryRead(0x03, data.memory)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+                aReg(data.expected)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+                isOverflowFlag(data.overflowFlag)
+            }
+        }
+
+        @ParameterizedTest
+        @MethodSource("checkBitFlags")
+        fun `BIT Absolute`(data: RegisterMemoryExpectedCheck) {
+            val memory = BasicMemory(setupMemory(BIT_AB, 0x03u, 0x00u, data.memory))
+
+            val interrogator = HardwareInterrogator(CpuState(aReg = data.aReg), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, BIT_AB)
+                }
+                cycle {
+                    memoryRead(1, 0x03u)
+                }
+                cycle {
+                    memoryRead(2, 0x00u)
+                }
+                cycle {
+                    memoryRead(0x03, data.memory)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(3)
+                aReg(data.expected)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+                isOverflowFlag(data.overflowFlag)
+            }
+        }
+    }
 }

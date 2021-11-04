@@ -12,6 +12,10 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     ADC_Z to ZeroPageReadPipeline(AddWithCarry),
     ADC_ZX to ZeroPageXReadPipeline(AddWithCarry),
 
+    //BitWithAccumulator
+    BIT_AB to AbsoluteReadPipeline(BitWithAccumulator),
+    BIT_Z to ZeroPageReadPipeline(BitWithAccumulator),
+
     //Branch
     BCC to ImmediateReadPipeline(BranchOnCarryClear),
     BCS to ImmediateReadPipeline(BranchOnCarrySet),
