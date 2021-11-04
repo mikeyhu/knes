@@ -24,7 +24,7 @@ class OperationState(
 
     fun getZeroPagePosition() = getArgumentLow().toInt()
 
-    fun getZeroPagePosition(offset:UByte) = ((getArgumentLow() + offset) % 0x100u).toInt()
+    fun getZeroPagePosition(offset: UByte) = ((getArgumentLow() + offset) % 0x100u).toInt()
 
     fun setNextArgument(value: UByte) {
         if (argumentLow == null) argumentLow = value
@@ -42,6 +42,10 @@ class OperationState(
 
     fun zeroPageToLocation() {
         location = getZeroPagePosition()
+    }
+
+    fun zeroPageToLocation(offset: UByte) {
+        location = getZeroPagePosition(offset)
     }
 
     private fun getArgumentLow(): UByte {
@@ -108,6 +112,7 @@ open class VariableLengthPipeline(vararg val effects: Effect) : EffectPipeline {
 class SingleEffectPipeline(val effect: Effect) : EffectPipeline {
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline? {
         effect.run(cpuState, memory, operationState)
+        operationState.reset()
         return null
     }
 }
@@ -126,103 +131,98 @@ class DelayedSingleEffectPipeline(val effect: Effect, val delay: Int) : EffectPi
 }
 
 @ExperimentalUnsignedTypes
-class ImmediateMemoryReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
+class ImmediateReadPipeline(vararg postEffects: Effect) : VariableLengthPipeline(
     ImmediateRead,
     *postEffects
 )
 
 @ExperimentalUnsignedTypes
-class AbsoluteMemoryReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
+open class AbsoluteMemoryPipeline(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadAtProgramCounter,
     ReadAtProgramCounter,
+    *postEffects
+)
+
+@ExperimentalUnsignedTypes
+class AbsoluteReadPipeline(vararg postEffects: Effect) : AbsoluteMemoryPipeline(
     AbsoluteRead,
     *postEffects
 )
 
 @ExperimentalUnsignedTypes
-class AbsoluteXMemoryReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ReadAtProgramCounter,
-    ReadAtProgramCounter,
+class AbsoluteXReadPipeline(vararg postEffects: Effect) : AbsoluteMemoryPipeline(
     AbsoluteReadWithXOffset,
     *postEffects
 )
 
 @ExperimentalUnsignedTypes
-class AbsoluteYMemoryReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ReadAtProgramCounter,
-    ReadAtProgramCounter,
+class AbsoluteYReadPipeline(vararg postEffects: Effect) : AbsoluteMemoryPipeline(
     AbsoluteReadWithYOffset,
     *postEffects
 )
 
 @ExperimentalUnsignedTypes
-class AbsoluteMemoryLocationOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ReadAtProgramCounter,
-    ReadAtProgramCounter,
+class AbsoluteLocationPipeline(vararg postEffects: Effect) : AbsoluteMemoryPipeline(
     ArgumentsToLocation,
     *postEffects
 )
 
 @ExperimentalUnsignedTypes
-class AbsoluteXMemoryLocationOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ReadAtProgramCounter,
-    ReadAtProgramCounter,
+class AbsoluteXLocationPipeline(vararg postEffects: Effect) : AbsoluteMemoryPipeline(
     ArgumentsToLocationWithXOffset,
     *postEffects
 )
 
 @ExperimentalUnsignedTypes
-class AbsoluteYMemoryLocationOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ReadAtProgramCounter,
-    ReadAtProgramCounter,
+class AbsoluteYLocationPipeline(vararg postEffects: Effect) : AbsoluteMemoryPipeline(
     ArgumentsToLocationWithYOffset,
     *postEffects
 )
 
 @ExperimentalUnsignedTypes
-class ZeroPageReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
+open class ZeroPagePipeline(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadAtProgramCounter,
+    *postEffects
+)
+
+@ExperimentalUnsignedTypes
+class ZeroPageReadPipeline(vararg postEffects: Effect) : ZeroPagePipeline(
     ZeroPageRead,
     *postEffects
 )
 
 @ExperimentalUnsignedTypes
-class ZeroPageXReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ReadAtProgramCounter,
+class ZeroPageXReadPipeline(vararg postEffects: Effect) : ZeroPagePipeline(
     ZeroPageXRead,
     *postEffects
 )
 
 @ExperimentalUnsignedTypes
-class ZeroPageYReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ReadAtProgramCounter,
+class ZeroPageYReadPipeline(vararg postEffects: Effect) : ZeroPagePipeline(
     ZeroPageYRead,
     *postEffects
 )
 
 @ExperimentalUnsignedTypes
-class ZeroPageWriteOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ImmediateRead,
-    ZeroPageWrite,
+class ZeroPageLocationPipeline(vararg postEffects: Effect) : ZeroPagePipeline(
+    ZeroPageToLocation,
     *postEffects
 )
 
 @ExperimentalUnsignedTypes
-class ZeroPageXWriteOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ImmediateRead,
-    ZeroPageXWrite,
+class ZeroPageXLocationPipeline(vararg postEffects: Effect) : ZeroPagePipeline(
+    ZeroPageXToLocation,
     *postEffects
 )
 
 @ExperimentalUnsignedTypes
-class ZeroPageYWriteOperation(vararg postEffects: Effect) : VariableLengthPipeline(
-    ImmediateRead,
-    ZeroPageYWrite,
+class ZeroPageYLocationPipeline(vararg postEffects: Effect) : ZeroPagePipeline(
+    ZeroPageYToLocation,
     *postEffects
 )
 
 @ExperimentalUnsignedTypes
-class IndirectIndexedReadOperation(vararg postEffects: Effect) : VariableLengthPipeline(
+class IndirectIndexedReadPipeline(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadAtProgramCounter,
     ZeroPageToLocation,
     ReadLocationLow,
@@ -232,7 +232,7 @@ class IndirectIndexedReadOperation(vararg postEffects: Effect) : VariableLengthP
 )
 
 @ExperimentalUnsignedTypes
-class IndirectIndexedMemoryLocationOperation(vararg postEffects: Effect) : VariableLengthPipeline(
+class IndirectIndexedLocationPipeline(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadAtProgramCounter,
     ZeroPageToLocation,
     ReadLocationLow,
@@ -242,7 +242,7 @@ class IndirectIndexedMemoryLocationOperation(vararg postEffects: Effect) : Varia
 )
 
 @ExperimentalUnsignedTypes
-class IndirectOperation(vararg postEffects: Effect) : VariableLengthPipeline(
+class IndirectPipeline(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadAtProgramCounter,
     ReadAtProgramCounter,
     ArgumentsToLocation,

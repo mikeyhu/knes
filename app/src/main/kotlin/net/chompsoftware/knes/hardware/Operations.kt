@@ -5,22 +5,22 @@ import net.chompsoftware.knes.hardware.effects.*
 @ExperimentalUnsignedTypes
 val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //AddWithCarry
-    ADC_I to ImmediateMemoryReadOperation(AddWithCarry),
-    ADC_AB to AbsoluteMemoryReadOperation(AddWithCarry),
-    ADC_ABX to AbsoluteXMemoryReadOperation(AddWithCarry),
-    ADC_ABY to AbsoluteYMemoryReadOperation(AddWithCarry),
-    ADC_Z to ZeroPageReadOperation(AddWithCarry),
-    ADC_ZX to ZeroPageXReadOperation(AddWithCarry),
+    ADC_I to ImmediateReadPipeline(AddWithCarry),
+    ADC_AB to AbsoluteReadPipeline(AddWithCarry),
+    ADC_ABX to AbsoluteXReadPipeline(AddWithCarry),
+    ADC_ABY to AbsoluteYReadPipeline(AddWithCarry),
+    ADC_Z to ZeroPageReadPipeline(AddWithCarry),
+    ADC_ZX to ZeroPageXReadPipeline(AddWithCarry),
 
     //Branch
-    BCC to ImmediateMemoryReadOperation(BranchOnCarryClear),
-    BCS to ImmediateMemoryReadOperation(BranchOnCarrySet),
-    BEQ to ImmediateMemoryReadOperation(BranchOnEqual),
-    BMI to ImmediateMemoryReadOperation(BranchOnMinus),
-    BNE to ImmediateMemoryReadOperation(BranchOnNotEqual),
-    BPL to ImmediateMemoryReadOperation(BranchOnPLus),
-    BVC to ImmediateMemoryReadOperation(BranchOnOverflowClear),
-    BVS to ImmediateMemoryReadOperation(BranchOnOverflowSet),
+    BCC to ImmediateReadPipeline(BranchOnCarryClear),
+    BCS to ImmediateReadPipeline(BranchOnCarrySet),
+    BEQ to ImmediateReadPipeline(BranchOnEqual),
+    BMI to ImmediateReadPipeline(BranchOnMinus),
+    BNE to ImmediateReadPipeline(BranchOnNotEqual),
+    BPL to ImmediateReadPipeline(BranchOnPLus),
+    BVC to ImmediateReadPipeline(BranchOnOverflowClear),
+    BVS to ImmediateReadPipeline(BranchOnOverflowSet),
 
     //Break
     BRK to VariableLengthPipeline(
@@ -41,43 +41,43 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     CLI to SingleEffectPipeline(ClearInterrupt),
 
     //Compare
-    CMP_I to ImmediateMemoryReadOperation(CompareToAccumulator),
-    CMP_AB to AbsoluteMemoryReadOperation(CompareToAccumulator),
-    CMP_ABX to AbsoluteXMemoryReadOperation(CompareToAccumulator),
-    CMP_ABY to AbsoluteYMemoryReadOperation(CompareToAccumulator),
-    CMP_Z to ZeroPageReadOperation(CompareToAccumulator),
-    CMP_ZX to ZeroPageXReadOperation(CompareToAccumulator),
-    CMP_IIY to IndirectIndexedReadOperation(CompareToAccumulator),
+    CMP_I to ImmediateReadPipeline(CompareToAccumulator),
+    CMP_AB to AbsoluteReadPipeline(CompareToAccumulator),
+    CMP_ABX to AbsoluteXReadPipeline(CompareToAccumulator),
+    CMP_ABY to AbsoluteYReadPipeline(CompareToAccumulator),
+    CMP_Z to ZeroPageReadPipeline(CompareToAccumulator),
+    CMP_ZX to ZeroPageXReadPipeline(CompareToAccumulator),
+    CMP_IIY to IndirectIndexedReadPipeline(CompareToAccumulator),
 
 
-    CPX_I to ImmediateMemoryReadOperation(CompareToX),
-    CPX_AB to AbsoluteMemoryReadOperation(CompareToX),
-    CPX_Z to ZeroPageReadOperation(CompareToX),
+    CPX_I to ImmediateReadPipeline(CompareToX),
+    CPX_AB to AbsoluteReadPipeline(CompareToX),
+    CPX_Z to ZeroPageReadPipeline(CompareToX),
 
-    CPY_I to ImmediateMemoryReadOperation(CompareToY),
-    CPY_AB to AbsoluteMemoryReadOperation(CompareToY),
-    CPY_Z to ZeroPageReadOperation(CompareToY),
+    CPY_I to ImmediateReadPipeline(CompareToY),
+    CPY_AB to AbsoluteReadPipeline(CompareToY),
+    CPY_Z to ZeroPageReadPipeline(CompareToY),
 
     //Decrement
     DEX to SingleEffectPipeline(DecrementX),
     DEY to SingleEffectPipeline(DecrementY),
 
     //Exclusive Or
-    EOR_I to ImmediateMemoryReadOperation(ExclusiveOr),
-    EOR_AB to AbsoluteMemoryReadOperation(ExclusiveOr),
-    EOR_ABX to AbsoluteXMemoryReadOperation(ExclusiveOr),
-    EOR_ABY to AbsoluteYMemoryReadOperation(ExclusiveOr),
-    EOR_Z to ZeroPageReadOperation(ExclusiveOr),
-    EOR_ZX to ZeroPageXReadOperation(ExclusiveOr),
+    EOR_I to ImmediateReadPipeline(ExclusiveOr),
+    EOR_AB to AbsoluteReadPipeline(ExclusiveOr),
+    EOR_ABX to AbsoluteXReadPipeline(ExclusiveOr),
+    EOR_ABY to AbsoluteYReadPipeline(ExclusiveOr),
+    EOR_Z to ZeroPageReadPipeline(ExclusiveOr),
+    EOR_ZX to ZeroPageXReadPipeline(ExclusiveOr),
 
     //Increment
     INX to SingleEffectPipeline(IncrementX),
     INY to SingleEffectPipeline(IncrementY),
 
     //Jump
-    JMP_AB to AbsoluteMemoryLocationOperation(Jump),
-    JMP_IN to IndirectOperation(Jump),
-    JSR_AB to AbsoluteMemoryLocationOperation(
+    JMP_AB to AbsoluteLocationPipeline(Jump),
+    JMP_IN to IndirectPipeline(Jump),
+    JSR_AB to AbsoluteLocationPipeline(
         NoOperation,
         PushProgramCounterHigh(-1),
         PushProgramCounterLow(-1),
@@ -88,35 +88,35 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     NOP to SingleEffectPipeline(NoOperation),
 
     //Load Accumulator
-    LDA_I to ImmediateMemoryReadOperation(ReadIntoAccumulator),
-    LDA_Z to ZeroPageReadOperation(ReadIntoAccumulator),
-    LDA_ZX to ZeroPageXReadOperation(ReadIntoAccumulator),
-    LDA_AB to AbsoluteMemoryReadOperation(ReadIntoAccumulator),
-    LDA_ABX to AbsoluteXMemoryReadOperation(ReadIntoAccumulator),
-    LDA_ABY to AbsoluteYMemoryReadOperation(ReadIntoAccumulator),
-    LDA_IIY to IndirectIndexedReadOperation(ReadIntoAccumulator),
+    LDA_I to ImmediateReadPipeline(ReadIntoAccumulator),
+    LDA_Z to ZeroPageReadPipeline(ReadIntoAccumulator),
+    LDA_ZX to ZeroPageXReadPipeline(ReadIntoAccumulator),
+    LDA_AB to AbsoluteReadPipeline(ReadIntoAccumulator),
+    LDA_ABX to AbsoluteXReadPipeline(ReadIntoAccumulator),
+    LDA_ABY to AbsoluteYReadPipeline(ReadIntoAccumulator),
+    LDA_IIY to IndirectIndexedReadPipeline(ReadIntoAccumulator),
 
     //Load X
-    LDX_I to ImmediateMemoryReadOperation(ReadIntoX),
-    LDX_AB to AbsoluteMemoryReadOperation(ReadIntoX),
-    LDX_ABY to AbsoluteYMemoryReadOperation(ReadIntoX),
-    LDX_Z to ZeroPageReadOperation(ReadIntoX),
-    LDX_ZY to ZeroPageYReadOperation(ReadIntoX),
+    LDX_I to ImmediateReadPipeline(ReadIntoX),
+    LDX_AB to AbsoluteReadPipeline(ReadIntoX),
+    LDX_ABY to AbsoluteYReadPipeline(ReadIntoX),
+    LDX_Z to ZeroPageReadPipeline(ReadIntoX),
+    LDX_ZY to ZeroPageYReadPipeline(ReadIntoX),
 
     //load Y
-    LDY_I to ImmediateMemoryReadOperation(ReadIntoY),
-    LDY_AB to AbsoluteMemoryReadOperation(ReadIntoY),
-    LDY_ABX to AbsoluteXMemoryReadOperation(ReadIntoY),
-    LDY_Z to ZeroPageReadOperation(ReadIntoY),
-    LDY_ZX to ZeroPageXReadOperation(ReadIntoY),
+    LDY_I to ImmediateReadPipeline(ReadIntoY),
+    LDY_AB to AbsoluteReadPipeline(ReadIntoY),
+    LDY_ABX to AbsoluteXReadPipeline(ReadIntoY),
+    LDY_Z to ZeroPageReadPipeline(ReadIntoY),
+    LDY_ZX to ZeroPageXReadPipeline(ReadIntoY),
 
     //Or
-    ORA_I to ImmediateMemoryReadOperation(OrWithAccumulator),
-    ORA_AB to AbsoluteMemoryReadOperation(OrWithAccumulator),
-    ORA_ABX to AbsoluteXMemoryReadOperation(OrWithAccumulator),
-    ORA_ABY to AbsoluteYMemoryReadOperation(OrWithAccumulator),
-    ORA_Z to ZeroPageReadOperation(OrWithAccumulator),
-    ORA_ZX to ZeroPageXReadOperation(OrWithAccumulator),
+    ORA_I to ImmediateReadPipeline(OrWithAccumulator),
+    ORA_AB to AbsoluteReadPipeline(OrWithAccumulator),
+    ORA_ABX to AbsoluteXReadPipeline(OrWithAccumulator),
+    ORA_ABY to AbsoluteYReadPipeline(OrWithAccumulator),
+    ORA_Z to ZeroPageReadPipeline(OrWithAccumulator),
+    ORA_ZX to ZeroPageXReadPipeline(OrWithAccumulator),
 
     //Push and Pull Stack Operations
     PHA to DelayedSingleEffectPipeline(PushAccumulator, delay = 1),
@@ -150,20 +150,20 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     SED to SingleEffectPipeline(SetDecimal),
 
     //Store
-    STA_Z to ZeroPageWriteOperation(StoreAccumulator),
-    STA_ZX to ZeroPageXWriteOperation(StoreAccumulator),
-    STA_AB to AbsoluteMemoryLocationOperation(StoreAccumulator),
-    STA_ABX to AbsoluteXMemoryLocationOperation(StoreAccumulator),
-    STA_ABY to AbsoluteYMemoryLocationOperation(StoreAccumulator),
-    STA_IIY to IndirectIndexedMemoryLocationOperation(StoreAccumulator),
+    STA_Z to ZeroPageLocationPipeline(StoreAccumulator),
+    STA_ZX to ZeroPageXLocationPipeline(StoreAccumulator),
+    STA_AB to AbsoluteLocationPipeline(StoreAccumulator),
+    STA_ABX to AbsoluteXLocationPipeline(StoreAccumulator),
+    STA_ABY to AbsoluteYLocationPipeline(StoreAccumulator),
+    STA_IIY to IndirectIndexedLocationPipeline(StoreAccumulator),
 
-    STX_Z to ZeroPageWriteOperation(StoreX),
-    STX_ZY to ZeroPageYWriteOperation(StoreX),
-    STX_AB to AbsoluteMemoryLocationOperation(StoreX),
+    STX_Z to ZeroPageLocationPipeline(StoreX),
+    STX_ZY to ZeroPageYLocationPipeline(StoreX),
+    STX_AB to AbsoluteLocationPipeline(StoreX),
 
-    STY_Z to ZeroPageWriteOperation(StoreY),
-    STY_ZX to ZeroPageXWriteOperation(StoreY),
-    STY_AB to AbsoluteMemoryLocationOperation(StoreY),
+    STY_Z to ZeroPageLocationPipeline(StoreY),
+    STY_ZX to ZeroPageXLocationPipeline(StoreY),
+    STY_AB to AbsoluteLocationPipeline(StoreY),
 
     //Transfer
     TAX to SingleEffectPipeline(TransferAccumulatorToX),
