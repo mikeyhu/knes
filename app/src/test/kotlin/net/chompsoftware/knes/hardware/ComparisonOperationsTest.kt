@@ -264,6 +264,47 @@ class ComparisonOperationsTest {
                 isCarryFlag(data.carryFlag)
             }
         }
+
+        @ParameterizedTest
+        @MethodSource("checkComparisonNegativeZeroCarryFlags")
+        fun `CMP Indexed Indirect`(data: ComparisonWithNegativeZeroCarryCheck) {
+            val memory = BasicMemory(setupMemory(CMP_IIX, 0xf0u, size=0xffff))
+
+            memory[0xf5] = 0xf0u
+            memory[0xf6] = 0xeeu
+            val xReg:UByte = 0x5u
+            memory[0xeef0] = data.input
+
+            val interrogator = HardwareInterrogator(CpuState(aReg = data.existing, xReg = xReg), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, CMP_IIX)
+                }
+                cycle {
+                    memoryRead(1, 0xf0u)
+                }
+                cycle {}
+                cycle {
+                    memoryRead(0xf5, 0xf0u)
+                }
+                cycle {
+                    memoryRead(0xf6, 0xeeu)
+                }
+                cycle {
+                    memoryRead(0xeef0, data.input)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+                isCarryFlag(data.carryFlag)
+            }
+        }
     }
 
     @Nested

@@ -51,6 +51,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     CMP_ABY to AbsoluteYReadPipeline(CompareToAccumulator),
     CMP_Z to ZeroPageReadPipeline(CompareToAccumulator),
     CMP_ZX to ZeroPageXReadPipeline(CompareToAccumulator),
+    CMP_IIX to IndexedIndirectReadPipeline(CompareToAccumulator),
     CMP_IIY to IndirectIndexedReadPipeline(CompareToAccumulator),
 
 
