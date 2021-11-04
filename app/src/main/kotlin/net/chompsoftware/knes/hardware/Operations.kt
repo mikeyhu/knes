@@ -95,6 +95,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     LDA_ABX to AbsoluteXReadPipeline(ReadIntoAccumulator),
     LDA_ABY to AbsoluteYReadPipeline(ReadIntoAccumulator),
     LDA_IIY to IndirectIndexedReadPipeline(ReadIntoAccumulator),
+    LDA_IIX to IndexedIndirectReadPipeline(ReadIntoAccumulator),
 
     //Load X
     LDX_I to ImmediateReadPipeline(ReadIntoX),
@@ -156,6 +157,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     STA_ABX to AbsoluteXLocationPipeline(StoreAccumulator),
     STA_ABY to AbsoluteYLocationPipeline(StoreAccumulator),
     STA_IIY to IndirectIndexedLocationPipeline(StoreAccumulator),
+    STA_IIX to IndexedIndirectLocationPipeline(StoreAccumulator),
 
     STX_Z to ZeroPageLocationPipeline(StoreX),
     STX_ZY to ZeroPageYLocationPipeline(StoreX),

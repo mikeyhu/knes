@@ -232,12 +232,32 @@ class IndirectIndexedReadPipeline(vararg postEffects: Effect) : VariableLengthPi
 )
 
 @ExperimentalUnsignedTypes
+class IndexedIndirectReadPipeline(vararg postEffects: Effect) : VariableLengthPipeline(
+    ReadAtProgramCounter,
+    ZeroPageXToLocation,
+    ReadLocationLow,
+    ReadLocationHigh,
+    AbsoluteRead,
+    *postEffects
+)
+
+@ExperimentalUnsignedTypes
 class IndirectIndexedLocationPipeline(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadAtProgramCounter,
     ZeroPageToLocation,
     ReadLocationLow,
     ReadLocationHigh,
     ArgumentsToLocationWithYOffset,
+    *postEffects
+)
+
+@ExperimentalUnsignedTypes
+class IndexedIndirectLocationPipeline(vararg postEffects: Effect) : VariableLengthPipeline(
+    ReadAtProgramCounter,
+    ZeroPageXToLocation,
+    ReadLocationLow,
+    ReadLocationHigh,
+    ArgumentsToLocation,
     *postEffects
 )
 

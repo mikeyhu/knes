@@ -193,6 +193,43 @@ class StoreOperationsTest {
                 programCounter(2)
             }
         }
+
+        @Test
+        fun `STA Indexed Indirect`() {
+            val memory = BasicMemory(setupMemory(STA_IIX, 0xf0u, size=0xffff))
+
+            memory[0xf5] = 0xf0u
+            memory[0xf6] = 0xeeu
+            val aReg: UByte = 0x01u
+            val xReg:UByte = 0x5u
+
+            val interrogator = HardwareInterrogator(CpuState(aReg = aReg, xReg = xReg), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, STA_IIX)
+                }
+                cycle {
+                    memoryRead(1, 0xf0u)
+                }
+                cycle {}
+                cycle {
+                    memoryRead(0xf5, 0xf0u)
+                }
+                cycle {
+                    memoryRead(0xf6, 0xeeu)
+                }
+                cycle {
+                    memoryWrite(0xeef0, aReg)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+            }
+        }
     }
 
     @Nested
