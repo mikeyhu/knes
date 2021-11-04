@@ -119,6 +119,8 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     LDY_Z to ZeroPageReadPipeline(ReadIntoY),
     LDY_ZX to ZeroPageXReadPipeline(ReadIntoY),
 
+    LSR_NONE to SingleEffectPipeline(LogicalShiftRight),
+
     //Or
     ORA_I to ImmediateReadPipeline(OrWithAccumulator),
     ORA_AB to AbsoluteReadPipeline(OrWithAccumulator),

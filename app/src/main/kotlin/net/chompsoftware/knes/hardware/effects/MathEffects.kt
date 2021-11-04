@@ -88,6 +88,21 @@ object ExclusiveOr : Effect() {
     override fun requiresCycle() = false
 }
 
+object LogicalShiftRight : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        val valueToShift = cpuState.aReg.toUInt()
+        val shifted = valueToShift.shr(1)
+        val shiftedByte = shifted.and(0xffu).toUByte()
+        cpuState.aReg = shiftedByte
+        cpuState.isCarryFlag = (valueToShift and 0x1u) > 0u
+        cpuState.isNegativeFlag = shiftedByte.isNegative()
+        cpuState.isZeroFlag = shiftedByte.isZero()
+    }
+}
+
+
+
 object OrWithAccumulator : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {

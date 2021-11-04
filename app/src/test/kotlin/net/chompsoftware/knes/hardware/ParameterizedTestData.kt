@@ -67,10 +67,19 @@ open class ParameterizedTestData {
         }
 
         @JvmStatic
-        fun checkAslFlags(): Stream<ArithmeticShiftLeftCheck> {
+        fun checkAslFlags(): Stream<ShiftCheck> {
             return Stream.of(
-                ArithmeticShiftLeftCheck(0xf2u, 0xe4u, true, true, false),
-                ArithmeticShiftLeftCheck(0x0u, 0x0u, false, false, true),
+                ShiftCheck(0xf2u, 0xe4u, true, true, false),
+                ShiftCheck(0x0u, 0x0u, false, false, true),
+            )
+        }
+
+        @JvmStatic
+        fun checkLsrFlags(): Stream<ShiftCheck> {
+            return Stream.of(
+                ShiftCheck(0x81u, 0x40u, false, true, false),
+                ShiftCheck(0x80u, 0x40u, false, false, false),
+                ShiftCheck(0xf2u, 0x79u, false, false, false),
             )
         }
     }
@@ -105,7 +114,7 @@ data class RegisterMemoryExpectedCheck(
     val overflowFlag: Boolean = false
 )
 
-data class ArithmeticShiftLeftCheck(
+data class ShiftCheck(
     val input: UByte,
     val output: UByte,
     val negativeFlag: Boolean,

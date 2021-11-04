@@ -757,7 +757,7 @@ class MathOperationsTest : ParameterizedTestData() {
     inner class ASL : ParameterizedTestData() {
         @ParameterizedTest
         @MethodSource("checkAslFlags")
-        fun `ASL Accumulator`(data: ArithmeticShiftLeftCheck) {
+        fun `ASL Accumulator`(data: ShiftCheck) {
             val memory = BasicMemory(setupMemory(ASL_NONE))
 
             val interrogator = HardwareInterrogator(CpuState(aReg = data.input), memory)
@@ -779,6 +779,33 @@ class MathOperationsTest : ParameterizedTestData() {
                 isZeroFlag(data.zeroFlag)
             }
         }
+    }
 
+    @Nested
+    inner class LSR : ParameterizedTestData() {
+        @ParameterizedTest
+        @MethodSource("checkLsrFlags")
+        fun `LSR Accumulator`(data: ShiftCheck) {
+            val memory = BasicMemory(setupMemory(LSR_NONE))
+
+            val interrogator = HardwareInterrogator(CpuState(aReg = data.input), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LSR_NONE)
+                }
+                cycle {}
+            }
+
+            interrogator.assertCpuState {
+                programCounter(1)
+                aReg(data.output)
+                isCarryFlag(data.carryFlag)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
+        }
     }
 }
