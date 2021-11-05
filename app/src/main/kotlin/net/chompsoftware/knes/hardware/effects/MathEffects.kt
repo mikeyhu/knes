@@ -1,12 +1,9 @@
 package net.chompsoftware.knes.hardware.effects
 
 import net.chompsoftware.knes.hardware.CpuState
-import net.chompsoftware.knes.hardware.Effect
 import net.chompsoftware.knes.hardware.Memory
 import net.chompsoftware.knes.hardware.OperationState
 import net.chompsoftware.knes.isCarry
-import net.chompsoftware.knes.isNegative
-import net.chompsoftware.knes.isZero
 
 object AddWithCarry : Effect() {
     @ExperimentalUnsignedTypes
@@ -142,7 +139,7 @@ object RotateRight : Effect() {
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         val useAccumulator = operationState.memoryValue == null
         val valueToShift = (operationState.memoryValue ?: cpuState.aReg).toUInt()
-        val shifted = valueToShift.shr(1) + if(cpuState.isCarryFlag) 0x80u else 0u
+        val shifted = valueToShift.shr(1) + if (cpuState.isCarryFlag) 0x80u else 0u
         val shiftedByte = shifted.and(0xffu).toUByte()
         if (useAccumulator) {
             cpuState.setARegWithFlags(shiftedByte)

@@ -1,4 +1,8 @@
-package net.chompsoftware.knes.hardware
+package net.chompsoftware.knes.hardware.effects
+
+import net.chompsoftware.knes.hardware.CpuState
+import net.chompsoftware.knes.hardware.Memory
+import net.chompsoftware.knes.hardware.OperationState
 
 abstract class Effect {
     @ExperimentalUnsignedTypes

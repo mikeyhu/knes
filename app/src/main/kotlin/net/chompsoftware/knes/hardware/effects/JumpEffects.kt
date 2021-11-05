@@ -1,10 +1,8 @@
 package net.chompsoftware.knes.hardware.effects
 
 import net.chompsoftware.knes.hardware.CpuState
-import net.chompsoftware.knes.hardware.Effect
 import net.chompsoftware.knes.hardware.Memory
 import net.chompsoftware.knes.hardware.OperationState
-import net.chompsoftware.knes.toHex
 
 
 object Jump : Effect() {
