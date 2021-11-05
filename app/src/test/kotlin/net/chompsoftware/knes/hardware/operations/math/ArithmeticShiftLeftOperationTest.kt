@@ -1,7 +1,10 @@
 package net.chompsoftware.knes.hardware.operations.math
 
-import net.chompsoftware.knes.HardwareInterrogator
-import net.chompsoftware.knes.hardware.*
+import net.chompsoftware.knes.hardware.BasicMemory
+import net.chompsoftware.knes.hardware.CpuState
+import net.chompsoftware.knes.hardware.instructions.*
+import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
+import net.chompsoftware.knes.hardware.utilities.ShiftCheck
 import net.chompsoftware.knes.setupMemory
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource

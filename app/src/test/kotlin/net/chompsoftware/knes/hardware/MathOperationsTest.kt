@@ -1,6 +1,10 @@
 package net.chompsoftware.knes.hardware
 
-import net.chompsoftware.knes.HardwareInterrogator
+import net.chompsoftware.knes.hardware.instructions.*
+import net.chompsoftware.knes.hardware.utilities.AddWithCarryCheck
+import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
+import net.chompsoftware.knes.hardware.utilities.ParameterizedTestData
+import net.chompsoftware.knes.hardware.utilities.RegisterMemoryExpectedCheck
 import net.chompsoftware.knes.setupMemory
 import net.chompsoftware.knes.toHexUByte
 import org.junit.jupiter.api.Nested
@@ -76,7 +80,8 @@ class MathOperationsTest : ParameterizedTestData() {
         fun `ADC ZeroPage X`(data: AddWithCarryCheck) {
             val memory = BasicMemory(setupMemory(ADC_ZX, 0x02u, NOP, NOP, data.memory))
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = data.aReg, isCarryFlag = data.carry, xReg = 0x02u), memory)
+            val interrogator =
+                HardwareInterrogator(CpuState(aReg = data.aReg, isCarryFlag = data.carry, xReg = 0x02u), memory)
 
             interrogator.processInstruction()
 
@@ -140,7 +145,8 @@ class MathOperationsTest : ParameterizedTestData() {
         fun `ADC Absolute X`(data: AddWithCarryCheck) {
             val memory = BasicMemory(setupMemory(ADC_ABX, 0x03u, 0x0u, NOP, NOP, data.memory))
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = data.aReg, isCarryFlag = data.carry, xReg = 0x2u), memory)
+            val interrogator =
+                HardwareInterrogator(CpuState(aReg = data.aReg, isCarryFlag = data.carry, xReg = 0x2u), memory)
 
             interrogator.processInstruction()
 
@@ -173,7 +179,8 @@ class MathOperationsTest : ParameterizedTestData() {
         fun `ADC Absolute Y`(data: AddWithCarryCheck) {
             val memory = BasicMemory(setupMemory(ADC_ABY, 0x03u, 0x0u, NOP, NOP, data.memory))
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = data.aReg, isCarryFlag = data.carry, yReg = 0x2u), memory)
+            val interrogator =
+                HardwareInterrogator(CpuState(aReg = data.aReg, isCarryFlag = data.carry, yReg = 0x2u), memory)
 
             interrogator.processInstruction()
 

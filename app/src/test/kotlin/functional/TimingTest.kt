@@ -1,6 +1,7 @@
 package functional
 
 import net.chompsoftware.knes.hardware.*
+import net.chompsoftware.knes.hardware.instructions.*
 import net.chompsoftware.knes.toHex
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable

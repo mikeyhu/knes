@@ -1,6 +1,7 @@
 package net.chompsoftware.knes.hardware
 
 import net.chompsoftware.knes.hardware.effects.*
+import net.chompsoftware.knes.hardware.instructions.*
 
 @ExperimentalUnsignedTypes
 val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(

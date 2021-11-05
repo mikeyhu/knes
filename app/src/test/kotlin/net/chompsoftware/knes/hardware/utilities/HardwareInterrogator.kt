@@ -1,6 +1,7 @@
-package net.chompsoftware.knes
+package net.chompsoftware.knes.hardware.utilities
 
 import net.chompsoftware.knes.hardware.*
+import net.chompsoftware.knes.toHex
 import org.junit.jupiter.api.Assertions.assertEquals
 
 
@@ -137,6 +138,7 @@ sealed class Activity {
     data class MemoryReadActivity(val position: Int, val returned: UByte) : Activity() {
         override fun toString() = "MemoryReadActivity(position=${position.toHex()}, returned=${returned.toHex()})"
     }
+
     data class MemoryWriteActivity(val position: Int, val set: UByte) : Activity() {
         override fun toString() = "MemoryWriteActivity(position=${position.toHex()}, set=${set.toHex()})"
     }

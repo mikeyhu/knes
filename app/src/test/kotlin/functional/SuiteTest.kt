@@ -1,6 +1,6 @@
 package functional
 
-import net.chompsoftware.knes.LoggingHarness
+import net.chompsoftware.knes.hardware.utilities.LoggingHarness
 import net.chompsoftware.knes.hardware.BasicMemory
 import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.OperationState

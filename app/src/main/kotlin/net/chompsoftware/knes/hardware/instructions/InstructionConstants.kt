@@ -1,4 +1,4 @@
-package net.chompsoftware.knes.hardware
+package net.chompsoftware.knes.hardware.instructions
 
 //Add With Carry
 const val ADC_I: UByte = 0x69u

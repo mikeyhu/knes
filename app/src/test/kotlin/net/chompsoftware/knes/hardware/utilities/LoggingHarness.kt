@@ -1,6 +1,7 @@
-package net.chompsoftware.knes
+package net.chompsoftware.knes.hardware.utilities
 
 import net.chompsoftware.knes.hardware.*
+import net.chompsoftware.knes.toHex
 
 @ExperimentalUnsignedTypes
 class LoggingHarness(private val cpuState: CpuState, private val memory: Memory, maxSize: Int = 10) {
