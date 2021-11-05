@@ -72,6 +72,10 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     CPY_Z to ZeroPageReadPipeline(CompareToY),
 
     //Decrement
+    DEC_AB to AbsoluteLocationPipeline(*surroundWithMemoryReadWrite(Decrement)),
+    DEC_ABX to AbsoluteXLocationPipeline(*surroundWithMemoryReadWrite(Decrement)),
+    DEC_Z to ZeroPageLocationPipeline(*surroundWithMemoryReadWrite(Decrement)),
+    DEC_ZX to ZeroPageXLocationPipeline(*surroundWithMemoryReadWrite(Decrement)),
     DEX to SingleEffectPipeline(DecrementX),
     DEY to SingleEffectPipeline(DecrementY),
 
@@ -84,6 +88,10 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     EOR_ZX to ZeroPageXReadPipeline(ExclusiveOr),
 
     //Increment
+    INC_AB to AbsoluteLocationPipeline(*surroundWithMemoryReadWrite(Increment)),
+    INC_ABX to AbsoluteXLocationPipeline(*surroundWithMemoryReadWrite(Increment)),
+    INC_Z to ZeroPageLocationPipeline(*surroundWithMemoryReadWrite(Increment)),
+    INC_ZX to ZeroPageXLocationPipeline(*surroundWithMemoryReadWrite(Increment)),
     INX to SingleEffectPipeline(IncrementX),
     INY to SingleEffectPipeline(IncrementY),
 

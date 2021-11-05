@@ -2,28 +2,170 @@ package net.chompsoftware.knes.hardware.operations.math
 
 import net.chompsoftware.knes.hardware.BasicMemory
 import net.chompsoftware.knes.hardware.CpuState
-import net.chompsoftware.knes.hardware.instructions.INX
-import net.chompsoftware.knes.hardware.instructions.INY
-import net.chompsoftware.knes.hardware.instructions.NOP
+import net.chompsoftware.knes.hardware.instructions.*
 import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
+import net.chompsoftware.knes.hardware.utilities.ShiftCheck
 import net.chompsoftware.knes.setupMemory
-import net.chompsoftware.knes.toHexUByte
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.MethodSource
+import java.util.stream.Stream
 
 @ExperimentalUnsignedTypes
 class IncrementOperationTest {
 
-    @ParameterizedTest()
-    @CsvSource(
-        "0x00u, 0x01u, false, false",
-        "0xffu, 0x00u, false, true",
-        "0x7fu, 0x80u, true,  false",
-    )
-    fun `INX - Increment X`(initial: String, expected: String, negativeFlag: Boolean, zeroFlag: Boolean) {
+    companion object {
+        @JvmStatic
+        fun checkFlags(): Stream<ShiftCheck> {
+            return Stream.of(
+                ShiftCheck(0x00u, 0x01u, negativeFlag = false, zeroFlag = false),
+                ShiftCheck(0xffu, 0x00u, negativeFlag = false, zeroFlag = true),
+                ShiftCheck(0x7fu, 0x80u, negativeFlag = true, zeroFlag = false),
+            )
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("checkFlags")
+    fun `INC ZeroPage`(data: ShiftCheck) {
+        val memory = BasicMemory(setupMemory(INC_Z, 0x03u, NOP, data.input))
+
+        val interrogator = HardwareInterrogator(CpuState(), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, INC_Z)
+            }
+            cycle {
+                memoryRead(1, 0x03u)
+            }
+            cycle {
+                memoryRead(0x03, data.input)
+            }
+            cycle {}
+            cycle {
+                memoryWrite(0x03, data.output)
+            }
+        }
+
+        interrogator.assertCpuState {
+            programCounter(2)
+            isNegativeFlag(data.negativeFlag)
+            isZeroFlag(data.zeroFlag)
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("checkFlags")
+    fun `INC ZeroPage X`(data: ShiftCheck) {
+        val memory = BasicMemory(setupMemory(INC_ZX, 0x03u, NOP, NOP, NOP, data.input))
+
+        val interrogator = HardwareInterrogator(CpuState(xReg = 0x02u), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, INC_ZX)
+            }
+            cycle {
+                memoryRead(1, 0x03u)
+            }
+            cycle {}
+            cycle {
+                memoryRead(0x05, data.input)
+            }
+            cycle {}
+            cycle {
+                memoryWrite(0x05, data.output)
+            }
+        }
+
+        interrogator.assertCpuState {
+            programCounter(2)
+            isNegativeFlag(data.negativeFlag)
+            isZeroFlag(data.zeroFlag)
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("checkFlags")
+    fun `INC Absolute`(data: ShiftCheck) {
+        val memory = BasicMemory(setupMemory(INC_AB, 0x03u, 0x00u, data.input))
+
+        val interrogator = HardwareInterrogator(CpuState(), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, INC_AB)
+            }
+            cycle {
+                memoryRead(1, 0x03u)
+            }
+            cycle {
+                memoryRead(2, 0x00u)
+            }
+            cycle {
+                memoryRead(0x03, data.input)
+            }
+            cycle {}
+            cycle {
+                memoryWrite(0x03, data.output)
+            }
+        }
+
+        interrogator.assertCpuState {
+            programCounter(3)
+            isNegativeFlag(data.negativeFlag)
+            isZeroFlag(data.zeroFlag)
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("checkFlags")
+    fun `INC Absolute X`(data: ShiftCheck) {
+        val memory = BasicMemory(setupMemory(INC_ABX, 0x03u, 0x00u, NOP, NOP, data.input))
+
+        val interrogator = HardwareInterrogator(CpuState(xReg = 0x2u), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, INC_ABX)
+            }
+            cycle {
+                memoryRead(1, 0x03u)
+            }
+            cycle {
+                memoryRead(2, 0x00u)
+            }
+            cycle {}
+            cycle {
+                memoryRead(0x05, data.input)
+            }
+            cycle {}
+            cycle {
+                memoryWrite(0x05, data.output)
+            }
+        }
+
+        interrogator.assertCpuState {
+            programCounter(3)
+            isNegativeFlag(data.negativeFlag)
+            isZeroFlag(data.zeroFlag)
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("checkFlags")
+    fun `INX - Increment X`(data: ShiftCheck) {
         val memory = BasicMemory(setupMemory(INX, NOP))
 
-        val interrogator = HardwareInterrogator(CpuState(xReg = initial.toHexUByte()), memory)
+        val interrogator = HardwareInterrogator(CpuState(xReg = data.input), memory)
 
         interrogator.processInstruction()
 
@@ -36,22 +178,18 @@ class IncrementOperationTest {
 
         interrogator.assertCpuState {
             programCounter(1)
-            xReg(expected.toHexUByte())
-            isNegativeFlag(negativeFlag)
-            isZeroFlag(zeroFlag)
+            xReg(data.output)
+            isNegativeFlag(data.negativeFlag)
+            isZeroFlag(data.zeroFlag)
         }
     }
 
-    @ParameterizedTest()
-    @CsvSource(
-        "0x00u, 0x01u, false, false",
-        "0xffu, 0x00u, false, true",
-        "0x7fu, 0x80u, true,  false",
-    )
-    fun `INY - Increment Y`(initial: String, expected: String, negativeFlag: Boolean, zeroFlag: Boolean) {
+    @ParameterizedTest
+    @MethodSource("checkFlags")
+    fun `INY - Increment Y`(data: ShiftCheck) {
         val memory = BasicMemory(setupMemory(INY, NOP))
 
-        val interrogator = HardwareInterrogator(CpuState(yReg = initial.toHexUByte()), memory)
+        val interrogator = HardwareInterrogator(CpuState(yReg = data.input), memory)
 
         interrogator.processInstruction()
 
@@ -64,9 +202,9 @@ class IncrementOperationTest {
 
         interrogator.assertCpuState {
             programCounter(1)
-            yReg(expected.toHexUByte())
-            isNegativeFlag(negativeFlag)
-            isZeroFlag(zeroFlag)
+            yReg(data.output)
+            isNegativeFlag(data.negativeFlag)
+            isZeroFlag(data.zeroFlag)
         }
     }
 }

@@ -53,6 +53,15 @@ object BitWithAccumulator : Effect() {
     override fun requiresCycle() = false
 }
 
+object Decrement : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        val value = (operationState.getMemoryValue() - 1u).toUByte()
+        cpuState.setNegativeZeroFlags(value)
+        operationState.memoryValue = value
+    }
+}
+
 object DecrementX : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
@@ -64,6 +73,15 @@ object DecrementY : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         cpuState.setYRegWithFlags((cpuState.yReg - 1u).toUByte())
+    }
+}
+
+object Increment : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        val value = (operationState.getMemoryValue() + 1u).toUByte()
+        cpuState.setNegativeZeroFlags(value)
+        operationState.memoryValue = value
     }
 }
 

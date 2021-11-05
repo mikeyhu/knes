@@ -36,8 +36,8 @@ data class RegisterMemoryExpectedCheck(
 data class ShiftCheck(
     val input: UByte,
     val output: UByte,
-    val negativeFlag: Boolean,
-    val carryFlag: Boolean,
-    val zeroFlag: Boolean,
+    val negativeFlag: Boolean = false,
+    val carryFlag: Boolean = false,
+    val zeroFlag: Boolean = false,
     val carryIn: Boolean = false
 )
