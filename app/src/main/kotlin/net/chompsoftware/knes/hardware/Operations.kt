@@ -16,6 +16,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //ArithmeticShiftLeft
     ASL_NONE to SingleEffectPipeline(ArithmeticShiftLeft),
     ASL_AB to AbsoluteLocationPipeline(*surroundWithMemoryReadWrite(ArithmeticShiftLeft)),
+    ASL_ABX to AbsoluteXLocationPipeline(*surroundWithMemoryReadWrite(ArithmeticShiftLeft)),
     ASL_Z to ZeroPageLocationPipeline(*surroundWithMemoryReadWrite(ArithmeticShiftLeft)),
     ASL_ZX to ZeroPageXLocationPipeline(*surroundWithMemoryReadWrite(ArithmeticShiftLeft)),
 
@@ -125,6 +126,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     LSR_NONE to SingleEffectPipeline(LogicalShiftRight),
     LSR_AB to AbsoluteLocationPipeline(*surroundWithMemoryReadWrite(LogicalShiftRight)),
+    LSR_ABX to AbsoluteXLocationPipeline(*surroundWithMemoryReadWrite(LogicalShiftRight)),
     LSR_Z to ZeroPageLocationPipeline(*surroundWithMemoryReadWrite(LogicalShiftRight)),
     LSR_ZX to ZeroPageXLocationPipeline(*surroundWithMemoryReadWrite(LogicalShiftRight)),
 
@@ -139,12 +141,14 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //Rotate Left
     ROL_NONE to SingleEffectPipeline(RotateLeft),
     ROL_AB to AbsoluteLocationPipeline(*surroundWithMemoryReadWrite(RotateLeft)),
+    ROL_ABX to AbsoluteXLocationPipeline(*surroundWithMemoryReadWrite(RotateLeft)),
     ROL_Z to ZeroPageLocationPipeline(*surroundWithMemoryReadWrite(RotateLeft)),
     ROL_ZX to ZeroPageXLocationPipeline(*surroundWithMemoryReadWrite(RotateLeft)),
 
     //Rotate Right
     ROR_NONE to SingleEffectPipeline(RotateRight),
     ROR_AB to AbsoluteLocationPipeline(*surroundWithMemoryReadWrite(RotateRight)),
+    ROR_ABX to AbsoluteXLocationPipeline(*surroundWithMemoryReadWrite(RotateRight)),
     ROR_Z to ZeroPageLocationPipeline(*surroundWithMemoryReadWrite(RotateRight)),
     ROR_ZX to ZeroPageXLocationPipeline(*surroundWithMemoryReadWrite(RotateRight)),
 

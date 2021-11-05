@@ -150,4 +150,41 @@ class ArithmeticShiftLeftOperationTest {
             isZeroFlag(data.zeroFlag)
         }
     }
+
+    @ParameterizedTest
+    @MethodSource("checkFlags")
+    fun `ASL Absolute X`(data: ShiftCheck) {
+        val memory = BasicMemory(setupMemory(ASL_ABX, 0x03u, 0x0u, NOP, NOP, data.input))
+
+        val interrogator = HardwareInterrogator(CpuState(xReg = 0x2u), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, ASL_ABX)
+            }
+            cycle {
+                memoryRead(1, 0x03u)
+            }
+            cycle {
+                memoryRead(2, 0x00u)
+            }
+            cycle {}
+            cycle {
+                memoryRead(0x05, data.input)
+            }
+            cycle {}
+            cycle {
+                memoryWrite(0x05, data.output)
+            }
+        }
+
+        interrogator.assertCpuState {
+            programCounter(3)
+            isCarryFlag(data.carryFlag)
+            isNegativeFlag(data.negativeFlag)
+            isZeroFlag(data.zeroFlag)
+        }
+    }
 }
