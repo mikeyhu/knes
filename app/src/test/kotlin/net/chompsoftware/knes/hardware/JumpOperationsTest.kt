@@ -105,9 +105,11 @@ class JumpOperationsTest {
         memory[0x1fe] = 0x34u
         memory[0x1ff] = 0x12u
 
-        val interrogator = HardwareInterrogator(CpuState(
-            stackReg = 0xfdu
-        ), memory)
+        val interrogator = HardwareInterrogator(
+            CpuState(
+                stackReg = 0xfdu
+            ), memory
+        )
 
         interrogator.processInstruction()
 
