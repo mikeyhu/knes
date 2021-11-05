@@ -1,13 +1,16 @@
-package net.chompsoftware.knes.hardware
+package net.chompsoftware.knes.hardware.operations
 
-import net.chompsoftware.knes.hardware.instructions.*
+import net.chompsoftware.knes.hardware.BasicMemory
+import net.chompsoftware.knes.hardware.CpuState
+import net.chompsoftware.knes.hardware.instructions.BRK
+import net.chompsoftware.knes.hardware.instructions.NOP
+import net.chompsoftware.knes.hardware.instructions.RTI
 import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
 import net.chompsoftware.knes.setupMemory
 import org.junit.jupiter.api.Test
 
 @ExperimentalUnsignedTypes
 class OperationsTest {
-
 
     @Test
     fun `NOP - No Operation`() {

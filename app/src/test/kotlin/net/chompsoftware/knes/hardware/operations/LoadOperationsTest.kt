@@ -1,5 +1,7 @@
-package net.chompsoftware.knes.hardware
+package net.chompsoftware.knes.hardware.operations
 
+import net.chompsoftware.knes.hardware.BasicMemory
+import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.instructions.*
 import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
 import net.chompsoftware.knes.hardware.utilities.InputWithNegativeZeroCheck
@@ -254,11 +256,11 @@ class LoadOperationsTest {
         @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
         @MethodSource("checkNegativeZeroFlags")
         fun `LDA Indirect Indexed`(data: InputWithNegativeZeroCheck) {
-            val memory = BasicMemory(setupMemory(LDA_IIY, 0xf0u, size=0xffff))
+            val memory = BasicMemory(setupMemory(LDA_IIY, 0xf0u, size = 0xffff))
 
             memory[0xf0] = 0xf0u
             memory[0xf1] = 0xeeu
-            val yReg:UByte = 0x5u
+            val yReg: UByte = 0x5u
             memory[0xeef5] = data.input
 
             val interrogator = HardwareInterrogator(CpuState(yReg = yReg), memory)
@@ -294,11 +296,11 @@ class LoadOperationsTest {
         @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
         @MethodSource("checkNegativeZeroFlags")
         fun `LDA Indirect Indexed with page boundary crossing`(data: InputWithNegativeZeroCheck) {
-            val memory = BasicMemory(setupMemory(LDA_IIY, 0xf0u, size=0xffff))
+            val memory = BasicMemory(setupMemory(LDA_IIY, 0xf0u, size = 0xffff))
 
             memory[0xf0] = 0xf0u
             memory[0xf1] = 0xeeu
-            val yReg:UByte = 0x15u
+            val yReg: UByte = 0x15u
             memory[0xef05] = data.input
 
             val interrogator = HardwareInterrogator(CpuState(yReg = yReg), memory)
@@ -335,11 +337,11 @@ class LoadOperationsTest {
         @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
         @MethodSource("checkNegativeZeroFlags")
         fun `LDA Indexed Indirect`(data: InputWithNegativeZeroCheck) {
-            val memory = BasicMemory(setupMemory(LDA_IIX, 0xf0u, size=0xffff))
+            val memory = BasicMemory(setupMemory(LDA_IIX, 0xf0u, size = 0xffff))
 
             memory[0xf5] = 0xf0u
             memory[0xf6] = 0xeeu
-            val xReg:UByte = 0x5u
+            val xReg: UByte = 0x5u
             memory[0xeef0] = data.input
 
             val interrogator = HardwareInterrogator(CpuState(xReg = xReg), memory)

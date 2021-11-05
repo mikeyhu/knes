@@ -1,5 +1,7 @@
-package net.chompsoftware.knes.hardware
+package net.chompsoftware.knes.hardware.operations
 
+import net.chompsoftware.knes.hardware.BasicMemory
+import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.instructions.*
 import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
 import net.chompsoftware.knes.setupMemory
