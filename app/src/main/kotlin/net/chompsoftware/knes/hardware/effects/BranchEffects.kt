@@ -13,7 +13,7 @@ abstract class BranchOnEvaluation : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         if (branchEvaluation(cpuState)) {
-            val read = operationState.getMemoryRead()
+            val read = operationState.getMemoryValue()
             val location: Int = if (read >= 0x80u) -0x100 + read.toInt() else read.toInt()
             val nextLocation = cpuState.programCounter + location
             val extraCycles = if (pageBoundaryCrossed(cpuState.programCounter, nextLocation)) 2 else 1

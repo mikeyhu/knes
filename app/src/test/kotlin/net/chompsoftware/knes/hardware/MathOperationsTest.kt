@@ -779,6 +779,39 @@ class MathOperationsTest : ParameterizedTestData() {
                 isZeroFlag(data.zeroFlag)
             }
         }
+
+        @ParameterizedTest
+        @MethodSource("checkAslFlags")
+        fun `ASL ZeroPage`(data: ShiftCheck) {
+            val memory = BasicMemory(setupMemory(ASL_Z, 0x03u, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(CpuState(), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, ASL_Z)
+                }
+                cycle {
+                    memoryRead(1, 0x03u)
+                }
+                cycle {
+                    memoryRead(0x03, data.input)
+                }
+                cycle {}
+                cycle {
+                    memoryWrite(0x03, data.output)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+                isCarryFlag(data.carryFlag)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
+        }
     }
 
     @Nested
@@ -802,6 +835,39 @@ class MathOperationsTest : ParameterizedTestData() {
             interrogator.assertCpuState {
                 programCounter(1)
                 aReg(data.output)
+                isCarryFlag(data.carryFlag)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
+        }
+
+        @ParameterizedTest
+        @MethodSource("checkLsrFlags")
+        fun `LSR ZeroPage`(data: ShiftCheck) {
+            val memory = BasicMemory(setupMemory(LSR_Z, 0x03u, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(CpuState(), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, LSR_Z)
+                }
+                cycle {
+                    memoryRead(1, 0x03u)
+                }
+                cycle {
+                    memoryRead(0x03, data.input)
+                }
+                cycle {}
+                cycle {
+                    memoryWrite(0x03, data.output)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
                 isCarryFlag(data.carryFlag)
                 isNegativeFlag(data.negativeFlag)
                 isZeroFlag(data.zeroFlag)
@@ -835,6 +901,39 @@ class MathOperationsTest : ParameterizedTestData() {
                 isZeroFlag(data.zeroFlag)
             }
         }
+
+        @ParameterizedTest
+        @MethodSource("checkRolFlags")
+        fun `ROL ZeroPage`(data: ShiftCheck) {
+            val memory = BasicMemory(setupMemory(ROL_Z, 0x03u, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(CpuState(isCarryFlag = data.carryIn), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, ROL_Z)
+                }
+                cycle {
+                    memoryRead(1, 0x03u)
+                }
+                cycle {
+                    memoryRead(0x03, data.input)
+                }
+                cycle {}
+                cycle {
+                    memoryWrite(0x03, data.output)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+                isCarryFlag(data.carryFlag)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
+        }
     }
 
     @Nested
@@ -858,6 +957,39 @@ class MathOperationsTest : ParameterizedTestData() {
             interrogator.assertCpuState {
                 programCounter(1)
                 aReg(data.output)
+                isCarryFlag(data.carryFlag)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
+        }
+
+        @ParameterizedTest
+        @MethodSource("checkRorFlags")
+        fun `ROR ZeroPage`(data: ShiftCheck) {
+            val memory = BasicMemory(setupMemory(ROR_Z, 0x03u, NOP, data.input))
+
+            val interrogator = HardwareInterrogator(CpuState(isCarryFlag = data.carryIn), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, ROR_Z)
+                }
+                cycle {
+                    memoryRead(1, 0x03u)
+                }
+                cycle {
+                    memoryRead(0x03, data.input)
+                }
+                cycle {}
+                cycle {
+                    memoryWrite(0x03, data.output)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
                 isCarryFlag(data.carryFlag)
                 isNegativeFlag(data.negativeFlag)
                 isZeroFlag(data.zeroFlag)

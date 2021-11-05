@@ -6,7 +6,7 @@ import net.chompsoftware.knes.toInt16
 
 class OperationState(
     var pipelinePosition: Int,
-    var memoryRead: UByte? = null,
+    var memoryValue: UByte? = null,
     var location: Int? = null,
     var argumentLow: UByte? = null,
     var argumentHigh: UByte? = null,
@@ -14,8 +14,8 @@ class OperationState(
 ) {
     fun argumentsPosition() = toInt16(getArgumentLow(), getArgumentHigh())
 
-    fun getMemoryRead(): UByte {
-        return memoryRead ?: throw Error("memoryRead was not set")
+    fun getMemoryValue(): UByte {
+        return memoryValue ?: throw Error("memoryValue was not set")
     }
 
     fun getLocation(): Int {
@@ -58,7 +58,7 @@ class OperationState(
 
     fun reset() {
         pipelinePosition = 0
-        memoryRead = null
+        memoryValue = null
         location = null
         argumentLow = null
         argumentHigh = null

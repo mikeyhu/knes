@@ -14,6 +14,11 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //ArithmeticShiftLeft
     ASL_NONE to SingleEffectPipeline(ArithmeticShiftLeft),
+    ASL_Z to ZeroPageLocationPipeline(
+        MemoryReadFromLocation,
+        ArithmeticShiftLeft,
+        StoreMemory
+    ),
 
     //BitWithAccumulator
     BIT_AB to AbsoluteReadPipeline(BitWithAccumulator),
@@ -120,6 +125,11 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     LDY_ZX to ZeroPageXReadPipeline(ReadIntoY),
 
     LSR_NONE to SingleEffectPipeline(LogicalShiftRight),
+    LSR_Z to ZeroPageLocationPipeline(
+        MemoryReadFromLocation,
+        LogicalShiftRight,
+        StoreMemory
+    ),
 
     //Or
     ORA_I to ImmediateReadPipeline(OrWithAccumulator),
@@ -131,9 +141,19 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //Rotate Left
     ROL_NONE to SingleEffectPipeline(RotateLeft),
+    ROL_Z to ZeroPageLocationPipeline(
+        MemoryReadFromLocation,
+        RotateLeft,
+        StoreMemory
+    ),
 
     //Rotate Right
     ROR_NONE to SingleEffectPipeline(RotateRight),
+    ROR_Z to ZeroPageLocationPipeline(
+        MemoryReadFromLocation,
+        RotateRight,
+        StoreMemory
+    ),
 
     //Push and Pull Stack Operations
     PHA to DelayedSingleEffectPipeline(PushAccumulator, delay = 1),

@@ -37,7 +37,7 @@ class SuiteTest {
 
         val reportThenFail = { message: String ->
             report()
-            harness.printLog()
+//            harness.printLog()
             fail(message)
         }
 

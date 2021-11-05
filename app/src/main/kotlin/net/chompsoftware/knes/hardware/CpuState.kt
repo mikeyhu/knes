@@ -41,6 +41,11 @@ data class CpuState(
         isZeroFlag = value.isZero()
     }
 
+    fun setNegativeZeroFlags(value: UByte) {
+        isNegativeFlag = value.isNegative()
+        isZeroFlag = value.isZero()
+    }
+
     fun setComparisonFlags(existing: UByte, compareTo: UByte) {
         isZeroFlag = existing == compareTo
         isNegativeFlag = existing < compareTo

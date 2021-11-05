@@ -17,14 +17,14 @@ object ReadAtProgramCounter : Effect() {
 object ZeroPageRead : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        operationState.memoryRead = memory[operationState.getZeroPagePosition()]
+        operationState.memoryValue = memory[operationState.getZeroPagePosition()]
     }
 }
 
 object ZeroPageYRead : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        operationState.memoryRead = memory[operationState.getZeroPagePosition(cpuState.yReg)]
+        operationState.memoryValue = memory[operationState.getZeroPagePosition(cpuState.yReg)]
         operationState.cyclesRemaining += 1
     }
 }
@@ -32,7 +32,7 @@ object ZeroPageYRead : Effect() {
 object ZeroPageXRead : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        operationState.memoryRead = memory[operationState.getZeroPagePosition(cpuState.xReg)]
+        operationState.memoryValue = memory[operationState.getZeroPagePosition(cpuState.xReg)]
         operationState.cyclesRemaining += 1
     }
 }
@@ -40,7 +40,7 @@ object ZeroPageXRead : Effect() {
 object AbsoluteRead : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        operationState.memoryRead = memory[operationState.argumentsPosition()]
+        operationState.memoryValue = memory[operationState.argumentsPosition()]
     }
 }
 
@@ -49,7 +49,7 @@ object AbsoluteReadWithXOffset : Effect() {
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         val initialLocation = operationState.argumentsPosition()
         val finalLocation = initialLocation + cpuState.xReg.toInt()
-        operationState.memoryRead = memory[finalLocation]
+        operationState.memoryValue = memory[finalLocation]
         if (pageBoundaryCrossed(initialLocation, finalLocation)) {
             operationState.cyclesRemaining += 1
         }
@@ -61,7 +61,7 @@ object AbsoluteReadWithYOffset : Effect() {
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         val initialLocation = operationState.argumentsPosition()
         val finalLocation = initialLocation + cpuState.yReg.toInt()
-        operationState.memoryRead = memory[finalLocation]
+        operationState.memoryValue = memory[finalLocation]
         if (pageBoundaryCrossed(initialLocation, finalLocation)) {
             operationState.cyclesRemaining += 1
         }
@@ -117,7 +117,7 @@ object ArgumentsToLocationWithYOffset : Effect() {
 object ImmediateRead : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        operationState.memoryRead = memory[cpuState.programCounterWithIncrement()]
+        operationState.memoryValue = memory[cpuState.programCounterWithIncrement()]
     }
 }
 
@@ -132,5 +132,12 @@ object ReadLocationHigh : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         operationState.argumentHigh = memory[operationState.getLocation() + 1]
+    }
+}
+
+object MemoryReadFromLocation : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        operationState.memoryValue = memory[operationState.getLocation()]
     }
 }

@@ -9,7 +9,7 @@ abstract class Effect {
 object ReadIntoAccumulator : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        cpuState.setARegWithFlags(operationState.getMemoryRead())
+        cpuState.setARegWithFlags(operationState.getMemoryValue())
     }
 
     override fun requiresCycle() = false
@@ -18,7 +18,7 @@ object ReadIntoAccumulator : Effect() {
 object ReadIntoX : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        cpuState.setXRegWithFlags(operationState.getMemoryRead())
+        cpuState.setXRegWithFlags(operationState.getMemoryValue())
     }
 
     override fun requiresCycle() = false
@@ -27,7 +27,7 @@ object ReadIntoX : Effect() {
 object ReadIntoY : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        cpuState.setYRegWithFlags(operationState.getMemoryRead())
+        cpuState.setYRegWithFlags(operationState.getMemoryValue())
     }
 
     override fun requiresCycle() = false
@@ -51,6 +51,13 @@ object StoreY : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         memory[operationState.getLocation()] = cpuState.yReg
+    }
+}
+
+object StoreMemory : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        memory[operationState.getLocation()] = operationState.getMemoryValue()
     }
 }
 

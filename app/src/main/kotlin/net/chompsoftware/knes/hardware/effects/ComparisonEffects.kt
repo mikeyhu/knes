@@ -9,7 +9,7 @@ import net.chompsoftware.knes.hardware.OperationState
 object CompareToAccumulator : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        cpuState.setComparisonFlags(cpuState.aReg, operationState.getMemoryRead())
+        cpuState.setComparisonFlags(cpuState.aReg, operationState.getMemoryValue())
     }
 
     override fun requiresCycle() = false
@@ -18,7 +18,7 @@ object CompareToAccumulator : Effect() {
 object CompareToX : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        cpuState.setComparisonFlags(cpuState.xReg, operationState.getMemoryRead())
+        cpuState.setComparisonFlags(cpuState.xReg, operationState.getMemoryValue())
     }
 
     override fun requiresCycle() = false
@@ -27,7 +27,7 @@ object CompareToX : Effect() {
 object CompareToY : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        cpuState.setComparisonFlags(cpuState.yReg, operationState.getMemoryRead())
+        cpuState.setComparisonFlags(cpuState.yReg, operationState.getMemoryValue())
     }
 
     override fun requiresCycle() = false

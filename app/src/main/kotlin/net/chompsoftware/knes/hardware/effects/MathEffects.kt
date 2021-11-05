@@ -11,7 +11,7 @@ import net.chompsoftware.knes.isZero
 object AddWithCarry : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        val toAdd: UByte = operationState.getMemoryRead()
+        val toAdd: UByte = operationState.getMemoryValue()
         val carryAmount: UByte = if (cpuState.isCarryFlag) 1u else 0u
         val sumUInt = cpuState.aReg + toAdd + carryAmount
         val sum = sumUInt.toUByte()
@@ -28,19 +28,24 @@ object AddWithCarry : Effect() {
 object ArithmeticShiftLeft : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        val shifted = cpuState.aReg.toUInt().shl(1)
+        val useAccumulator = operationState.memoryValue == null
+        val toShift = operationState.memoryValue ?: cpuState.aReg
+        val shifted = toShift.toUInt().shl(1)
         val shiftedByte = shifted.and(0xffu).toUByte()
-        cpuState.aReg = shiftedByte
+        if (useAccumulator) {
+            cpuState.setARegWithFlags(shiftedByte)
+        } else {
+            operationState.memoryValue = shiftedByte
+            cpuState.setNegativeZeroFlags(shiftedByte)
+        }
         cpuState.isCarryFlag = shifted.isCarry()
-        cpuState.isNegativeFlag = shiftedByte.isNegative()
-        cpuState.isZeroFlag = shiftedByte.isZero()
     }
 }
 
 object BitWithAccumulator : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        val memoryValue = operationState.getMemoryRead()
+        val memoryValue = operationState.getMemoryValue()
         val andByte: UByte = cpuState.aReg and memoryValue
         cpuState.isZeroFlag = andByte == UByte.MIN_VALUE
 
@@ -82,7 +87,7 @@ object IncrementY : Effect() {
 object ExclusiveOr : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        cpuState.setARegWithFlags(cpuState.aReg.xor(operationState.getMemoryRead()))
+        cpuState.setARegWithFlags(cpuState.aReg.xor(operationState.getMemoryValue()))
     }
 
     override fun requiresCycle() = false
@@ -91,13 +96,17 @@ object ExclusiveOr : Effect() {
 object LogicalShiftRight : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        val valueToShift = cpuState.aReg.toUInt()
+        val useAccumulator = operationState.memoryValue == null
+        val valueToShift = (operationState.memoryValue ?: cpuState.aReg).toUInt()
         val shifted = valueToShift.shr(1)
         val shiftedByte = shifted.and(0xffu).toUByte()
-        cpuState.aReg = shiftedByte
+        if (useAccumulator) {
+            cpuState.setARegWithFlags(shiftedByte)
+        } else {
+            operationState.memoryValue = shiftedByte
+            cpuState.setNegativeZeroFlags(shiftedByte)
+        }
         cpuState.isCarryFlag = (valueToShift and 0x1u) > 0u
-        cpuState.isNegativeFlag = shiftedByte.isNegative()
-        cpuState.isZeroFlag = shiftedByte.isZero()
     }
 }
 
@@ -105,7 +114,7 @@ object LogicalShiftRight : Effect() {
 object OrWithAccumulator : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        cpuState.setARegWithFlags(cpuState.aReg.or(operationState.getMemoryRead()))
+        cpuState.setARegWithFlags(cpuState.aReg.or(operationState.getMemoryValue()))
     }
 
     override fun requiresCycle() = false
@@ -114,24 +123,33 @@ object OrWithAccumulator : Effect() {
 object RotateLeft : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        val shifted = cpuState.aReg.toUInt().shl(1) + if (cpuState.isCarryFlag) 1u else 0u
+        val useAccumulator = operationState.memoryValue == null
+        val valueToShift = (operationState.memoryValue ?: cpuState.aReg).toUInt()
+        val shifted = valueToShift.shl(1) + if (cpuState.isCarryFlag) 1u else 0u
         val shiftedByte = shifted.and(0xffu).toUByte()
-        cpuState.aReg = shiftedByte
+        if (useAccumulator) {
+            cpuState.setARegWithFlags(shiftedByte)
+        } else {
+            operationState.memoryValue = shiftedByte
+            cpuState.setNegativeZeroFlags(shiftedByte)
+        }
         cpuState.isCarryFlag = shifted.isCarry()
-        cpuState.isNegativeFlag = shiftedByte.isNegative()
-        cpuState.isZeroFlag = shiftedByte.isZero()
     }
 }
 
 object RotateRight : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        val valueToShift = cpuState.aReg.toUInt()
+        val useAccumulator = operationState.memoryValue == null
+        val valueToShift = (operationState.memoryValue ?: cpuState.aReg).toUInt()
         val shifted = valueToShift.shr(1) + if(cpuState.isCarryFlag) 0x80u else 0u
         val shiftedByte = shifted.and(0xffu).toUByte()
-        cpuState.aReg = shiftedByte
+        if (useAccumulator) {
+            cpuState.setARegWithFlags(shiftedByte)
+        } else {
+            operationState.memoryValue = shiftedByte
+            cpuState.setNegativeZeroFlags(shiftedByte)
+        }
         cpuState.isCarryFlag = (valueToShift and 0x1u) > 0u
-        cpuState.isNegativeFlag = shiftedByte.isNegative()
-        cpuState.isZeroFlag = shiftedByte.isZero()
     }
 }
