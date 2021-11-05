@@ -1,10 +1,10 @@
 package net.chompsoftware.knes.hardware.operations.math
 
 import net.chompsoftware.knes.hardware.BasicMemory
-import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.instructions.*
 import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
 import net.chompsoftware.knes.hardware.utilities.ShiftCheck
+import net.chompsoftware.knes.hardware.utilities.randomisedCpuState
 import net.chompsoftware.knes.setupMemory
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -31,7 +31,8 @@ class RotateLeftOperationTest {
     fun `ROL Accumulator`(data: ShiftCheck) {
         val memory = BasicMemory(setupMemory(ROL_NONE))
 
-        val interrogator = HardwareInterrogator(CpuState(aReg = data.input, isCarryFlag = data.carryIn), memory)
+        val interrogator =
+            HardwareInterrogator(randomisedCpuState(aReg = data.input, isCarryFlag = data.carryIn), memory)
 
         interrogator.processInstruction()
 
@@ -56,7 +57,7 @@ class RotateLeftOperationTest {
     fun `ROL ZeroPage`(data: ShiftCheck) {
         val memory = BasicMemory(setupMemory(ROL_Z, 0x03u, NOP, data.input))
 
-        val interrogator = HardwareInterrogator(CpuState(isCarryFlag = data.carryIn), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(isCarryFlag = data.carryIn), memory)
 
         interrogator.processInstruction()
 
@@ -89,7 +90,7 @@ class RotateLeftOperationTest {
     fun `ROL ZeroPage X`(data: ShiftCheck) {
         val memory = BasicMemory(setupMemory(ROL_ZX, 0x03u, NOP, NOP, NOP, data.input))
 
-        val interrogator = HardwareInterrogator(CpuState(xReg = 0x02u, isCarryFlag = data.carryIn), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(xReg = 0x02u, isCarryFlag = data.carryIn), memory)
 
         interrogator.processInstruction()
 
@@ -123,7 +124,7 @@ class RotateLeftOperationTest {
     fun `ROL Absolute`(data: ShiftCheck) {
         val memory = BasicMemory(setupMemory(ROL_AB, 0x03u, 0x0u, data.input))
 
-        val interrogator = HardwareInterrogator(CpuState(isCarryFlag = data.carryIn), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(isCarryFlag = data.carryIn), memory)
 
         interrogator.processInstruction()
 
@@ -160,7 +161,7 @@ class RotateLeftOperationTest {
     fun `ROL Absolute X`(data: ShiftCheck) {
         val memory = BasicMemory(setupMemory(ROL_ABX, 0x03u, 0x0u, NOP, NOP, data.input))
 
-        val interrogator = HardwareInterrogator(CpuState(xReg = 0x2u, isCarryFlag = data.carryIn), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(xReg = 0x2u, isCarryFlag = data.carryIn), memory)
 
         interrogator.processInstruction()
 

@@ -1,9 +1,9 @@
 package net.chompsoftware.knes.hardware.operations
 
 import net.chompsoftware.knes.hardware.BasicMemory
-import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.instructions.*
 import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
+import net.chompsoftware.knes.hardware.utilities.randomisedCpuState
 import net.chompsoftware.knes.setupMemory
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -19,7 +19,7 @@ class StoreOperationsTest {
 
             val aReg: UByte = 0x01u
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = aReg), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = aReg), memory)
 
             interrogator.processInstruction()
 
@@ -46,7 +46,7 @@ class StoreOperationsTest {
 
             val aReg: UByte = 0x01u
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = aReg), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = aReg), memory)
 
             interrogator.processInstruction()
 
@@ -76,7 +76,7 @@ class StoreOperationsTest {
 
             val aReg: UByte = 0x05u
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = aReg, xReg = 0x01u), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = aReg, xReg = 0x01u), memory)
 
             interrogator.processInstruction()
 
@@ -104,7 +104,7 @@ class StoreOperationsTest {
 
             val aReg: UByte = 0x01u
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = aReg, xReg = 0x02u), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = aReg, xReg = 0x02u), memory)
 
             interrogator.processInstruction()
 
@@ -135,7 +135,7 @@ class StoreOperationsTest {
 
             val aReg: UByte = 0x01u
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = aReg, yReg = 0x02u), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = aReg, yReg = 0x02u), memory)
 
             interrogator.processInstruction()
 
@@ -169,7 +169,7 @@ class StoreOperationsTest {
             val aReg: UByte = 0x01u
             val yReg: UByte = 0x5u
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = aReg, yReg = yReg), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = aReg, yReg = yReg), memory)
 
             interrogator.processInstruction()
 
@@ -206,7 +206,7 @@ class StoreOperationsTest {
             val aReg: UByte = 0x01u
             val xReg: UByte = 0x5u
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = aReg, xReg = xReg), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = aReg, xReg = xReg), memory)
 
             interrogator.processInstruction()
 
@@ -243,7 +243,7 @@ class StoreOperationsTest {
 
             val xReg: UByte = 0x01u
 
-            val interrogator = HardwareInterrogator(CpuState(xReg = xReg), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(xReg = xReg), memory)
 
             interrogator.processInstruction()
 
@@ -270,7 +270,7 @@ class StoreOperationsTest {
 
             val xReg: UByte = 0x01u
 
-            val interrogator = HardwareInterrogator(CpuState(xReg = xReg, yReg = 0x01u), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(xReg = xReg, yReg = 0x01u), memory)
 
             interrogator.processInstruction()
 
@@ -298,7 +298,7 @@ class StoreOperationsTest {
 
             val xReg: UByte = 0x01u
 
-            val interrogator = HardwareInterrogator(CpuState(xReg = xReg, yReg = 0xffu), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(xReg = xReg, yReg = 0xffu), memory)
 
             interrogator.processInstruction()
 
@@ -326,7 +326,7 @@ class StoreOperationsTest {
 
             val xReg: UByte = 0x01u
 
-            val interrogator = HardwareInterrogator(CpuState(xReg = xReg), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(xReg = xReg), memory)
 
             interrogator.processInstruction()
 
@@ -359,7 +359,7 @@ class StoreOperationsTest {
 
             val yReg: UByte = 0x01u
 
-            val interrogator = HardwareInterrogator(CpuState(yReg = yReg), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(yReg = yReg), memory)
 
             interrogator.processInstruction()
 
@@ -386,7 +386,7 @@ class StoreOperationsTest {
 
             val yReg: UByte = 0x05u
 
-            val interrogator = HardwareInterrogator(CpuState(yReg = yReg, xReg = 0x01u), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(yReg = yReg, xReg = 0x01u), memory)
 
             interrogator.processInstruction()
 
@@ -414,7 +414,7 @@ class StoreOperationsTest {
 
             val yReg: UByte = 0x01u
 
-            val interrogator = HardwareInterrogator(CpuState(yReg = yReg, xReg = 0xffu), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(yReg = yReg, xReg = 0xffu), memory)
 
             interrogator.processInstruction()
 
@@ -442,7 +442,7 @@ class StoreOperationsTest {
 
             val yReg: UByte = 0x01u
 
-            val interrogator = HardwareInterrogator(CpuState(yReg = yReg), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(yReg = yReg), memory)
 
             interrogator.processInstruction()
 

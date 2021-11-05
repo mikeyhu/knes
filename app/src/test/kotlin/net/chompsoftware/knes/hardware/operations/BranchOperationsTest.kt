@@ -1,9 +1,9 @@
 package net.chompsoftware.knes.hardware.operations
 
 import net.chompsoftware.knes.hardware.BasicMemory
-import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.instructions.*
 import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
+import net.chompsoftware.knes.hardware.utilities.randomisedCpuState
 import net.chompsoftware.knes.setupMemory
 
 import org.junit.jupiter.api.Nested
@@ -17,7 +17,7 @@ class BranchOperationsTest {
         fun `BCC Branch on carry clear should not branch is carryFlag is true`() {
             val memory = BasicMemory(setupMemory(BCC, 0x10u, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(isCarryFlag = true), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(isCarryFlag = true), memory)
 
             interrogator.processInstruction()
 
@@ -39,7 +39,7 @@ class BranchOperationsTest {
         fun `BCC Branch on carry clear should branch is carryFlag is false`() {
             val memory = BasicMemory(setupMemory(BCC, 0x10u, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(isCarryFlag = false), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(isCarryFlag = false), memory)
 
             interrogator.processInstruction()
 
@@ -62,7 +62,7 @@ class BranchOperationsTest {
         fun `BCC Branch on carry clear should branch backwards if carryFlag is false and location is greater that 0x80`() {
             val memory = BasicMemory(setupMemory(NOP, BCC, 0xfdu, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(programCounter = 1, isCarryFlag = false), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(programCounter = 1, isCarryFlag = false), memory)
 
             interrogator.processInstruction()
 
@@ -85,7 +85,7 @@ class BranchOperationsTest {
         fun `BCC Branch on carry clear should take an extra cycle if crossing a page boundary when branching`() {
             val memory = BasicMemory(setupMemory(BCC, 0x10u, NOP, memoryOffset = 0xf0))
 
-            val interrogator = HardwareInterrogator(CpuState(programCounter = 0xf0, isCarryFlag = false), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(programCounter = 0xf0, isCarryFlag = false), memory)
 
             interrogator.processInstruction()
 
@@ -112,7 +112,7 @@ class BranchOperationsTest {
         fun `BCS Branch on carry set should not branch is carryFlag is false`() {
             val memory = BasicMemory(setupMemory(BCS, 0x10u, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(isCarryFlag = false), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(isCarryFlag = false), memory)
 
             interrogator.processInstruction()
 
@@ -134,7 +134,7 @@ class BranchOperationsTest {
         fun `BCS Branch on carry set should branch is carryFlag is true`() {
             val memory = BasicMemory(setupMemory(BCS, 0x10u, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(isCarryFlag = true), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(isCarryFlag = true), memory)
 
             interrogator.processInstruction()
 
@@ -160,7 +160,7 @@ class BranchOperationsTest {
         fun `BNE Branch on not equal should not branch is zeroFlag is true`() {
             val memory = BasicMemory(setupMemory(BNE, 0x10u, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(isZeroFlag = true), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(isZeroFlag = true), memory)
 
             interrogator.processInstruction()
 
@@ -182,7 +182,7 @@ class BranchOperationsTest {
         fun `BNE Branch on not equal should branch is zeroFlag is false`() {
             val memory = BasicMemory(setupMemory(BNE, 0x10u, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(isZeroFlag = false), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(isZeroFlag = false), memory)
 
             interrogator.processInstruction()
 
@@ -205,7 +205,7 @@ class BranchOperationsTest {
         fun `BNE Branch on not equal should branch backwards if zeroFlag is false and location is greater that 0x80`() {
             val memory = BasicMemory(setupMemory(NOP, BNE, 0xfdu, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(programCounter = 1, isZeroFlag = false), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(programCounter = 1, isZeroFlag = false), memory)
 
             interrogator.processInstruction()
 
@@ -228,7 +228,7 @@ class BranchOperationsTest {
         fun `BNE Branch on not equal should take an extra cycle if crossing a page boundary when branching`() {
             val memory = BasicMemory(setupMemory(BNE, 0x10u, NOP, memoryOffset = 0xf0))
 
-            val interrogator = HardwareInterrogator(CpuState(programCounter = 0xf0, isZeroFlag = false), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(programCounter = 0xf0, isZeroFlag = false), memory)
 
             interrogator.processInstruction()
 
@@ -255,7 +255,7 @@ class BranchOperationsTest {
         fun `BMI Branch on minus should not branch is negativeFlag is false`() {
             val memory = BasicMemory(setupMemory(BMI, 0x10u, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(isNegativeFlag = false), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(isNegativeFlag = false), memory)
 
             interrogator.processInstruction()
 
@@ -277,7 +277,7 @@ class BranchOperationsTest {
         fun `BMI Branch on minus should branch is negativeFlag is true`() {
             val memory = BasicMemory(setupMemory(BMI, 0x10u, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(isNegativeFlag = true), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(isNegativeFlag = true), memory)
 
             interrogator.processInstruction()
 
@@ -303,7 +303,7 @@ class BranchOperationsTest {
         fun `BEQ Branch on equal should not branch if zeroFlag is false`() {
             val memory = BasicMemory(setupMemory(BEQ, 0x10u, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(isZeroFlag = false), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(isZeroFlag = false), memory)
 
             interrogator.processInstruction()
 
@@ -325,7 +325,7 @@ class BranchOperationsTest {
         fun `BEQ Branch on equal should branch is zeroFlag is true`() {
             val memory = BasicMemory(setupMemory(BEQ, 0x10u, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(isZeroFlag = true), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(isZeroFlag = true), memory)
 
             interrogator.processInstruction()
 
@@ -348,7 +348,7 @@ class BranchOperationsTest {
         fun `BEQ Branch on equal should branch backwards if zeroFlag is true and location is greater that 0x80`() {
             val memory = BasicMemory(setupMemory(NOP, BEQ, 0xfdu, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(programCounter = 1, isZeroFlag = true), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(programCounter = 1, isZeroFlag = true), memory)
 
             interrogator.processInstruction()
 
@@ -371,7 +371,7 @@ class BranchOperationsTest {
         fun `BEQ Branch on equal should take an extra cycle if crossing a page boundary when branching`() {
             val memory = BasicMemory(setupMemory(BEQ, 0x10u, NOP, memoryOffset = 0xf0))
 
-            val interrogator = HardwareInterrogator(CpuState(programCounter = 0xf0, isZeroFlag = true), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(programCounter = 0xf0, isZeroFlag = true), memory)
 
             interrogator.processInstruction()
 
@@ -398,7 +398,7 @@ class BranchOperationsTest {
         fun `BPL Branch on not equal should not branch is negativeFlag is true`() {
             val memory = BasicMemory(setupMemory(BPL, 0x10u, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(isNegativeFlag = true), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(isNegativeFlag = true), memory)
 
             interrogator.processInstruction()
 
@@ -420,7 +420,7 @@ class BranchOperationsTest {
         fun `BPL Branch on not equal should branch is negativeFlag is false`() {
             val memory = BasicMemory(setupMemory(BPL, 0x10u, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(isNegativeFlag = false), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(isNegativeFlag = false), memory)
 
             interrogator.processInstruction()
 
@@ -443,7 +443,7 @@ class BranchOperationsTest {
         fun `BPL Branch on not equal should branch backwards if negativeFlag is false and location is greater that 0x80`() {
             val memory = BasicMemory(setupMemory(NOP, BPL, 0xfdu, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(programCounter = 1, isNegativeFlag = false), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(programCounter = 1, isNegativeFlag = false), memory)
 
             interrogator.processInstruction()
 
@@ -466,7 +466,7 @@ class BranchOperationsTest {
         fun `BPL Branch on not equal should take an extra cycle if crossing a page boundary when branching`() {
             val memory = BasicMemory(setupMemory(BPL, 0x10u, NOP, memoryOffset = 0xf0))
 
-            val interrogator = HardwareInterrogator(CpuState(programCounter = 0xf0, isNegativeFlag = false), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(programCounter = 0xf0, isNegativeFlag = false), memory)
 
             interrogator.processInstruction()
 
@@ -493,7 +493,7 @@ class BranchOperationsTest {
         fun `BVC Branch on overflow clear should not branch is overflowFlag is true`() {
             val memory = BasicMemory(setupMemory(BVC, 0x10u, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(isOverflowFlag = true), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(isOverflowFlag = true), memory)
 
             interrogator.processInstruction()
 
@@ -515,7 +515,7 @@ class BranchOperationsTest {
         fun `BVC Branch on overflow clear should branch is carryFlag is false`() {
             val memory = BasicMemory(setupMemory(BVC, 0x10u, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(isOverflowFlag = false), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(isOverflowFlag = false), memory)
 
             interrogator.processInstruction()
 
@@ -541,7 +541,7 @@ class BranchOperationsTest {
         fun `BVS Branch on overflow set should not branch is overflowFlag is false`() {
             val memory = BasicMemory(setupMemory(BVS, 0x10u, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(isOverflowFlag = false), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(isOverflowFlag = false), memory)
 
             interrogator.processInstruction()
 
@@ -563,7 +563,7 @@ class BranchOperationsTest {
         fun `BVS Branch on overflow set should branch is carryFlag is true`() {
             val memory = BasicMemory(setupMemory(BVS, 0x10u, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(isOverflowFlag = true), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(isOverflowFlag = true), memory)
 
             interrogator.processInstruction()
 

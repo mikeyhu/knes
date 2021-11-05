@@ -1,10 +1,10 @@
 package net.chompsoftware.knes.hardware.operations.math
 
 import net.chompsoftware.knes.hardware.BasicMemory
-import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.instructions.*
 import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
 import net.chompsoftware.knes.hardware.utilities.RegisterMemoryExpectedCheck
+import net.chompsoftware.knes.hardware.utilities.randomisedCpuState
 import net.chompsoftware.knes.setupMemory
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -29,7 +29,7 @@ class ExclusiveOrOperationTest {
     fun `EOR Immediate - Exclusive OR`(data: RegisterMemoryExpectedCheck) {
         val memory = BasicMemory(setupMemory(EOR_I, data.memory))
 
-        val interrogator = HardwareInterrogator(CpuState(aReg = data.aReg), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.aReg), memory)
 
         interrogator.processInstruction()
 
@@ -57,7 +57,7 @@ class ExclusiveOrOperationTest {
     fun `EOR ZeroPage`(data: RegisterMemoryExpectedCheck) {
         val memory = BasicMemory(setupMemory(EOR_Z, 0x03u, NOP, data.memory))
 
-        val interrogator = HardwareInterrogator(CpuState(aReg = data.aReg), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.aReg), memory)
 
         interrogator.processInstruction()
 
@@ -86,7 +86,7 @@ class ExclusiveOrOperationTest {
     fun `EOR ZeroPage X`(data: RegisterMemoryExpectedCheck) {
         val memory = BasicMemory(setupMemory(EOR_ZX, 0x02u, NOP, NOP, data.memory))
 
-        val interrogator = HardwareInterrogator(CpuState(aReg = data.aReg, xReg = 0x02u), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.aReg, xReg = 0x02u), memory)
 
         interrogator.processInstruction()
 
@@ -116,7 +116,7 @@ class ExclusiveOrOperationTest {
     fun `EOR Absolute`(data: RegisterMemoryExpectedCheck) {
         val memory = BasicMemory(setupMemory(EOR_AB, 0x03u, 0x0u, data.memory))
 
-        val interrogator = HardwareInterrogator(CpuState(aReg = data.aReg), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.aReg), memory)
 
         interrogator.processInstruction()
 
@@ -148,7 +148,7 @@ class ExclusiveOrOperationTest {
     fun `EOR Absolute X`(data: RegisterMemoryExpectedCheck) {
         val memory = BasicMemory(setupMemory(EOR_ABX, 0x03u, 0x0u, NOP, NOP, data.memory))
 
-        val interrogator = HardwareInterrogator(CpuState(aReg = data.aReg, xReg = 0x2u), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.aReg, xReg = 0x2u), memory)
 
         interrogator.processInstruction()
 
@@ -180,7 +180,7 @@ class ExclusiveOrOperationTest {
     fun `EOR Absolute Y`(data: RegisterMemoryExpectedCheck) {
         val memory = BasicMemory(setupMemory(EOR_ABY, 0x03u, 0x0u, NOP, NOP, data.memory))
 
-        val interrogator = HardwareInterrogator(CpuState(aReg = data.aReg, yReg = 0x2u), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.aReg, yReg = 0x2u), memory)
 
         interrogator.processInstruction()
 

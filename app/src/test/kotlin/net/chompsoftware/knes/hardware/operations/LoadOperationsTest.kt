@@ -6,6 +6,7 @@ import net.chompsoftware.knes.hardware.instructions.*
 import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
 import net.chompsoftware.knes.hardware.utilities.InputWithNegativeZeroCheck
 import net.chompsoftware.knes.hardware.utilities.ParameterizedTestData
+import net.chompsoftware.knes.hardware.utilities.randomisedCpuState
 import net.chompsoftware.knes.setupMemory
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.params.ParameterizedTest
@@ -22,7 +23,7 @@ class LoadOperationsTest {
         fun `LDA Immediate`(data: InputWithNegativeZeroCheck) {
             val memory = BasicMemory(setupMemory(LDA_I, data.input))
 
-            val interrogator = HardwareInterrogator(CpuState(), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(), memory)
 
             interrogator.processInstruction()
 
@@ -48,7 +49,7 @@ class LoadOperationsTest {
         fun `LDA Absolute`(data: InputWithNegativeZeroCheck) {
             val memory = BasicMemory(setupMemory(LDA_AB, 0x04u, 0x00u, NOP, data.input))
 
-            val interrogator = HardwareInterrogator(CpuState(), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(), memory)
 
             interrogator.processInstruction()
 
@@ -193,7 +194,7 @@ class LoadOperationsTest {
         fun `LDA ZeroPage`(data: InputWithNegativeZeroCheck) {
             val memory = BasicMemory(setupMemory(LDA_Z, 0x03u, NOP, data.input))
 
-            val interrogator = HardwareInterrogator(CpuState(), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(), memory)
 
             interrogator.processInstruction()
 
@@ -263,7 +264,7 @@ class LoadOperationsTest {
             val yReg: UByte = 0x5u
             memory[0xeef5] = data.input
 
-            val interrogator = HardwareInterrogator(CpuState(yReg = yReg), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(yReg = yReg), memory)
 
             interrogator.processInstruction()
 
@@ -303,7 +304,7 @@ class LoadOperationsTest {
             val yReg: UByte = 0x15u
             memory[0xef05] = data.input
 
-            val interrogator = HardwareInterrogator(CpuState(yReg = yReg), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(yReg = yReg), memory)
 
             interrogator.processInstruction()
 
@@ -344,7 +345,7 @@ class LoadOperationsTest {
             val xReg: UByte = 0x5u
             memory[0xeef0] = data.input
 
-            val interrogator = HardwareInterrogator(CpuState(xReg = xReg), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(xReg = xReg), memory)
 
             interrogator.processInstruction()
 
@@ -384,7 +385,7 @@ class LoadOperationsTest {
         fun `LDX Immediate`(data: InputWithNegativeZeroCheck) {
             val memory = BasicMemory(setupMemory(LDX_I, data.input))
 
-            val interrogator = HardwareInterrogator(CpuState(), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(), memory)
 
             interrogator.processInstruction()
 
@@ -410,7 +411,7 @@ class LoadOperationsTest {
         fun `LDX Absolute`(data: InputWithNegativeZeroCheck) {
             val memory = BasicMemory(setupMemory(LDX_AB, 0x04u, 0x00u, NOP, data.input))
 
-            val interrogator = HardwareInterrogator(CpuState(), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(), memory)
 
             interrogator.processInstruction()
 
@@ -442,7 +443,7 @@ class LoadOperationsTest {
         fun `LDX Absolute Y offset`(data: InputWithNegativeZeroCheck) {
             val memory = BasicMemory(setupMemory(LDX_ABY, 0x02u, 0x00u, NOP, data.input))
 
-            val interrogator = HardwareInterrogator(CpuState(yReg = 0x02u), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(yReg = 0x02u), memory)
 
             interrogator.processInstruction()
 
@@ -474,7 +475,7 @@ class LoadOperationsTest {
         fun `LDX ZeroPage`(data: InputWithNegativeZeroCheck) {
             val memory = BasicMemory(setupMemory(LDX_Z, 0x03u, NOP, data.input))
 
-            val interrogator = HardwareInterrogator(CpuState(), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(), memory)
 
             interrogator.processInstruction()
 
@@ -579,7 +580,7 @@ class LoadOperationsTest {
         fun `LDY Immediate`(data: InputWithNegativeZeroCheck) {
             val memory = BasicMemory(setupMemory(LDY_I, data.input))
 
-            val interrogator = HardwareInterrogator(CpuState(), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(), memory)
 
             interrogator.processInstruction()
 
@@ -605,7 +606,7 @@ class LoadOperationsTest {
         fun `LDY Absolute`(data: InputWithNegativeZeroCheck) {
             val memory = BasicMemory(setupMemory(LDY_AB, 0x04u, 0x00u, NOP, data.input))
 
-            val interrogator = HardwareInterrogator(CpuState(), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(), memory)
 
             interrogator.processInstruction()
 
@@ -673,7 +674,7 @@ class LoadOperationsTest {
         fun `LDY ZeroPage`(data: InputWithNegativeZeroCheck) {
             val memory = BasicMemory(setupMemory(LDY_Z, 0x03u, NOP, data.input))
 
-            val interrogator = HardwareInterrogator(CpuState(), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(), memory)
 
             interrogator.processInstruction()
 

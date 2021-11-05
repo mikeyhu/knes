@@ -1,12 +1,12 @@
 package net.chompsoftware.knes.hardware.operations.math
 
 import net.chompsoftware.knes.hardware.BasicMemory
-import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.instructions.BIT_AB
 import net.chompsoftware.knes.hardware.instructions.BIT_Z
 import net.chompsoftware.knes.hardware.instructions.NOP
 import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
 import net.chompsoftware.knes.hardware.utilities.RegisterMemoryExpectedCheck
+import net.chompsoftware.knes.hardware.utilities.randomisedCpuState
 import net.chompsoftware.knes.setupMemory
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -34,7 +34,7 @@ class BitWithAccumulatorOperationTest {
     fun `BIT ZeroPage`(data: RegisterMemoryExpectedCheck) {
         val memory = BasicMemory(setupMemory(BIT_Z, 0x03u, NOP, data.memory))
 
-        val interrogator = HardwareInterrogator(CpuState(aReg = data.aReg), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.aReg), memory)
 
         interrogator.processInstruction()
 
@@ -64,7 +64,7 @@ class BitWithAccumulatorOperationTest {
     fun `BIT Absolute`(data: RegisterMemoryExpectedCheck) {
         val memory = BasicMemory(setupMemory(BIT_AB, 0x03u, 0x00u, data.memory))
 
-        val interrogator = HardwareInterrogator(CpuState(aReg = data.aReg), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.aReg), memory)
 
         interrogator.processInstruction()
 

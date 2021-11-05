@@ -1,10 +1,10 @@
 package net.chompsoftware.knes.hardware.operations.math
 
 import net.chompsoftware.knes.hardware.BasicMemory
-import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.instructions.*
 import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
 import net.chompsoftware.knes.hardware.utilities.ShiftCheck
+import net.chompsoftware.knes.hardware.utilities.randomisedCpuState
 import net.chompsoftware.knes.setupMemory
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -28,7 +28,7 @@ class ArithmeticShiftLeftOperationTest {
     fun `ASL Accumulator`(data: ShiftCheck) {
         val memory = BasicMemory(setupMemory(ASL_NONE))
 
-        val interrogator = HardwareInterrogator(CpuState(aReg = data.input), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.input), memory)
 
         interrogator.processInstruction()
 
@@ -53,7 +53,7 @@ class ArithmeticShiftLeftOperationTest {
     fun `ASL ZeroPage`(data: ShiftCheck) {
         val memory = BasicMemory(setupMemory(ASL_Z, 0x03u, NOP, data.input))
 
-        val interrogator = HardwareInterrogator(CpuState(), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(), memory)
 
         interrogator.processInstruction()
 
@@ -86,7 +86,7 @@ class ArithmeticShiftLeftOperationTest {
     fun `ASL ZeroPage X`(data: ShiftCheck) {
         val memory = BasicMemory(setupMemory(ASL_ZX, 0x03u, NOP, NOP, NOP, data.input))
 
-        val interrogator = HardwareInterrogator(CpuState(xReg = 0x02u), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(xReg = 0x02u), memory)
 
         interrogator.processInstruction()
 
@@ -120,7 +120,7 @@ class ArithmeticShiftLeftOperationTest {
     fun `ASL Absolute`(data: ShiftCheck) {
         val memory = BasicMemory(setupMemory(ASL_AB, 0x03u, 0x0u, data.input))
 
-        val interrogator = HardwareInterrogator(CpuState(), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(), memory)
 
         interrogator.processInstruction()
 
@@ -156,7 +156,7 @@ class ArithmeticShiftLeftOperationTest {
     fun `ASL Absolute X`(data: ShiftCheck) {
         val memory = BasicMemory(setupMemory(ASL_ABX, 0x03u, 0x0u, NOP, NOP, data.input))
 
-        val interrogator = HardwareInterrogator(CpuState(xReg = 0x2u), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(xReg = 0x2u), memory)
 
         interrogator.processInstruction()
 

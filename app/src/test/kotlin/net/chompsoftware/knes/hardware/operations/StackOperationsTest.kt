@@ -6,6 +6,7 @@ import net.chompsoftware.knes.hardware.instructions.*
 import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
 import net.chompsoftware.knes.hardware.utilities.InputWithNegativeZeroCheck
 import net.chompsoftware.knes.hardware.utilities.ParameterizedTestData
+import net.chompsoftware.knes.hardware.utilities.randomisedCpuState
 import net.chompsoftware.knes.setupMemory
 import net.chompsoftware.knes.toHexUByte
 import org.junit.jupiter.api.Nested
@@ -28,7 +29,8 @@ class StackOperationsTest {
             val expectedStackPosition = 0x1ff
             val expectedStackRegister: UByte = 0xfeu
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = accumulator, stackReg = stackRegister), memory)
+            val interrogator =
+                HardwareInterrogator(randomisedCpuState(aReg = accumulator, stackReg = stackRegister), memory)
 
             interrogator.processInstruction()
 
@@ -57,7 +59,8 @@ class StackOperationsTest {
             val expectedStackPosition = 0x100
             val expectedStackRegister: UByte = 0xffu
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = accumulator, stackReg = stackRegister), memory)
+            val interrogator =
+                HardwareInterrogator(randomisedCpuState(aReg = accumulator, stackReg = stackRegister), memory)
 
             interrogator.processInstruction()
 
@@ -88,7 +91,7 @@ class StackOperationsTest {
 
             memory[expectedStackPosition] = data.input
 
-            val interrogator = HardwareInterrogator(CpuState(stackReg = stackRegister), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(stackReg = stackRegister), memory)
 
             interrogator.processInstruction()
 
@@ -142,7 +145,7 @@ class StackOperationsTest {
 
             memory[expectedStackPosition] = value.toHexUByte()
 
-            val interrogator = HardwareInterrogator(CpuState(stackReg = stackRegister), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(stackReg = stackRegister), memory)
 
             interrogator.processInstruction()
 

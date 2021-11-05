@@ -4,6 +4,7 @@ import net.chompsoftware.knes.hardware.BasicMemory
 import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.instructions.*
 import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
+import net.chompsoftware.knes.hardware.utilities.randomisedCpuState
 import net.chompsoftware.knes.setupMemory
 import org.junit.jupiter.api.Test
 
@@ -13,7 +14,7 @@ class JumpOperationsTest {
     fun `JMP - Jump to absolute position`() {
         val memory = BasicMemory(setupMemory(JMP_AB, 0x34u, 0x12u))
 
-        val interrogator = HardwareInterrogator(CpuState(), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(), memory)
 
         interrogator.processInstruction()
 
@@ -38,7 +39,7 @@ class JumpOperationsTest {
     fun `JMP - Jump to indirect position`() {
         val memory = BasicMemory(setupMemory(JMP_IN, 0x04u, 0x00u, NOP, 0x34u, 0x12u))
 
-        val interrogator = HardwareInterrogator(CpuState(), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(), memory)
 
         interrogator.processInstruction()
 
@@ -69,7 +70,7 @@ class JumpOperationsTest {
     fun `JSR - Jump to subroutine`() {
         val memory = BasicMemory(setupMemory(JSR_AB, 0x34u, 0x12u))
 
-        val interrogator = HardwareInterrogator(CpuState(stackReg = 0xffu), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(stackReg = 0xffu), memory)
 
         interrogator.processInstruction()
 

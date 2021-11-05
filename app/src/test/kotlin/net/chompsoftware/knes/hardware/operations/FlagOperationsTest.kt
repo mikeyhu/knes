@@ -1,9 +1,9 @@
 package net.chompsoftware.knes.hardware.operations
 
 import net.chompsoftware.knes.hardware.BasicMemory
-import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.instructions.*
 import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
+import net.chompsoftware.knes.hardware.utilities.randomisedCpuState
 import net.chompsoftware.knes.setupMemory
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -16,7 +16,7 @@ class FlagOperationsTest {
     fun `CLD - clear Decimal`(flagValue: Boolean) {
         val memory = BasicMemory(setupMemory(CLD, NOP))
 
-        val interrogator = HardwareInterrogator(CpuState(isDecimalFlag = flagValue), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(isDecimalFlag = flagValue), memory)
 
         interrogator.processInstruction()
 
@@ -38,7 +38,7 @@ class FlagOperationsTest {
     fun `CLC - clear Carry`(flagValue: Boolean) {
         val memory = BasicMemory(setupMemory(CLC, NOP))
 
-        val interrogator = HardwareInterrogator(CpuState(isCarryFlag = flagValue), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(isCarryFlag = flagValue), memory)
 
         interrogator.processInstruction()
 
@@ -60,7 +60,7 @@ class FlagOperationsTest {
     fun `CLV - clear Overflow`(flagValue: Boolean) {
         val memory = BasicMemory(setupMemory(CLV, NOP))
 
-        val interrogator = HardwareInterrogator(CpuState(isOverflowFlag = flagValue), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(isOverflowFlag = flagValue), memory)
 
         interrogator.processInstruction()
 
@@ -82,7 +82,7 @@ class FlagOperationsTest {
     fun `CLI - clear Interrupt`(flagValue: Boolean) {
         val memory = BasicMemory(setupMemory(CLI, NOP))
 
-        val interrogator = HardwareInterrogator(CpuState(isInterruptDisabledFlag = flagValue), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(isInterruptDisabledFlag = flagValue), memory)
 
         interrogator.processInstruction()
 
@@ -104,7 +104,7 @@ class FlagOperationsTest {
     fun `SEC - set Carry`(flagValue: Boolean) {
         val memory = BasicMemory(setupMemory(SEC, NOP))
 
-        val interrogator = HardwareInterrogator(CpuState(isCarryFlag = flagValue), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(isCarryFlag = flagValue), memory)
 
         interrogator.processInstruction()
 
@@ -126,7 +126,7 @@ class FlagOperationsTest {
     fun `SEI - set Interrupt`(flagValue: Boolean) {
         val memory = BasicMemory(setupMemory(SEI, NOP))
 
-        val interrogator = HardwareInterrogator(CpuState(isInterruptDisabledFlag = flagValue), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(isInterruptDisabledFlag = flagValue), memory)
 
         interrogator.processInstruction()
 
@@ -148,7 +148,7 @@ class FlagOperationsTest {
     fun `SED - set decimal`(flagValue: Boolean) {
         val memory = BasicMemory(setupMemory(SED, NOP))
 
-        val interrogator = HardwareInterrogator(CpuState(isDecimalFlag = flagValue), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(isDecimalFlag = flagValue), memory)
 
         interrogator.processInstruction()
 

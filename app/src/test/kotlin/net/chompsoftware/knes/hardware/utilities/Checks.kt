@@ -21,7 +21,8 @@ data class AddWithCarryCheck(
     val expected: UByte,
     val negativeFlag: Boolean,
     val overflowFlag: Boolean,
-    val carryFlag: Boolean
+    val carryFlag: Boolean,
+    val zeroFlag: Boolean
 )
 
 data class RegisterMemoryExpectedCheck(

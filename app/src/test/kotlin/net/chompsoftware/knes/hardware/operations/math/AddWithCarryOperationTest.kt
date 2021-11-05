@@ -1,10 +1,10 @@
 package net.chompsoftware.knes.hardware.operations.math
 
 import net.chompsoftware.knes.hardware.BasicMemory
-import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.instructions.*
 import net.chompsoftware.knes.hardware.utilities.AddWithCarryCheck
 import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
+import net.chompsoftware.knes.hardware.utilities.randomisedCpuState
 import net.chompsoftware.knes.setupMemory
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -17,10 +17,11 @@ class AddWithCarryOperationTest {
         @JvmStatic
         fun checkFlags(): Stream<AddWithCarryCheck> {
             return Stream.of(
-                AddWithCarryCheck(0x0fu, 0x01u, false, 0x10u, false, false, false),
-                AddWithCarryCheck(0x7fu, 0x0u, false, 0x7fu, false, false, false),
-                AddWithCarryCheck(0x7fu, 0x0u, true, 0x80u, true, true, false),
-                AddWithCarryCheck(0x80u, 0x0u, false, 0x80u, true, false, false),
+                AddWithCarryCheck(0x0fu, 0x01u, false, 0x10u, false, false, false, false),
+                AddWithCarryCheck(0x7fu, 0x0u, false, 0x7fu, false, false, false, false),
+                AddWithCarryCheck(0x7fu, 0x0u, true, 0x80u, true, true, false, false),
+                AddWithCarryCheck(0x80u, 0x0u, false, 0x80u, true, false, false, false),
+                AddWithCarryCheck(0x0u, 0x0u, false, 0x0u, false, false, false, true),
             )
         }
     }
@@ -30,7 +31,7 @@ class AddWithCarryOperationTest {
     fun `ADC Immediate`(data: AddWithCarryCheck) {
         val memory = BasicMemory(setupMemory(ADC_I, data.memory))
 
-        val interrogator = HardwareInterrogator(CpuState(aReg = data.aReg, isCarryFlag = data.carry), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.aReg, isCarryFlag = data.carry), memory)
 
         interrogator.processInstruction()
 
@@ -49,6 +50,7 @@ class AddWithCarryOperationTest {
             isNegativeFlag(data.negativeFlag)
             isOverflowFlag(data.overflowFlag)
             isCarryFlag(data.carryFlag)
+            isZeroFlag(data.zeroFlag)
         }
     }
 
@@ -58,7 +60,7 @@ class AddWithCarryOperationTest {
     fun `ADC ZeroPage`(data: AddWithCarryCheck) {
         val memory = BasicMemory(setupMemory(ADC_Z, 0x03u, NOP, data.memory))
 
-        val interrogator = HardwareInterrogator(CpuState(aReg = data.aReg, isCarryFlag = data.carry), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.aReg, isCarryFlag = data.carry), memory)
 
         interrogator.processInstruction()
 
@@ -80,6 +82,7 @@ class AddWithCarryOperationTest {
             isNegativeFlag(data.negativeFlag)
             isOverflowFlag(data.overflowFlag)
             isCarryFlag(data.carryFlag)
+            isZeroFlag(data.zeroFlag)
         }
     }
 
@@ -89,7 +92,7 @@ class AddWithCarryOperationTest {
         val memory = BasicMemory(setupMemory(ADC_ZX, 0x02u, NOP, NOP, data.memory))
 
         val interrogator =
-            HardwareInterrogator(CpuState(aReg = data.aReg, isCarryFlag = data.carry, xReg = 0x02u), memory)
+            HardwareInterrogator(randomisedCpuState(aReg = data.aReg, isCarryFlag = data.carry, xReg = 0x02u), memory)
 
         interrogator.processInstruction()
 
@@ -112,6 +115,7 @@ class AddWithCarryOperationTest {
             isNegativeFlag(data.negativeFlag)
             isOverflowFlag(data.overflowFlag)
             isCarryFlag(data.carryFlag)
+            isZeroFlag(data.zeroFlag)
         }
     }
 
@@ -120,7 +124,7 @@ class AddWithCarryOperationTest {
     fun `ADC Absolute`(data: AddWithCarryCheck) {
         val memory = BasicMemory(setupMemory(ADC_AB, 0x03u, 0x0u, data.memory))
 
-        val interrogator = HardwareInterrogator(CpuState(aReg = data.aReg, isCarryFlag = data.carry), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.aReg, isCarryFlag = data.carry), memory)
 
         interrogator.processInstruction()
 
@@ -145,6 +149,7 @@ class AddWithCarryOperationTest {
             isNegativeFlag(data.negativeFlag)
             isOverflowFlag(data.overflowFlag)
             isCarryFlag(data.carryFlag)
+            isZeroFlag(data.zeroFlag)
         }
     }
 
@@ -154,7 +159,7 @@ class AddWithCarryOperationTest {
         val memory = BasicMemory(setupMemory(ADC_ABX, 0x03u, 0x0u, NOP, NOP, data.memory))
 
         val interrogator =
-            HardwareInterrogator(CpuState(aReg = data.aReg, isCarryFlag = data.carry, xReg = 0x2u), memory)
+            HardwareInterrogator(randomisedCpuState(aReg = data.aReg, isCarryFlag = data.carry, xReg = 0x2u), memory)
 
         interrogator.processInstruction()
 
@@ -179,6 +184,7 @@ class AddWithCarryOperationTest {
             isNegativeFlag(data.negativeFlag)
             isOverflowFlag(data.overflowFlag)
             isCarryFlag(data.carryFlag)
+            isZeroFlag(data.zeroFlag)
         }
     }
 
@@ -188,7 +194,7 @@ class AddWithCarryOperationTest {
         val memory = BasicMemory(setupMemory(ADC_ABY, 0x03u, 0x0u, NOP, NOP, data.memory))
 
         val interrogator =
-            HardwareInterrogator(CpuState(aReg = data.aReg, isCarryFlag = data.carry, yReg = 0x2u), memory)
+            HardwareInterrogator(randomisedCpuState(aReg = data.aReg, isCarryFlag = data.carry, yReg = 0x2u), memory)
 
         interrogator.processInstruction()
 
@@ -213,6 +219,7 @@ class AddWithCarryOperationTest {
             isNegativeFlag(data.negativeFlag)
             isOverflowFlag(data.overflowFlag)
             isCarryFlag(data.carryFlag)
+            isZeroFlag(data.zeroFlag)
         }
     }
 }

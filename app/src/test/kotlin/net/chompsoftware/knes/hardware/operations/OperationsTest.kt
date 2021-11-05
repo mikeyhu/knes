@@ -6,6 +6,7 @@ import net.chompsoftware.knes.hardware.instructions.BRK
 import net.chompsoftware.knes.hardware.instructions.NOP
 import net.chompsoftware.knes.hardware.instructions.RTI
 import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
+import net.chompsoftware.knes.hardware.utilities.randomisedCpuState
 import net.chompsoftware.knes.setupMemory
 import org.junit.jupiter.api.Test
 
@@ -16,7 +17,7 @@ class OperationsTest {
     fun `NOP - No Operation`() {
         val memory = BasicMemory(setupMemory(NOP))
 
-        val interrogator = HardwareInterrogator(CpuState(), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(), memory)
 
         interrogator.processInstruction()
 

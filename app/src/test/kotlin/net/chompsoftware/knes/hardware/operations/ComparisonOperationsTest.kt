@@ -1,11 +1,11 @@
 package net.chompsoftware.knes.hardware.operations
 
 import net.chompsoftware.knes.hardware.BasicMemory
-import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.instructions.*
 import net.chompsoftware.knes.hardware.utilities.ComparisonWithNegativeZeroCarryCheck
 import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
 import net.chompsoftware.knes.hardware.utilities.ParameterizedTestData
+import net.chompsoftware.knes.hardware.utilities.randomisedCpuState
 import net.chompsoftware.knes.setupMemory
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.params.ParameterizedTest
@@ -20,7 +20,7 @@ class ComparisonOperationsTest {
         fun `CMP Immediate`(data: ComparisonWithNegativeZeroCarryCheck) {
             val memory = BasicMemory(setupMemory(CMP_I, data.input, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = data.existing), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.existing), memory)
 
             interrogator.processInstruction()
 
@@ -46,7 +46,7 @@ class ComparisonOperationsTest {
         fun `CMP Absolute`(data: ComparisonWithNegativeZeroCarryCheck) {
             val memory = BasicMemory(setupMemory(CMP_AB, 0x04u, 0x00u, NOP, data.input))
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = data.existing), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.existing), memory)
 
             interrogator.processInstruction()
 
@@ -78,7 +78,7 @@ class ComparisonOperationsTest {
         fun `CMP Absolute X`(data: ComparisonWithNegativeZeroCarryCheck) {
             val memory = BasicMemory(setupMemory(CMP_ABX, 0x04u, 0x00u, NOP, NOP, data.input))
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = data.existing, xReg = 0x01u), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.existing, xReg = 0x01u), memory)
 
             interrogator.processInstruction()
 
@@ -110,7 +110,7 @@ class ComparisonOperationsTest {
         fun `CMP Absolute Y`(data: ComparisonWithNegativeZeroCarryCheck) {
             val memory = BasicMemory(setupMemory(CMP_ABY, 0x04u, 0x00u, NOP, NOP, data.input))
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = data.existing, yReg = 0x01u), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.existing, yReg = 0x01u), memory)
 
             interrogator.processInstruction()
 
@@ -143,7 +143,7 @@ class ComparisonOperationsTest {
             val memory = BasicMemory(setupMemory(CMP_ABY, 0xffu, 0x00u))
             memory[0x100] = data.input
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = data.existing, yReg = 0x01u), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.existing, yReg = 0x01u), memory)
 
             interrogator.processInstruction()
 
@@ -176,7 +176,7 @@ class ComparisonOperationsTest {
         fun `CMP ZeroPage`(data: ComparisonWithNegativeZeroCarryCheck) {
             val memory = BasicMemory(setupMemory(CMP_Z, 0x04u, NOP, NOP, data.input))
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = data.existing), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.existing), memory)
 
             interrogator.processInstruction()
 
@@ -205,7 +205,7 @@ class ComparisonOperationsTest {
         fun `CMP ZeroPage X`(data: ComparisonWithNegativeZeroCarryCheck) {
             val memory = BasicMemory(setupMemory(CMP_ZX, 0x04u, NOP, NOP, NOP, data.input))
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = data.existing, xReg = 0x01u), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.existing, xReg = 0x01u), memory)
 
             interrogator.processInstruction()
 
@@ -240,7 +240,7 @@ class ComparisonOperationsTest {
             val yReg: UByte = 0x5u
             memory[0xeef5] = data.input
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = data.existing, yReg = yReg), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.existing, yReg = yReg), memory)
 
             interrogator.processInstruction()
 
@@ -280,7 +280,7 @@ class ComparisonOperationsTest {
             val xReg: UByte = 0x5u
             memory[0xeef0] = data.input
 
-            val interrogator = HardwareInterrogator(CpuState(aReg = data.existing, xReg = xReg), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.existing, xReg = xReg), memory)
 
             interrogator.processInstruction()
 
@@ -319,7 +319,7 @@ class ComparisonOperationsTest {
         fun `CPX Immediate - Compare X`(data: ComparisonWithNegativeZeroCarryCheck) {
             val memory = BasicMemory(setupMemory(CPX_I, data.input, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(xReg = data.existing), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(xReg = data.existing), memory)
 
             interrogator.processInstruction()
 
@@ -345,7 +345,7 @@ class ComparisonOperationsTest {
         fun `CPX Absolute`(data: ComparisonWithNegativeZeroCarryCheck) {
             val memory = BasicMemory(setupMemory(CPX_AB, 0x04u, 0x00u, NOP, data.input))
 
-            val interrogator = HardwareInterrogator(CpuState(xReg = data.existing), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(xReg = data.existing), memory)
 
             interrogator.processInstruction()
 
@@ -377,7 +377,7 @@ class ComparisonOperationsTest {
         fun `CPX ZeroPage`(data: ComparisonWithNegativeZeroCarryCheck) {
             val memory = BasicMemory(setupMemory(CPX_Z, 0x04u, NOP, NOP, data.input))
 
-            val interrogator = HardwareInterrogator(CpuState(xReg = data.existing), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(xReg = data.existing), memory)
 
             interrogator.processInstruction()
 
@@ -409,7 +409,7 @@ class ComparisonOperationsTest {
         fun `CPY Immediate - Compare Y`(data: ComparisonWithNegativeZeroCarryCheck) {
             val memory = BasicMemory(setupMemory(CPY_I, data.input, NOP))
 
-            val interrogator = HardwareInterrogator(CpuState(yReg = data.existing), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(yReg = data.existing), memory)
 
             interrogator.processInstruction()
 
@@ -435,7 +435,7 @@ class ComparisonOperationsTest {
         fun `CPY Absolute`(data: ComparisonWithNegativeZeroCarryCheck) {
             val memory = BasicMemory(setupMemory(CPY_AB, 0x04u, 0x00u, NOP, data.input))
 
-            val interrogator = HardwareInterrogator(CpuState(yReg = data.existing), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(yReg = data.existing), memory)
 
             interrogator.processInstruction()
 
@@ -467,7 +467,7 @@ class ComparisonOperationsTest {
         fun `CPY ZeroPage`(data: ComparisonWithNegativeZeroCarryCheck) {
             val memory = BasicMemory(setupMemory(CPY_Z, 0x04u, NOP, NOP, data.input))
 
-            val interrogator = HardwareInterrogator(CpuState(yReg = data.existing), memory)
+            val interrogator = HardwareInterrogator(randomisedCpuState(yReg = data.existing), memory)
 
             interrogator.processInstruction()
 

@@ -1,11 +1,11 @@
 package net.chompsoftware.knes.hardware.operations
 
 import net.chompsoftware.knes.hardware.BasicMemory
-import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.instructions.*
 import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
 import net.chompsoftware.knes.hardware.utilities.InputWithNegativeZeroCheck
 import net.chompsoftware.knes.hardware.utilities.ParameterizedTestData
+import net.chompsoftware.knes.hardware.utilities.randomisedCpuState
 import net.chompsoftware.knes.setupMemory
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -19,7 +19,7 @@ class TransferOperationsTest : ParameterizedTestData() {
     fun `TAX - Transfer Accumulator to X`(data: InputWithNegativeZeroCheck) {
         val memory = BasicMemory(setupMemory(TAX, NOP))
 
-        val interrogator = HardwareInterrogator(CpuState(aReg = data.input), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.input), memory)
 
         interrogator.processInstruction()
 
@@ -43,7 +43,7 @@ class TransferOperationsTest : ParameterizedTestData() {
     fun `TAY - Transfer Accumulator to Y`(data: InputWithNegativeZeroCheck) {
         val memory = BasicMemory(setupMemory(TAY, NOP))
 
-        val interrogator = HardwareInterrogator(CpuState(aReg = data.input), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.input), memory)
 
         interrogator.processInstruction()
 
@@ -67,7 +67,7 @@ class TransferOperationsTest : ParameterizedTestData() {
     fun `TSX - Transfer Stack Register to X`(data: InputWithNegativeZeroCheck) {
         val memory = BasicMemory(setupMemory(TSX, NOP))
 
-        val interrogator = HardwareInterrogator(CpuState(xReg = 0x0u, stackReg = data.input), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(xReg = 0x0u, stackReg = data.input), memory)
 
         interrogator.processInstruction()
 
@@ -91,7 +91,7 @@ class TransferOperationsTest : ParameterizedTestData() {
     fun `TXA - Transfer X to Accumulator`(data: InputWithNegativeZeroCheck) {
         val memory = BasicMemory(setupMemory(TXA, NOP))
 
-        val interrogator = HardwareInterrogator(CpuState(xReg = data.input), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(xReg = data.input), memory)
 
         interrogator.processInstruction()
 
@@ -114,7 +114,7 @@ class TransferOperationsTest : ParameterizedTestData() {
     fun `TXS - Transfer X to Stack Register`() {
         val memory = BasicMemory(setupMemory(TXS, NOP))
 
-        val interrogator = HardwareInterrogator(CpuState(xReg = 0x10u, stackReg = 0x0u), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(xReg = 0x10u, stackReg = 0x0u), memory)
 
         interrogator.processInstruction()
 
@@ -136,7 +136,7 @@ class TransferOperationsTest : ParameterizedTestData() {
     fun `TYA - Transfer Y to Accumulator`(data: InputWithNegativeZeroCheck) {
         val memory = BasicMemory(setupMemory(TYA, NOP))
 
-        val interrogator = HardwareInterrogator(CpuState(yReg = data.input), memory)
+        val interrogator = HardwareInterrogator(randomisedCpuState(yReg = data.input), memory)
 
         interrogator.processInstruction()
 
