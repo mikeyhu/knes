@@ -7,3 +7,7 @@ build
 .idea
 
 performance.txt
+
+externalSuite/
+
+.gitattributes
