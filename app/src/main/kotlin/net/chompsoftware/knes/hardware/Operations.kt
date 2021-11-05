@@ -14,11 +14,9 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //ArithmeticShiftLeft
     ASL_NONE to SingleEffectPipeline(ArithmeticShiftLeft),
-    ASL_Z to ZeroPageLocationPipeline(
-        MemoryReadFromLocation,
-        ArithmeticShiftLeft,
-        StoreMemory
-    ),
+    ASL_AB to AbsoluteLocationPipeline(*surroundWithMemoryReadWrite(ArithmeticShiftLeft)),
+    ASL_Z to ZeroPageLocationPipeline(*surroundWithMemoryReadWrite(ArithmeticShiftLeft)),
+    ASL_ZX to ZeroPageXLocationPipeline(*surroundWithMemoryReadWrite(ArithmeticShiftLeft)),
 
     //BitWithAccumulator
     BIT_AB to AbsoluteReadPipeline(BitWithAccumulator),
@@ -125,11 +123,9 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     LDY_ZX to ZeroPageXReadPipeline(ReadIntoY),
 
     LSR_NONE to SingleEffectPipeline(LogicalShiftRight),
-    LSR_Z to ZeroPageLocationPipeline(
-        MemoryReadFromLocation,
-        LogicalShiftRight,
-        StoreMemory
-    ),
+    LSR_AB to AbsoluteLocationPipeline(*surroundWithMemoryReadWrite(LogicalShiftRight)),
+    LSR_Z to ZeroPageLocationPipeline(*surroundWithMemoryReadWrite(LogicalShiftRight)),
+    LSR_ZX to ZeroPageXLocationPipeline(*surroundWithMemoryReadWrite(LogicalShiftRight)),
 
     //Or
     ORA_I to ImmediateReadPipeline(OrWithAccumulator),
@@ -141,19 +137,15 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //Rotate Left
     ROL_NONE to SingleEffectPipeline(RotateLeft),
-    ROL_Z to ZeroPageLocationPipeline(
-        MemoryReadFromLocation,
-        RotateLeft,
-        StoreMemory
-    ),
+    ROL_AB to AbsoluteLocationPipeline(*surroundWithMemoryReadWrite(RotateLeft)),
+    ROL_Z to ZeroPageLocationPipeline(*surroundWithMemoryReadWrite(RotateLeft)),
+    ROL_ZX to ZeroPageXLocationPipeline(*surroundWithMemoryReadWrite(RotateLeft)),
 
     //Rotate Right
     ROR_NONE to SingleEffectPipeline(RotateRight),
-    ROR_Z to ZeroPageLocationPipeline(
-        MemoryReadFromLocation,
-        RotateRight,
-        StoreMemory
-    ),
+    ROR_AB to AbsoluteLocationPipeline(*surroundWithMemoryReadWrite(RotateRight)),
+    ROR_Z to ZeroPageLocationPipeline(*surroundWithMemoryReadWrite(RotateRight)),
+    ROR_ZX to ZeroPageXLocationPipeline(*surroundWithMemoryReadWrite(RotateRight)),
 
     //Push and Pull Stack Operations
     PHA to DelayedSingleEffectPipeline(PushAccumulator, delay = 1),

@@ -271,3 +271,5 @@ class IndirectPipeline(vararg postEffects: Effect) : VariableLengthPipeline(
     ArgumentsToLocation,
     *postEffects
 )
+
+fun surroundWithMemoryReadWrite(vararg effects: Effect) = arrayOf(MemoryReadFromLocation, *effects, StoreMemory)

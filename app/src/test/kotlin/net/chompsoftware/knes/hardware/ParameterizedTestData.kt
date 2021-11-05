@@ -65,44 +65,6 @@ open class ParameterizedTestData {
                 RegisterMemoryExpectedCheck(0x01u, 0x10u, 0x01u, false, true, false),
             )
         }
-
-        @JvmStatic
-        fun checkAslFlags(): Stream<ShiftCheck> {
-            return Stream.of(
-                ShiftCheck(0xf2u, 0xe4u, true, true, false),
-                ShiftCheck(0x0u, 0x0u, false, false, true),
-            )
-        }
-
-        @JvmStatic
-        fun checkLsrFlags(): Stream<ShiftCheck> {
-            return Stream.of(
-                ShiftCheck(0x81u, 0x40u, false, true, false),
-                ShiftCheck(0x80u, 0x40u, false, false, false),
-                ShiftCheck(0xf2u, 0x79u, false, false, false),
-            )
-        }
-
-        @JvmStatic
-        fun checkRolFlags(): Stream<ShiftCheck> {
-            return Stream.of(
-                ShiftCheck(0x81u, 0x2u, false, true, false),
-                ShiftCheck(0x81u, 0x3u, false, true, false, carryIn = true),
-                ShiftCheck(0x00u, 0x1u, false, false, false, carryIn = true),
-                ShiftCheck(0x80u, 0x0u, false, true, true),
-                ShiftCheck(0x40u, 0x80u, true, false, false),
-            )
-        }
-
-        @JvmStatic
-        fun checkRorFlags(): Stream<ShiftCheck> {
-            return Stream.of(
-                ShiftCheck(0x3u, 0x1u, false, true, false),
-                ShiftCheck(0x1u, 0x0u, false, true, true),
-                ShiftCheck(0x0u, 0x80u, true, false, false, carryIn = true),
-                ShiftCheck(0x1u, 0x80u, true, true, false, carryIn = true),
-            )
-        }
     }
 }
 
