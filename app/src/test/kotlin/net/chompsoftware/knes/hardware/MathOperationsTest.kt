@@ -808,4 +808,60 @@ class MathOperationsTest : ParameterizedTestData() {
             }
         }
     }
+
+    @Nested
+    inner class ROL : ParameterizedTestData() {
+        @ParameterizedTest
+        @MethodSource("checkRolFlags")
+        fun `ROL Accumulator`(data: ShiftCheck) {
+            val memory = BasicMemory(setupMemory(ROL_NONE))
+
+            val interrogator = HardwareInterrogator(CpuState(aReg = data.input, isCarryFlag = data.carryIn), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, ROL_NONE)
+                }
+                cycle {}
+            }
+
+            interrogator.assertCpuState {
+                programCounter(1)
+                aReg(data.output)
+                isCarryFlag(data.carryFlag)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
+        }
+    }
+
+    @Nested
+    inner class ROR : ParameterizedTestData() {
+        @ParameterizedTest
+        @MethodSource("checkRorFlags")
+        fun `ROR Accumulator`(data: ShiftCheck) {
+            val memory = BasicMemory(setupMemory(ROR_NONE))
+
+            val interrogator = HardwareInterrogator(CpuState(aReg = data.input, isCarryFlag = data.carryIn), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, ROR_NONE)
+                }
+                cycle {}
+            }
+
+            interrogator.assertCpuState {
+                programCounter(1)
+                aReg(data.output)
+                isCarryFlag(data.carryFlag)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
+        }
+    }
 }

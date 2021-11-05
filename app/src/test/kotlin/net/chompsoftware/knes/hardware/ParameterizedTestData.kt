@@ -82,6 +82,27 @@ open class ParameterizedTestData {
                 ShiftCheck(0xf2u, 0x79u, false, false, false),
             )
         }
+
+        @JvmStatic
+        fun checkRolFlags(): Stream<ShiftCheck> {
+            return Stream.of(
+                ShiftCheck(0x81u, 0x2u, false, true, false),
+                ShiftCheck(0x81u, 0x3u, false, true, false, carryIn = true),
+                ShiftCheck(0x00u, 0x1u, false, false, false, carryIn = true),
+                ShiftCheck(0x80u, 0x0u, false, true, true),
+                ShiftCheck(0x40u, 0x80u, true, false, false),
+            )
+        }
+
+        @JvmStatic
+        fun checkRorFlags(): Stream<ShiftCheck> {
+            return Stream.of(
+                ShiftCheck(0x3u, 0x1u, false, true, false),
+                ShiftCheck(0x1u, 0x0u, false, true, true),
+                ShiftCheck(0x0u, 0x80u, true, false, false, carryIn = true),
+                ShiftCheck(0x1u, 0x80u, true, true, false, carryIn = true),
+            )
+        }
     }
 }
 
@@ -119,5 +140,6 @@ data class ShiftCheck(
     val output: UByte,
     val negativeFlag: Boolean,
     val carryFlag: Boolean,
-    val zeroFlag: Boolean
+    val zeroFlag: Boolean,
+    val carryIn: Boolean = false
 )

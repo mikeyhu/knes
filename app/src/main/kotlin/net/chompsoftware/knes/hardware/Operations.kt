@@ -129,6 +129,12 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     ORA_Z to ZeroPageReadPipeline(OrWithAccumulator),
     ORA_ZX to ZeroPageXReadPipeline(OrWithAccumulator),
 
+    //Rotate Left
+    ROL_NONE to SingleEffectPipeline(RotateLeft),
+
+    //Rotate Right
+    ROR_NONE to SingleEffectPipeline(RotateRight),
+
     //Push and Pull Stack Operations
     PHA to DelayedSingleEffectPipeline(PushAccumulator, delay = 1),
     PHP to DelayedSingleEffectPipeline(PushProcessorStatus(false), delay = 1),
