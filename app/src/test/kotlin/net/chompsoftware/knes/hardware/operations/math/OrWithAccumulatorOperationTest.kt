@@ -205,4 +205,85 @@ class OrWithAccumulatorOperationTest {
             isZeroFlag(data.zeroFlag)
         }
     }
+
+    @ParameterizedTest
+    @MethodSource("checkFlags")
+    fun `ORA Indirect Indexed`(data: RegisterMemoryExpectedCheck) {
+        val memory = BasicMemory(setupMemory(ORA_IIY, 0xf0u, size = 0xffff))
+
+        memory[0xf0] = 0xf0u
+        memory[0xf1] = 0xeeu
+        val yReg: UByte = 0x5u
+        memory[0xeef5] = data.memory
+
+        val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.aReg, yReg = yReg), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, ORA_IIY)
+            }
+            cycle {
+                memoryRead(1, 0xf0u)
+            }
+            cycle {
+                memoryRead(0xf0, 0xf0u)
+            }
+            cycle {
+                memoryRead(0xf1, 0xeeu)
+            }
+            cycle {
+                memoryRead(0xeef5, data.memory)
+            }
+        }
+
+        interrogator.assertCpuState {
+            programCounter(2)
+            aReg(data.expected)
+            isNegativeFlag(data.negativeFlag)
+            isZeroFlag(data.zeroFlag)
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("checkFlags")
+    fun `ORA Indexed Indirect`(data: RegisterMemoryExpectedCheck) {
+        val memory = BasicMemory(setupMemory(ORA_IIX, 0xf0u, size = 0xffff))
+
+        memory[0xf5] = 0xf0u
+        memory[0xf6] = 0xeeu
+        val xReg: UByte = 0x5u
+        memory[0xeef0] = data.memory
+
+        val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.aReg, xReg = xReg), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, ORA_IIX)
+            }
+            cycle {
+                memoryRead(1, 0xf0u)
+            }
+            cycle {}
+            cycle {
+                memoryRead(0xf5, 0xf0u)
+            }
+            cycle {
+                memoryRead(0xf6, 0xeeu)
+            }
+            cycle {
+                memoryRead(0xeef0, data.memory)
+            }
+        }
+
+        interrogator.assertCpuState {
+            programCounter(2)
+            aReg(data.expected)
+            isNegativeFlag(data.negativeFlag)
+            isZeroFlag(data.zeroFlag)
+        }
+    }
 }

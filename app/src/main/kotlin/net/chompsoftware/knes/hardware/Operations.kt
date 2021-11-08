@@ -96,6 +96,8 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     EOR_ABY to AbsoluteYReadPipeline(ExclusiveOr),
     EOR_Z to ZeroPageReadPipeline(ExclusiveOr),
     EOR_ZX to ZeroPageXReadPipeline(ExclusiveOr),
+    EOR_IIX to IndexedIndirectReadPipeline(ExclusiveOr),
+    EOR_IIY to IndirectIndexedReadPipeline(ExclusiveOr),
 
     //Increment
     INC_AB to AbsoluteLocationPipeline(*surroundWithMemoryReadWrite(Increment)),
@@ -155,6 +157,8 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     ORA_ABY to AbsoluteYReadPipeline(OrWithAccumulator),
     ORA_Z to ZeroPageReadPipeline(OrWithAccumulator),
     ORA_ZX to ZeroPageXReadPipeline(OrWithAccumulator),
+    ORA_IIX to IndexedIndirectReadPipeline(OrWithAccumulator),
+    ORA_IIY to IndirectIndexedReadPipeline(OrWithAccumulator),
 
     //Rotate Left
     ROL_NONE to SingleEffectPipeline(RotateLeft),
