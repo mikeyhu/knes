@@ -200,6 +200,15 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
         IncrementProgramCounter
     ),
 
+    //AddWithCarry
+    SBC_I to ImmediateReadPipeline(SubtractWithCarry),
+    SBC_AB to AbsoluteReadPipeline(SubtractWithCarry),
+    SBC_ABX to AbsoluteXReadPipeline(SubtractWithCarry),
+    SBC_ABY to AbsoluteYReadPipeline(SubtractWithCarry),
+    SBC_Z to ZeroPageReadPipeline(SubtractWithCarry),
+    SBC_ZX to ZeroPageXReadPipeline(SubtractWithCarry),
+
+
     //Set
     SEC to SingleEffectPipeline(SetCarry),
     SEI to SingleEffectPipeline(SetInterrupt),

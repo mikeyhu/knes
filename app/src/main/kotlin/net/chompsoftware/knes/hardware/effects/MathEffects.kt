@@ -9,14 +9,7 @@ object AddWithCarry : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         val toAdd: UByte = operationState.getMemoryValue()
-        val carryAmount: UByte = if (cpuState.isCarryFlag) 1u else 0u
-        val sumUInt = cpuState.aReg + toAdd + carryAmount
-        val sum = sumUInt.toUByte()
-        val overflow = cpuState.aReg.xor(sum).and(toAdd.xor(sum)).and(0x80u) > 0u
-
-        cpuState.isOverflowFlag = overflow
-        cpuState.isCarryFlag = sumUInt > 0xffu
-        cpuState.setARegWithFlags(sum)
+        addWithCarry(toAdd, cpuState)
     }
 
     override fun requiresCycle() = false
@@ -176,4 +169,25 @@ object RotateRight : Effect() {
         }
         cpuState.isCarryFlag = (valueToShift and 0x1u) > 0u
     }
+}
+
+object SubtractWithCarry : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        val toSubtract: UByte = operationState.getMemoryValue().xor(0xffu)
+        addWithCarry(toSubtract, cpuState)
+    }
+
+    override fun requiresCycle() = false
+}
+
+private fun addWithCarry(toAdd: UByte, cpuState: CpuState) {
+    val carryAmount: UByte = if (cpuState.isCarryFlag) 1u else 0u
+    val sumUInt = cpuState.aReg + toAdd + carryAmount
+    val sum = sumUInt.toUByte()
+    val overflow = cpuState.aReg.xor(sum).and(toAdd.xor(sum)).and(0x80u) > 0u
+
+    cpuState.isOverflowFlag = overflow
+    cpuState.isCarryFlag = sumUInt > 0xffu
+    cpuState.setARegWithFlags(sum)
 }
