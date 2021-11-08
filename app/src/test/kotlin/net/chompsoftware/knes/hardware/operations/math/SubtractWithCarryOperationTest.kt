@@ -231,4 +231,91 @@ class SubtractWithCarryOperationTest {
             isZeroFlag(data.zeroFlag)
         }
     }
+
+    @ParameterizedTest
+    @MethodSource("checkFlags")
+    fun `SBC Indirect Indexed`(data: SubtractWithCarryCheck) {
+        val memory = BasicMemory(setupMemory(SBC_IIY, 0xf0u, size = 0xffff))
+
+        memory[0xf0] = 0xf0u
+        memory[0xf1] = 0xeeu
+        val yReg: UByte = 0x5u
+        memory[0xeef5] = data.memory
+
+        val interrogator =
+            HardwareInterrogator(randomisedCpuState(aReg = data.aReg, isCarryFlag = data.carry, yReg = yReg), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, SBC_IIY)
+            }
+            cycle {
+                memoryRead(1, 0xf0u)
+            }
+            cycle {
+                memoryRead(0xf0, 0xf0u)
+            }
+            cycle {
+                memoryRead(0xf1, 0xeeu)
+            }
+            cycle {
+                memoryRead(0xeef5, data.memory)
+            }
+        }
+
+        interrogator.assertCpuState {
+            programCounter(2)
+            aReg(data.expected)
+            isNegativeFlag(data.negativeFlag)
+            isOverflowFlag(data.overflowFlag)
+            isCarryFlag(data.carryFlag)
+            isZeroFlag(data.zeroFlag)
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("checkFlags")
+    fun `SBC Indexed Indirect`(data: SubtractWithCarryCheck) {
+        val memory = BasicMemory(setupMemory(SBC_IIX, 0xf0u, size = 0xffff))
+
+        memory[0xf5] = 0xf0u
+        memory[0xf6] = 0xeeu
+        val xReg: UByte = 0x5u
+        memory[0xeef0] = data.memory
+
+        val interrogator =
+            HardwareInterrogator(randomisedCpuState(aReg = data.aReg, isCarryFlag = data.carry, xReg = xReg), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, SBC_IIX)
+            }
+            cycle {
+                memoryRead(1, 0xf0u)
+            }
+            cycle {}
+            cycle {
+                memoryRead(0xf5, 0xf0u)
+            }
+            cycle {
+                memoryRead(0xf6, 0xeeu)
+            }
+            cycle {
+                memoryRead(0xeef0, data.memory)
+            }
+        }
+
+        interrogator.assertCpuState {
+            programCounter(2)
+            aReg(data.expected)
+            isNegativeFlag(data.negativeFlag)
+            isOverflowFlag(data.overflowFlag)
+            isCarryFlag(data.carryFlag)
+            isZeroFlag(data.zeroFlag)
+        }
+    }
 }

@@ -12,6 +12,9 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     ADC_ABY to AbsoluteYReadPipeline(AddWithCarry),
     ADC_Z to ZeroPageReadPipeline(AddWithCarry),
     ADC_ZX to ZeroPageXReadPipeline(AddWithCarry),
+    ADC_IIX to IndexedIndirectReadPipeline(AddWithCarry),
+    ADC_IIY to IndirectIndexedReadPipeline(AddWithCarry),
+
 
     //AndWithAccumulator
     AND_I to ImmediateReadPipeline(AndWithAccumulator),
@@ -207,6 +210,8 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     SBC_ABY to AbsoluteYReadPipeline(SubtractWithCarry),
     SBC_Z to ZeroPageReadPipeline(SubtractWithCarry),
     SBC_ZX to ZeroPageXReadPipeline(SubtractWithCarry),
+    SBC_IIX to IndexedIndirectReadPipeline(SubtractWithCarry),
+    SBC_IIY to IndirectIndexedReadPipeline(SubtractWithCarry),
 
 
     //Set
