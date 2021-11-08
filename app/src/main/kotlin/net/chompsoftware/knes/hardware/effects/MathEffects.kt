@@ -22,6 +22,15 @@ object AddWithCarry : Effect() {
     override fun requiresCycle() = false
 }
 
+object AndWithAccumulator : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        cpuState.setARegWithFlags(cpuState.aReg.and(operationState.getMemoryValue()))
+    }
+
+    override fun requiresCycle() = false
+}
+
 object ArithmeticShiftLeft : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
