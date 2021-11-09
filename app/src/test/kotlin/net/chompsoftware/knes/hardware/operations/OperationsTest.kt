@@ -17,7 +17,7 @@ class OperationsTest {
     companion object {
         @JvmStatic
         fun unofficalNops(): Stream<Int> {
-            return listOf(NOP_1A, NOP_3A, NOP_5A, NOP_7A, NOP_DA, NOP_FA).map { it.toInt() }.stream()
+            return listOf(NOP_UN_1A, NOP_UN_3A, NOP_UN_5A, NOP_UN_7A, NOP_UN_DA, NOP_UN_FA).map { it.toInt() }.stream()
         }
     }
 

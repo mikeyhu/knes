@@ -133,12 +133,12 @@ const val LSR_ABX: UByte = 0x5eu
 
 //No Operation
 const val NOP: UByte = 0xeau
-const val NOP_1A: UByte = 0x1au
-const val NOP_3A: UByte = 0x3au
-const val NOP_5A: UByte = 0x5au
-const val NOP_7A: UByte = 0x7au
-const val NOP_DA: UByte = 0xdau
-const val NOP_FA: UByte = 0xfau
+const val NOP_UN_1A: UByte = 0x1au //unofficial
+const val NOP_UN_3A: UByte = 0x3au //unofficial
+const val NOP_UN_5A: UByte = 0x5au //unofficial
+const val NOP_UN_7A: UByte = 0x7au //unofficial
+const val NOP_UN_DA: UByte = 0xdau //unofficial
+const val NOP_UN_FA: UByte = 0xfau //unofficial
 
 //Or with Accumulator
 const val ORA_I: UByte = 0x09u

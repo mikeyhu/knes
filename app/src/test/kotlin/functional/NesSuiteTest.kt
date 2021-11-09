@@ -24,7 +24,7 @@ class NesSuiteTest {
         @JvmStatic
         fun testFiles(): Stream<String> {
             val files = File(testDirectory).listFiles()
-            val filenames = files.map { it.name }
+            val filenames = files.map { it.name }.sorted()
             return filenames.stream()
         }
     }
