@@ -2,16 +2,24 @@ package net.chompsoftware.knes.hardware.operations
 
 import net.chompsoftware.knes.hardware.BasicMemory
 import net.chompsoftware.knes.hardware.CpuState
-import net.chompsoftware.knes.hardware.instructions.BRK
-import net.chompsoftware.knes.hardware.instructions.NOP
-import net.chompsoftware.knes.hardware.instructions.RTI
+import net.chompsoftware.knes.hardware.instructions.*
 import net.chompsoftware.knes.hardware.utilities.HardwareInterrogator
 import net.chompsoftware.knes.hardware.utilities.randomisedCpuState
 import net.chompsoftware.knes.setupMemory
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
+import java.util.stream.Stream
 
 @ExperimentalUnsignedTypes
 class OperationsTest {
+
+    companion object {
+        @JvmStatic
+        fun unofficalNops(): Stream<Int> {
+            return listOf(NOP_1A, NOP_3A, NOP_5A, NOP_7A, NOP_DA, NOP_FA).map { it.toInt() }.stream()
+        }
+    }
 
     @Test
     fun `NOP - No Operation`() {
@@ -24,6 +32,27 @@ class OperationsTest {
         interrogator.assertCycleLog {
             cycle {
                 memoryRead(0, NOP)
+            }
+            cycle {}
+        }
+
+        interrogator.assertCpuState {
+            programCounter(1)
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("unofficalNops")
+    fun `NOP - No Operation - unofficial`(nop: Int) {
+        val memory = BasicMemory(setupMemory(nop.toUByte()))
+
+        val interrogator = HardwareInterrogator(randomisedCpuState(), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, nop.toUByte())
             }
             cycle {}
         }

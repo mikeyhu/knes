@@ -122,6 +122,12 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //No Operation
     NOP to SingleEffectPipeline(NoOperation),
+    NOP_1A to SingleEffectPipeline(NoOperation),
+    NOP_3A to SingleEffectPipeline(NoOperation),
+    NOP_5A to SingleEffectPipeline(NoOperation),
+    NOP_7A to SingleEffectPipeline(NoOperation),
+    NOP_DA to SingleEffectPipeline(NoOperation),
+    NOP_FA to SingleEffectPipeline(NoOperation),
 
     //Load Accumulator
     LDA_I to ImmediateReadPipeline(ReadIntoAccumulator),
