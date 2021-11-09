@@ -29,6 +29,18 @@ class OperationsTest {
         fun unofficalDopsZeroPage(): Stream<Int> {
             return listOf(DOP_Z_UN_04, DOP_Z_UN_44, DOP_Z_UN_64).map { it.toInt() }.stream()
         }
+
+        @JvmStatic
+        fun unofficalDopsZeroPageX(): Stream<Int> {
+            return listOf(
+                DOP_ZX_UN_14,
+                DOP_ZX_UN_34,
+                DOP_ZX_UN_54,
+                DOP_ZX_UN_74,
+                DOP_ZX_UN_D4,
+                DOP_ZX_UN_F4
+            ).map { it.toInt() }.stream()
+        }
     }
 
     @Test
@@ -114,6 +126,33 @@ class OperationsTest {
             cycle {
                 memoryRead(0xff, 0x0u)
             }
+        }
+
+        interrogator.assertCpuState {
+            programCounter(2)
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("unofficalDopsZeroPageX")
+    fun `DOP - Double No Operation - ZeroPageX - unofficial`(nop: Int) {
+        val memory = BasicMemory(setupMemory(nop.toUByte(), 0xfeu))
+
+        val interrogator = HardwareInterrogator(randomisedCpuState(xReg = 1u), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, nop.toUByte())
+            }
+            cycle {
+                memoryRead(1, 0xfeu)
+            }
+            cycle {
+                memoryRead(0xff, 0x0u)
+            }
+            cycle {}
         }
 
         interrogator.assertCpuState {

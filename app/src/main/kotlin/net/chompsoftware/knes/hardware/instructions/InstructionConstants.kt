@@ -33,6 +33,7 @@ const val ASL_ZX: UByte = 0x16u
 
 // AND + LSR - Unofficial
 const val ASR_I_UN: UByte = 0x4bu
+
 // Bit
 const val BIT_Z: UByte = 0x24u
 const val BIT_AB: UByte = 0x2cu
@@ -92,6 +93,13 @@ const val DOP_I_UN_E2: UByte = 0xe2u
 const val DOP_Z_UN_04: UByte = 0x04u
 const val DOP_Z_UN_44: UByte = 0x44u
 const val DOP_Z_UN_64: UByte = 0x64u
+const val DOP_ZX_UN_14: UByte = 0x14u
+const val DOP_ZX_UN_34: UByte = 0x34u
+const val DOP_ZX_UN_54: UByte = 0x54u
+const val DOP_ZX_UN_74: UByte = 0x74u
+const val DOP_ZX_UN_D4: UByte = 0xd4u
+const val DOP_ZX_UN_F4: UByte = 0xf4u
+
 
 //Exclusive OR
 const val EOR_I: UByte = 0x49u

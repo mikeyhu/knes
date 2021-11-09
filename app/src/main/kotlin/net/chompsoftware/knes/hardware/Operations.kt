@@ -108,7 +108,12 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     DOP_Z_UN_04 to ZeroPageReadPipeline(DoubleNoOperation),
     DOP_Z_UN_44 to ZeroPageReadPipeline(DoubleNoOperation),
     DOP_Z_UN_64 to ZeroPageReadPipeline(DoubleNoOperation),
-
+    DOP_ZX_UN_14 to ZeroPageXReadPipeline(DoubleNoOperation),
+    DOP_ZX_UN_34 to ZeroPageXReadPipeline(DoubleNoOperation),
+    DOP_ZX_UN_54 to ZeroPageXReadPipeline(DoubleNoOperation),
+    DOP_ZX_UN_74 to ZeroPageXReadPipeline(DoubleNoOperation),
+    DOP_ZX_UN_D4 to ZeroPageXReadPipeline(DoubleNoOperation),
+    DOP_ZX_UN_F4 to ZeroPageXReadPipeline(DoubleNoOperation),
 
     //Exclusive Or
     EOR_I to ImmediateReadPipeline(ExclusiveOr),
