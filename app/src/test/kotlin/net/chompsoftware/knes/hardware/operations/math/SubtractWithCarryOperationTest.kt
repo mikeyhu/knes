@@ -318,4 +318,32 @@ class SubtractWithCarryOperationTest {
             isZeroFlag(data.zeroFlag)
         }
     }
+
+    @ParameterizedTest
+    @MethodSource("checkFlags")
+    fun `SBC Immediate - unofficial 0xebu`(data: SubtractWithCarryCheck) {
+        val memory = BasicMemory(setupMemory(SBC_I_UN_EB, data.memory))
+
+        val interrogator = HardwareInterrogator(randomisedCpuState(aReg = data.aReg, isCarryFlag = data.carry), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, SBC_I_UN_EB)
+            }
+            cycle {
+                memoryRead(1, data.memory)
+            }
+        }
+
+        interrogator.assertCpuState {
+            programCounter(2)
+            aReg(data.expected)
+            isNegativeFlag(data.negativeFlag)
+            isOverflowFlag(data.overflowFlag)
+            isCarryFlag(data.carryFlag)
+            isZeroFlag(data.zeroFlag)
+        }
+    }
 }

@@ -10,6 +10,10 @@ const val ADC_ZX: UByte = 0x75u
 const val ADC_IIX: UByte = 0x61u
 const val ADC_IIY: UByte = 0x71u
 
+// AND + ASL - Unofficial
+const val ANC_I_UN_0B: UByte = 0x0bu
+const val ANC_I_UN_2B: UByte = 0x2bu
+
 // And With Accumulator
 const val AND_I: UByte = 0x29u
 const val AND_Z: UByte = 0x25u
@@ -27,6 +31,8 @@ const val ASL_ABX: UByte = 0x1eu
 const val ASL_Z: UByte = 0x06u
 const val ASL_ZX: UByte = 0x16u
 
+// AND + LSR - Unofficial
+const val ASR_I_UN: UByte = 0x4bu
 // Bit
 const val BIT_Z: UByte = 0x24u
 const val BIT_AB: UByte = 0x2cu
@@ -76,6 +82,13 @@ const val DEC_ZX: UByte = 0xd6u
 
 const val DEX: UByte = 0xcau //X
 const val DEY: UByte = 0x88u //Y
+
+//Double No Operation - All unofficial
+const val DOP_I_UN_80: UByte = 0x80u
+const val DOP_I_UN_82: UByte = 0x82u
+const val DOP_I_UN_89: UByte = 0x89u
+const val DOP_I_UN_C2: UByte = 0xc2u
+const val DOP_I_UN_E2: UByte = 0xe2u
 
 //Exclusive OR
 const val EOR_I: UByte = 0x49u
@@ -183,6 +196,7 @@ const val SBC_ABX: UByte = 0xfdu
 const val SBC_ABY: UByte = 0xf9u
 const val SBC_IIX: UByte = 0xe1u
 const val SBC_IIY: UByte = 0xf1u
+const val SBC_I_UN_EB: UByte = 0xebu //unofficial
 
 //Set
 const val SEC: UByte = 0x38u //carry

@@ -19,6 +19,11 @@ class OperationsTest {
         fun unofficalNops(): Stream<Int> {
             return listOf(NOP_UN_1A, NOP_UN_3A, NOP_UN_5A, NOP_UN_7A, NOP_UN_DA, NOP_UN_FA).map { it.toInt() }.stream()
         }
+
+        @JvmStatic
+        fun unofficalDops(): Stream<Int> {
+            return listOf(DOP_I_UN_80, DOP_I_UN_82, DOP_I_UN_89, DOP_I_UN_C2, DOP_I_UN_E2).map { it.toInt() }.stream()
+        }
     }
 
     @Test
@@ -59,6 +64,29 @@ class OperationsTest {
 
         interrogator.assertCpuState {
             programCounter(1)
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("unofficalDops")
+    fun `DOP - Double No Operation - Immediate - unofficial`(nop: Int) {
+        val memory = BasicMemory(setupMemory(nop.toUByte(), 0xffu))
+
+        val interrogator = HardwareInterrogator(randomisedCpuState(), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, nop.toUByte())
+            }
+            cycle {
+                memoryRead(1, 0xffu)
+            }
+        }
+
+        interrogator.assertCpuState {
+            programCounter(2)
         }
     }
 

@@ -24,6 +24,32 @@ object AndWithAccumulator : Effect() {
     override fun requiresCycle() = false
 }
 
+object AndWithCarry : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        cpuState.setARegWithFlags(cpuState.aReg.and(operationState.getMemoryValue()))
+        val toShift = operationState.getMemoryValue()
+        val shifted = toShift.toUInt().shl(1)
+        cpuState.isCarryFlag = shifted.isCarry()
+    }
+
+    override fun requiresCycle() = false
+}
+
+object AndShiftRight : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        val anded = cpuState.aReg.and(operationState.getMemoryValue()).toUInt()
+        val shifted = anded.shr(1)
+        val shiftedByte = shifted.and(0xffu).toUByte()
+
+        cpuState.setARegWithFlags(shiftedByte)
+        cpuState.isCarryFlag = (anded and 0x1u) > 0u
+    }
+
+    override fun requiresCycle() = false
+}
+
 object ArithmeticShiftLeft : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {

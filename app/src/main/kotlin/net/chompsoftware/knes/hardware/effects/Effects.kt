@@ -71,6 +71,14 @@ object NoOperation : Effect() {
     }
 }
 
+object DoubleNoOperation : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+    }
+
+    override fun requiresCycle() = false
+}
+
 object IncrementProgramCounter : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {

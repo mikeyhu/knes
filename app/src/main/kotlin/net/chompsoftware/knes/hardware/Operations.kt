@@ -26,12 +26,19 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     AND_IIX to IndexedIndirectReadPipeline(AndWithAccumulator),
     AND_IIY to IndirectIndexedReadPipeline(AndWithAccumulator),
 
+    // And + ASL - Unofficial
+    ANC_I_UN_0B to ImmediateReadPipeline(AndWithCarry),
+    ANC_I_UN_2B to ImmediateReadPipeline(AndWithCarry),
+
     //ArithmeticShiftLeft
     ASL_NONE to SingleEffectPipeline(ArithmeticShiftLeft),
     ASL_AB to AbsoluteLocationPipeline(*surroundWithMemoryReadWrite(ArithmeticShiftLeft)),
     ASL_ABX to AbsoluteXLocationPipeline(*surroundWithMemoryReadWrite(ArithmeticShiftLeft)),
     ASL_Z to ZeroPageLocationPipeline(*surroundWithMemoryReadWrite(ArithmeticShiftLeft)),
     ASL_ZX to ZeroPageXLocationPipeline(*surroundWithMemoryReadWrite(ArithmeticShiftLeft)),
+
+    // AND + LSR - Unofficial
+    ASR_I_UN to ImmediateReadPipeline(AndShiftRight),
 
     //BitWithAccumulator
     BIT_AB to AbsoluteReadPipeline(BitWithAccumulator),
@@ -91,6 +98,13 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     DEC_ZX to ZeroPageXLocationPipeline(*surroundWithMemoryReadWrite(Decrement)),
     DEX to SingleEffectPipeline(DecrementX),
     DEY to SingleEffectPipeline(DecrementY),
+
+    //Double No Operation (all unofficial)
+    DOP_I_UN_80 to ImmediateReadPipeline(DoubleNoOperation),
+    DOP_I_UN_82 to ImmediateReadPipeline(DoubleNoOperation),
+    DOP_I_UN_89 to ImmediateReadPipeline(DoubleNoOperation),
+    DOP_I_UN_C2 to ImmediateReadPipeline(DoubleNoOperation),
+    DOP_I_UN_E2 to ImmediateReadPipeline(DoubleNoOperation),
 
     //Exclusive Or
     EOR_I to ImmediateReadPipeline(ExclusiveOr),
@@ -218,7 +232,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     SBC_ZX to ZeroPageXReadPipeline(SubtractWithCarry),
     SBC_IIX to IndexedIndirectReadPipeline(SubtractWithCarry),
     SBC_IIY to IndirectIndexedReadPipeline(SubtractWithCarry),
-
+    SBC_I_UN_EB to ImmediateReadPipeline(SubtractWithCarry),
 
     //Set
     SEC to SingleEffectPipeline(SetCarry),
