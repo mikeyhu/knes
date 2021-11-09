@@ -21,8 +21,13 @@ class OperationsTest {
         }
 
         @JvmStatic
-        fun unofficalDops(): Stream<Int> {
+        fun unofficalDopsImmediate(): Stream<Int> {
             return listOf(DOP_I_UN_80, DOP_I_UN_82, DOP_I_UN_89, DOP_I_UN_C2, DOP_I_UN_E2).map { it.toInt() }.stream()
+        }
+
+        @JvmStatic
+        fun unofficalDopsZeroPage(): Stream<Int> {
+            return listOf(DOP_Z_UN_04, DOP_Z_UN_44, DOP_Z_UN_64).map { it.toInt() }.stream()
         }
     }
 
@@ -68,7 +73,7 @@ class OperationsTest {
     }
 
     @ParameterizedTest
-    @MethodSource("unofficalDops")
+    @MethodSource("unofficalDopsImmediate")
     fun `DOP - Double No Operation - Immediate - unofficial`(nop: Int) {
         val memory = BasicMemory(setupMemory(nop.toUByte(), 0xffu))
 
@@ -82,6 +87,32 @@ class OperationsTest {
             }
             cycle {
                 memoryRead(1, 0xffu)
+            }
+        }
+
+        interrogator.assertCpuState {
+            programCounter(2)
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("unofficalDopsZeroPage")
+    fun `DOP - Double No Operation - ZeroPage - unofficial`(nop: Int) {
+        val memory = BasicMemory(setupMemory(nop.toUByte(), 0xffu))
+
+        val interrogator = HardwareInterrogator(randomisedCpuState(), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, nop.toUByte())
+            }
+            cycle {
+                memoryRead(1, 0xffu)
+            }
+            cycle {
+                memoryRead(0xff, 0x0u)
             }
         }
 

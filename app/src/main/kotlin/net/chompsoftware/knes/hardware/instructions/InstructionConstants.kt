@@ -89,6 +89,9 @@ const val DOP_I_UN_82: UByte = 0x82u
 const val DOP_I_UN_89: UByte = 0x89u
 const val DOP_I_UN_C2: UByte = 0xc2u
 const val DOP_I_UN_E2: UByte = 0xe2u
+const val DOP_Z_UN_04: UByte = 0x04u
+const val DOP_Z_UN_44: UByte = 0x44u
+const val DOP_Z_UN_64: UByte = 0x64u
 
 //Exclusive OR
 const val EOR_I: UByte = 0x49u
