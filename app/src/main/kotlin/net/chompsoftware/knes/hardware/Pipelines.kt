@@ -267,7 +267,7 @@ class IndirectPipeline(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadAtProgramCounter,
     ArgumentsToLocation,
     ReadLocationLow,
-    ReadLocationHigh,
+    ReadLocationHighWithWrap,
     ArgumentsToLocation,
     *postEffects
 )

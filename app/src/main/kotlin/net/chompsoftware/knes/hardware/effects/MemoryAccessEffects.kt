@@ -134,6 +134,14 @@ object ReadLocationHigh : Effect() {
     }
 }
 
+object ReadLocationHighWithWrap : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        val wrappedLocation = if(operationState.getLocation().and(0xff)==0xff) operationState.getLocation() - 0xff else operationState.getLocation() + 1
+        operationState.argumentHigh = memory[wrappedLocation]
+    }
+}
+
 object MemoryReadFromLocation : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {

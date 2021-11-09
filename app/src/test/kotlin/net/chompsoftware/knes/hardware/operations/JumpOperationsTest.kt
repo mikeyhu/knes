@@ -67,6 +67,48 @@ class JumpOperationsTest {
     }
 
     @Test
+    fun `JMP - Jump to indirect position wrap-around`() {
+        /* http://6502.org/tutorials/6502opcodes.html
+        Note that there is no carry associated with the indirect jump so:
+        AN INDIRECT JUMP MUST NEVER USE A
+        VECTOR BEGINNING ON THE LAST BYTE
+        OF A PAGE
+        For example if address $3000 contains $40, $30FF contains $80, and $3100 contains $50, the result of JMP ($30FF) will be a transfer of control to $4080 rather than $5080 as you intended i.e. the 6502 took the low byte of the address from $30FF and the high byte from $3000.
+         */
+        val memory = BasicMemory(setupMemory(JMP_IN, 0xffu, 0x30u, NOP))
+
+        memory[0x3000] = 0x40u
+        memory[0x30ff] = 0x80u
+        memory[0x3100] = 0x50u
+
+        val interrogator = HardwareInterrogator(randomisedCpuState(), memory)
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, JMP_IN)
+            }
+            cycle {
+                memoryRead(1, 0xffu)
+            }
+            cycle {
+                memoryRead(2, 0x30u)
+            }
+            cycle {
+                memoryRead(0x30ff, 0x80u)
+            }
+            cycle {
+                memoryRead(0x3000, 0x40u)
+            }
+        }
+
+        interrogator.assertCpuState {
+            programCounter(0x4080)
+        }
+    }
+
+    @Test
     fun `JSR - Jump to subroutine`() {
         val memory = BasicMemory(setupMemory(JSR_AB, 0x34u, 0x12u))
 
