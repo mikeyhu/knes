@@ -26,19 +26,12 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     AND_IIX to IndexedIndirectReadPipeline(AndWithAccumulator),
     AND_IIY to IndirectIndexedReadPipeline(AndWithAccumulator),
 
-    // And + ASL - Unofficial
-    ANC_I_UN_0B to ImmediateReadPipeline(AndWithCarry),
-    ANC_I_UN_2B to ImmediateReadPipeline(AndWithCarry),
-
     //ArithmeticShiftLeft
     ASL_NONE to SingleEffectPipeline(ArithmeticShiftLeft),
     ASL_AB to AbsoluteLocationPipeline(*surroundWithMemoryReadWrite(ArithmeticShiftLeft)),
     ASL_ABX to AbsoluteXLocationPipeline(*surroundWithMemoryReadWrite(ArithmeticShiftLeft)),
     ASL_Z to ZeroPageLocationPipeline(*surroundWithMemoryReadWrite(ArithmeticShiftLeft)),
     ASL_ZX to ZeroPageXLocationPipeline(*surroundWithMemoryReadWrite(ArithmeticShiftLeft)),
-
-    // AND + LSR - Unofficial
-    ASR_I_UN to ImmediateReadPipeline(AndShiftRight),
 
     //BitWithAccumulator
     BIT_AB to AbsoluteReadPipeline(BitWithAccumulator),
@@ -99,22 +92,6 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     DEX to SingleEffectPipeline(DecrementX),
     DEY to SingleEffectPipeline(DecrementY),
 
-    //Double No Operation (all unofficial)
-    DOP_I_UN_80 to ImmediateReadPipeline(DoubleNoOperation),
-    DOP_I_UN_82 to ImmediateReadPipeline(DoubleNoOperation),
-    DOP_I_UN_89 to ImmediateReadPipeline(DoubleNoOperation),
-    DOP_I_UN_C2 to ImmediateReadPipeline(DoubleNoOperation),
-    DOP_I_UN_E2 to ImmediateReadPipeline(DoubleNoOperation),
-    DOP_Z_UN_04 to ZeroPageReadPipeline(DoubleNoOperation),
-    DOP_Z_UN_44 to ZeroPageReadPipeline(DoubleNoOperation),
-    DOP_Z_UN_64 to ZeroPageReadPipeline(DoubleNoOperation),
-    DOP_ZX_UN_14 to ZeroPageXReadPipeline(DoubleNoOperation),
-    DOP_ZX_UN_34 to ZeroPageXReadPipeline(DoubleNoOperation),
-    DOP_ZX_UN_54 to ZeroPageXReadPipeline(DoubleNoOperation),
-    DOP_ZX_UN_74 to ZeroPageXReadPipeline(DoubleNoOperation),
-    DOP_ZX_UN_D4 to ZeroPageXReadPipeline(DoubleNoOperation),
-    DOP_ZX_UN_F4 to ZeroPageXReadPipeline(DoubleNoOperation),
-
     //Exclusive Or
     EOR_I to ImmediateReadPipeline(ExclusiveOr),
     EOR_AB to AbsoluteReadPipeline(ExclusiveOr),
@@ -145,12 +122,6 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 
     //No Operation
     NOP to SingleEffectPipeline(NoOperation),
-    NOP_UN_1A to SingleEffectPipeline(NoOperation),
-    NOP_UN_3A to SingleEffectPipeline(NoOperation),
-    NOP_UN_5A to SingleEffectPipeline(NoOperation),
-    NOP_UN_7A to SingleEffectPipeline(NoOperation),
-    NOP_UN_DA to SingleEffectPipeline(NoOperation),
-    NOP_UN_FA to SingleEffectPipeline(NoOperation),
 
     //Load Accumulator
     LDA_I to ImmediateReadPipeline(ReadIntoAccumulator),
@@ -232,7 +203,7 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
         IncrementProgramCounter
     ),
 
-    //AddWithCarry
+    //SubtractWithCarry
     SBC_I to ImmediateReadPipeline(SubtractWithCarry),
     SBC_AB to AbsoluteReadPipeline(SubtractWithCarry),
     SBC_ABX to AbsoluteXReadPipeline(SubtractWithCarry),
@@ -241,7 +212,6 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     SBC_ZX to ZeroPageXReadPipeline(SubtractWithCarry),
     SBC_IIX to IndexedIndirectReadPipeline(SubtractWithCarry),
     SBC_IIY to IndirectIndexedReadPipeline(SubtractWithCarry),
-    SBC_I_UN_EB to ImmediateReadPipeline(SubtractWithCarry),
 
     //Set
     SEC to SingleEffectPipeline(SetCarry),
@@ -275,8 +245,48 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
 )
 
 @ExperimentalUnsignedTypes
-val instructionMap: Map<UByte, EffectPipeline> = mapOf(*instructionList).also {
-    if (it.size != instructionList.size) {
+val unofficialInstructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
+    // And + ASL
+    ANC_I_UN_0B to ImmediateReadPipeline(AndWithCarry),
+    ANC_I_UN_2B to ImmediateReadPipeline(AndWithCarry),
+
+    // AND + LSR
+    ASR_I_UN to ImmediateReadPipeline(AndShiftRight),
+
+    //Double No Operation
+    DOP_I_UN_80 to ImmediateReadPipeline(DoubleNoOperation),
+    DOP_I_UN_82 to ImmediateReadPipeline(DoubleNoOperation),
+    DOP_I_UN_89 to ImmediateReadPipeline(DoubleNoOperation),
+    DOP_I_UN_C2 to ImmediateReadPipeline(DoubleNoOperation),
+    DOP_I_UN_E2 to ImmediateReadPipeline(DoubleNoOperation),
+    DOP_Z_UN_04 to ZeroPageReadPipeline(DoubleNoOperation),
+    DOP_Z_UN_44 to ZeroPageReadPipeline(DoubleNoOperation),
+    DOP_Z_UN_64 to ZeroPageReadPipeline(DoubleNoOperation),
+    DOP_ZX_UN_14 to ZeroPageXReadPipeline(DoubleNoOperation),
+    DOP_ZX_UN_34 to ZeroPageXReadPipeline(DoubleNoOperation),
+    DOP_ZX_UN_54 to ZeroPageXReadPipeline(DoubleNoOperation),
+    DOP_ZX_UN_74 to ZeroPageXReadPipeline(DoubleNoOperation),
+    DOP_ZX_UN_D4 to ZeroPageXReadPipeline(DoubleNoOperation),
+    DOP_ZX_UN_F4 to ZeroPageXReadPipeline(DoubleNoOperation),
+
+    //No Operation
+    NOP_UN_1A to SingleEffectPipeline(NoOperation),
+    NOP_UN_3A to SingleEffectPipeline(NoOperation),
+    NOP_UN_5A to SingleEffectPipeline(NoOperation),
+    NOP_UN_7A to SingleEffectPipeline(NoOperation),
+    NOP_UN_DA to SingleEffectPipeline(NoOperation),
+    NOP_UN_FA to SingleEffectPipeline(NoOperation),
+
+    //Subtract with Carry
+    SBC_I_UN_EB to ImmediateReadPipeline(SubtractWithCarry),
+)
+
+@ExperimentalUnsignedTypes
+val instructionMap: Map<UByte, EffectPipeline> = mapOf(
+    *instructionList,
+    *unofficialInstructionList
+).also {
+    if (it.size != instructionList.size + unofficialInstructionList.size) {
         throw Error("instructionMap size incorrect")
     }
 }
