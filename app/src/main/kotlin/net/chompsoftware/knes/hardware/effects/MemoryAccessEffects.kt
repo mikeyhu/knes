@@ -59,7 +59,7 @@ object AbsoluteReadWithYOffset : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         val initialLocation = operationState.argumentsPosition()
-        val finalLocation = initialLocation + cpuState.yReg.toInt()
+        val finalLocation = (initialLocation + cpuState.yReg.toInt()) % 0x10000
         operationState.memoryValue = memory[finalLocation]
         if (pageBoundaryCrossed(initialLocation, finalLocation)) {
             operationState.cyclesRemaining += 1
@@ -137,7 +137,9 @@ object ReadLocationHigh : Effect() {
 object ReadLocationHighWithWrap : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        val wrappedLocation = if(operationState.getLocation().and(0xff)==0xff) operationState.getLocation() - 0xff else operationState.getLocation() + 1
+        val wrappedLocation = if (operationState.getLocation()
+                .and(0xff) == 0xff
+        ) operationState.getLocation() - 0xff else operationState.getLocation() + 1
         operationState.argumentHigh = memory[wrappedLocation]
     }
 }

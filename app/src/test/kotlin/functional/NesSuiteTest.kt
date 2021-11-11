@@ -77,7 +77,7 @@ class NesSuiteTest {
             try {
                 val operationState = OperationState(0)
                 harness.processInstruction(operationState)
-            } catch (error: Error) {
+            } catch (error: Exception) {
                 reportThenFail("failed at ${counter.toHex()} with $error")
             }
             operationsDone++

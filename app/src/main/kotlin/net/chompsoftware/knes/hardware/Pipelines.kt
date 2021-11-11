@@ -37,7 +37,7 @@ class OperationState(
 
 
     fun argumentsToLocation(offset: UByte) {
-        location = argumentsPosition() + offset.toInt()
+        location = (argumentsPosition() + offset.toInt()) % 0x10000
     }
 
     fun zeroPageToLocation() {

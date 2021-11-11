@@ -130,6 +130,37 @@ class StoreOperationsTest {
         }
 
         @Test
+        fun `STA Absolute with X offset (wrapping)`() {
+            val memory = BasicMemory(setupMemory(STA_ABX, 0xffu, 0xffu, NOP, 0x00u))
+
+            val aReg: UByte = 0x01u
+
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = aReg, xReg = 0x05u), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, STA_ABX)
+                }
+                cycle {
+                    memoryRead(1, 0xffu)
+                }
+                cycle {
+                    memoryRead(2, 0xffu)
+                }
+                cycle {}
+                cycle {
+                    memoryWrite(0x04, aReg)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(3)
+            }
+        }
+
+        @Test
         fun `STA Absolute with Y offset`() {
             val memory = BasicMemory(setupMemory(STA_ABY, 0x01u, 0x04u, NOP, 0x00u))
 
@@ -152,6 +183,37 @@ class StoreOperationsTest {
                 cycle {}
                 cycle {
                     memoryWrite(0x403, aReg)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(3)
+            }
+        }
+
+        @Test
+        fun `STA Absolute with Y offset (wrapping)`() {
+            val memory = BasicMemory(setupMemory(STA_ABY, 0xffu, 0xffu, NOP, 0x00u))
+
+            val aReg: UByte = 0x01u
+
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = aReg, yReg = 0x05u), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, STA_ABY)
+                }
+                cycle {
+                    memoryRead(1, 0xffu)
+                }
+                cycle {
+                    memoryRead(2, 0xffu)
+                }
+                cycle {}
+                cycle {
+                    memoryWrite(0x04, aReg)
                 }
             }
 
@@ -198,6 +260,43 @@ class StoreOperationsTest {
         }
 
         @Test
+        fun `STA Indirect Indexed (wrapped)`() {
+            val memory = BasicMemory(setupMemory(STA_IIY, 0xf0u, size = 0xffff))
+
+            memory[0xf0] = 0xffu
+            memory[0xf1] = 0xffu
+            val aReg: UByte = 0x01u
+            val yReg: UByte = 0x5u
+
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = aReg, yReg = yReg), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, STA_IIY)
+                }
+                cycle {
+                    memoryRead(1, 0xf0u)
+                }
+                cycle {
+                    memoryRead(0xf0, 0xffu)
+                }
+                cycle {
+                    memoryRead(0xf1, 0xffu)
+                }
+                cycle {}
+                cycle {
+                    memoryWrite(0x04, aReg)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+            }
+        }
+
+        @Test
         fun `STA Indexed Indirect`() {
             val memory = BasicMemory(setupMemory(STA_IIX, 0xf0u, size = 0xffff))
 
@@ -223,6 +322,43 @@ class StoreOperationsTest {
                 }
                 cycle {
                     memoryRead(0xf6, 0xeeu)
+                }
+                cycle {
+                    memoryWrite(0xeef0, aReg)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(2)
+            }
+        }
+
+        @Test
+        fun `STA Indexed Indirect (wrapped)`() {
+            val memory = BasicMemory(setupMemory(STA_IIX, 0xffu, NOP, NOP, 0xf0u, 0xeeu, size = 0xffff))
+
+            memory[0xf5] = 0xf0u
+            memory[0xf6] = 0xeeu
+            val aReg: UByte = 0x01u
+            val xReg: UByte = 0x5u
+
+            val interrogator = HardwareInterrogator(randomisedCpuState(aReg = aReg, xReg = xReg), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(0, STA_IIX)
+                }
+                cycle {
+                    memoryRead(1, 0xffu)
+                }
+                cycle {}
+                cycle {
+                    memoryRead(0x4, 0xf0u)
+                }
+                cycle {
+                    memoryRead(0x5, 0xeeu)
                 }
                 cycle {
                     memoryWrite(0xeef0, aReg)
