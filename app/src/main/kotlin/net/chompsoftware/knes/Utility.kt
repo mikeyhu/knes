@@ -5,6 +5,9 @@ import net.chompsoftware.knes.hardware.effects.CpuStatusComparisons
 fun UByte.toHex() = "0x" + this.toString(16)
 fun UInt.toHex() = "0x" + this.toString(16)
 fun Int.toHex() = "0x" + this.toString(16)
+fun UByte.toLogHex() = this.toString(16).uppercase()
+fun UInt.toLogHex() = this.toString(16).uppercase()
+fun Int.toLogHex() = this.toString(16).uppercase()
 
 fun String.toHexUByte() = Integer.parseInt(this.removePrefix("0x").removeSuffix("u"), 16).toUByte()
 fun String.toHexUInt() = Integer.parseInt(this.removePrefix("0x").removeSuffix("u"), 16).toUInt()

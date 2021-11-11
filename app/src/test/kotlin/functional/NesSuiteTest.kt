@@ -7,6 +7,7 @@ import net.chompsoftware.knes.hardware.rom.RomLoader
 import net.chompsoftware.knes.hardware.utilities.LoggingHarness
 import net.chompsoftware.knes.toHex
 import net.chompsoftware.knes.toInt16
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
@@ -86,6 +87,60 @@ class NesSuiteTest {
                 } else {
                     reportThenFail("hit trap at ${counter.toHex()}")
                 }
+            }
+        } while (counter != cpuState.programCounter)
+
+        report()
+    }
+
+    @Test
+    fun `Run external NES suites - CPU - nestest`() {
+
+        val suiteFile = readFileToByteArray(File("../nesSuite/nestest.nes"))
+
+        val romInformation = RomInspector.inspectRom(suiteFile)
+
+        println(romInformation)
+
+        val memory = RomLoader.loadMemory(romInformation, suiteFile)
+
+        val initialCounter = 0xC000
+
+        val cpuState = CpuState(
+            programCounter = initialCounter,
+            breakLocation = 0xfffe
+        )
+
+        val start = System.nanoTime()
+
+        val harness = LoggingHarness(cpuState, memory, maxSize = 10)
+        harness.enableLogging()
+
+        val report = {
+            val finish = System.nanoTime()
+            val elapsed = (finish - start) / 1000000
+            println("Operations done: ${harness.operationsDone} Time taken: ${elapsed}ms. Ops per ms: ${harness.operationsDone / elapsed}")
+            harness.finishLogging()
+        }
+
+        val reportThenFail = { message: String ->
+            report()
+            harness.printLog()
+            fail(message)
+        }
+
+        do {
+            val counter = cpuState.programCounter
+            try {
+                val operationState = OperationState(0)
+                harness.processInstruction(operationState)
+            } catch (error: Error) {
+                reportThenFail("failed at ${counter.toHex()} with $error")
+            } catch (e: Exception) {
+                reportThenFail("failed at ${counter.toHex()} with ${e}")
+            }
+            if (counter == cpuState.programCounter) {
+                reportThenFail("hit trap at ${counter.toHex()}")
             }
         } while (counter != cpuState.programCounter)
 

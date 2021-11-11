@@ -50,7 +50,12 @@ object RomLoader {
             0 -> {
                 val array = UByteArray(0x10000)
                 rom.copyInto(array, 0x8000, 0 + headerSize, 0x4000 + headerSize)
-                rom.copyInto(array, 0xC000, 0x4000 + headerSize, 0x8000 + headerSize)
+                if (info.prgRom > 0x4000) {
+                    rom.copyInto(array, 0xC000, 0x4000 + headerSize, 0x8000 + headerSize)
+                } else {
+                    rom.copyInto(array, 0xC000, 0 + headerSize, 0x4000 + headerSize)
+
+                }
                 return BasicMemory(array)
             }
             else ->

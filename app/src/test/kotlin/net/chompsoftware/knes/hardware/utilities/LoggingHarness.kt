@@ -2,14 +2,37 @@ package net.chompsoftware.knes.hardware.utilities
 
 import net.chompsoftware.knes.hardware.*
 import net.chompsoftware.knes.toHex
+import net.chompsoftware.knes.toLogHex
+import java.io.File
+import java.io.PrintWriter
 
 @ExperimentalUnsignedTypes
 class LoggingHarness(private val cpuState: CpuState, private val memory: Memory, maxSize: Int = 10) {
 
+    private val logFileName = "/tmp/knes.log"
     private val processLog = ProcessLog(maxSize)
+    var operationsDone = 0
+    var cyclesDone = 7 // start at 7 due to initial bootstrapping?
+
+    lateinit var log: PrintWriter
+
+    private var loggingEnabled = false
+
+    fun enableLogging() {
+        File(logFileName).delete()
+        log = File(logFileName).printWriter()
+
+        loggingEnabled = true
+    }
+
+    fun finishLogging() {
+        if (loggingEnabled) {
+            log.close()
+        }
+    }
 
     fun processInstruction(operationState: OperationState = OperationState(0, null, null, null)) {
-        val processLogEntry = ProcessLogEntry(cpuState)
+        val processLogEntry = ProcessLogEntry(cpuState, cyclesDone)
 
         val trackingMemory = TrackingMemory(memory, processLogEntry)
 
@@ -17,10 +40,16 @@ class LoggingHarness(private val cpuState: CpuState, private val memory: Memory,
 
         processLogEntry.nextCycle()
         var nextPipeline: EffectPipeline? = Operation.run(cpuState, trackingMemory, operationState)
-
+        cyclesDone++
         while (nextPipeline != null) {
             processLogEntry.nextCycle()
             nextPipeline = nextPipeline.run(cpuState, trackingMemory, operationState)
+            cyclesDone++
+        }
+        operationsDone++
+        if (loggingEnabled) {
+//            log.println("${processLogEntry.savedCpuState.programCounter.toLogHex()}  ${processLogEntry.savedCpuState}  ${processLogEntry.cycles}  CYC:${processLogEntry.cyclesDone}")
+            log.println("${processLogEntry.savedCpuState.programCounter.toLogHex()} CYC:${processLogEntry.cyclesDone}")
         }
     }
 
@@ -46,7 +75,7 @@ class LoggingHarness(private val cpuState: CpuState, private val memory: Memory,
         }
     }
 
-    inner class ProcessLogEntry(cpuState: CpuState) {
+    inner class ProcessLogEntry(cpuState: CpuState, val cyclesDone: Int) {
         val savedCpuState: CpuState = cpuState.copy()
         val cycles: MutableList<MutableList<Activity>> = mutableListOf()
 
