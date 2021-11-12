@@ -337,6 +337,51 @@ class LoadOperationsTest {
 
         @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
         @MethodSource("checkNegativeZeroFlags")
+        fun `LDA Indirect Indexed (wrapping)`(data: InputWithNegativeZeroCheck) {
+            val memory = BasicMemory(setupMemory(0xeeu, NOP, LDA_IIY, 0xffu, size = 0xffff))
+
+            memory[0xff] = 0xf0u
+            val yReg: UByte = 0x15u
+            memory[0xef05] = data.input
+
+            val interrogator = HardwareInterrogator(
+                randomisedCpuState(
+                    programCounter = 2,
+                    yReg = yReg
+                ), memory
+            )
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(2, LDA_IIY)
+                }
+                cycle {
+                    memoryRead(3, 0xffu)
+                }
+                cycle {
+                    memoryRead(0xff, 0xf0u)
+                }
+                cycle {
+                    memoryRead(0x00, 0xeeu)
+                }
+                cycle {
+                    memoryRead(0xef05, data.input)
+                }
+                cycle {}
+            }
+
+            interrogator.assertCpuState {
+                programCounter(4)
+                aReg(data.input)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
+        }
+
+        @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
+        @MethodSource("checkNegativeZeroFlags")
         fun `LDA Indexed Indirect`(data: InputWithNegativeZeroCheck) {
             val memory = BasicMemory(setupMemory(LDA_IIX, 0xf0u, size = 0xffff))
 
@@ -370,6 +415,46 @@ class LoadOperationsTest {
 
             interrogator.assertCpuState {
                 programCounter(2)
+                aReg(data.input)
+                isNegativeFlag(data.negativeFlag)
+                isZeroFlag(data.zeroFlag)
+            }
+        }
+
+        @ParameterizedTest(name = NEGATIVE_ZERO_CHECK)
+        @MethodSource("checkNegativeZeroFlags")
+        fun `LDA Indexed Indirect (wrapping)`(data: InputWithNegativeZeroCheck) {
+            val memory = BasicMemory(setupMemory(0xeeu, NOP, LDA_IIX, 0xfeu, size = 0xffff))
+
+            memory[0xff] = 0xf0u
+            val xReg: UByte = 1u
+            memory[0xeef0] = data.input
+
+            val interrogator = HardwareInterrogator(randomisedCpuState(programCounter = 2, xReg = xReg), memory)
+
+            interrogator.processInstruction()
+
+            interrogator.assertCycleLog {
+                cycle {
+                    memoryRead(2, LDA_IIX)
+                }
+                cycle {
+                    memoryRead(3, 0xfeu)
+                }
+                cycle {}
+                cycle {
+                    memoryRead(0xff, 0xf0u)
+                }
+                cycle {
+                    memoryRead(0x00, 0xeeu)
+                }
+                cycle {
+                    memoryRead(0xeef0, data.input)
+                }
+            }
+
+            interrogator.assertCpuState {
+                programCounter(4)
                 aReg(data.input)
                 isNegativeFlag(data.negativeFlag)
                 isZeroFlag(data.zeroFlag)

@@ -226,7 +226,7 @@ class IndirectIndexedReadPipeline(vararg postEffects: Effect) : VariableLengthPi
     ReadAtProgramCounter,
     ZeroPageToLocation,
     ReadLocationLow,
-    ReadLocationHigh,
+    ReadLocationZeroPageHigh,
     AbsoluteReadWithYOffset,
     *postEffects
 )
@@ -236,7 +236,7 @@ class IndexedIndirectReadPipeline(vararg postEffects: Effect) : VariableLengthPi
     ReadAtProgramCounter,
     ZeroPageXToLocation,
     ReadLocationLow,
-    ReadLocationHigh,
+    ReadLocationZeroPageHigh,
     AbsoluteRead,
     *postEffects
 )
@@ -246,7 +246,7 @@ class IndirectIndexedLocationPipeline(vararg postEffects: Effect) : VariableLeng
     ReadAtProgramCounter,
     ZeroPageToLocation,
     ReadLocationLow,
-    ReadLocationHigh,
+    ReadLocationZeroPageHigh,
     ArgumentsToLocationWithYOffset,
     *postEffects
 )
@@ -256,7 +256,7 @@ class IndexedIndirectLocationPipeline(vararg postEffects: Effect) : VariableLeng
     ReadAtProgramCounter,
     ZeroPageXToLocation,
     ReadLocationLow,
-    ReadLocationHigh,
+    ReadLocationZeroPageHigh,
     ArgumentsToLocation,
     *postEffects
 )

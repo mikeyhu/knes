@@ -134,6 +134,13 @@ object ReadLocationHigh : Effect() {
     }
 }
 
+object ReadLocationZeroPageHigh : Effect() {
+    @ExperimentalUnsignedTypes
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        operationState.argumentHigh = memory[(operationState.getLocation() + 1) % 0x100]
+    }
+}
+
 object ReadLocationHighWithWrap : Effect() {
     @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {

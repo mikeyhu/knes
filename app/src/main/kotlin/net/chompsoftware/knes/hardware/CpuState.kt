@@ -48,7 +48,7 @@ data class CpuState(
 
     fun setComparisonFlags(existing: UByte, compareTo: UByte) {
         isZeroFlag = existing == compareTo
-        isNegativeFlag = existing < compareTo
+        isNegativeFlag = (existing - compareTo).toUByte().isNegative()
         isCarryFlag = existing >= compareTo
     }
 

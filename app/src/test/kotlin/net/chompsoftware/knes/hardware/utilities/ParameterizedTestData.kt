@@ -22,6 +22,7 @@ open class ParameterizedTestData {
                 ComparisonWithNegativeZeroCarryCheck(0x10u, 0x11u, false, false, true),
                 ComparisonWithNegativeZeroCarryCheck(0x10u, 0x10u, false, true, true),
                 ComparisonWithNegativeZeroCarryCheck(0x12u, 0x11u, true, false, false),
+                ComparisonWithNegativeZeroCarryCheck(0x00u, 0x80u, true, false, true),
             )
         }
     }

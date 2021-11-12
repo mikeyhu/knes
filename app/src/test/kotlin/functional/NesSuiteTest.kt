@@ -77,6 +77,8 @@ class NesSuiteTest {
             try {
                 val operationState = OperationState(0)
                 harness.processInstruction(operationState)
+            } catch (error: Error) {
+                reportThenFail("failed at ${counter.toHex()} with $error")
             } catch (error: Exception) {
                 reportThenFail("failed at ${counter.toHex()} with $error")
             }
@@ -108,6 +110,7 @@ class NesSuiteTest {
 
         val cpuState = CpuState(
             programCounter = initialCounter,
+            stackReg = 0xfdu,
             breakLocation = 0xfffe
         )
 

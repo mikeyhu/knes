@@ -178,4 +178,40 @@ class JumpOperationsTest {
             stackReg(0xffu)
         }
     }
+
+    @Test
+    fun `RTS - Return from subroutine (stack wrap)`() {
+        val memory = BasicMemory(setupMemory(RTS, NOP))
+
+        memory[0x1ff] = 0x34u
+        memory[0x100] = 0x12u
+
+        val interrogator = HardwareInterrogator(
+            CpuState(
+                stackReg = 0xfeu
+            ), memory
+        )
+
+        interrogator.processInstruction()
+
+        interrogator.assertCycleLog {
+            cycle {
+                memoryRead(0, RTS)
+            }
+            cycle {}
+            cycle {}
+            cycle {
+                memoryRead(0x1ff, 0x34u)
+            }
+            cycle {
+                memoryRead(0x100, 0x12u)
+            }
+            cycle {}
+        }
+
+        interrogator.assertCpuState {
+            programCounter(0x1235)
+            stackReg(0x00u)
+        }
+    }
 }
