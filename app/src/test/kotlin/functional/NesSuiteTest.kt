@@ -95,6 +95,7 @@ class NesSuiteTest {
         report()
     }
 
+    @EnabledIfEnvironmentVariable(named = "NESSUITE", matches = "true")
     @Test
     fun `Run external NES suites - CPU - nestest`() {
 
