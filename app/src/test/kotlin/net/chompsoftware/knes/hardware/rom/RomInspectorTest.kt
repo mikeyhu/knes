@@ -87,6 +87,7 @@ class RomInspectorTest {
     @ParameterizedTest
     @CsvSource(
         "0x00, 0x00, 0x00",
+        "0x10, 0x00, 0x01",
         "0xff, 0x00, 0x0f",
         "0x00, 0xff, 0xf0",
         "0xff, 0xff, 0xff",
@@ -167,6 +168,27 @@ class RomInspectorTest {
         val romInformation = RomInspector.inspectRom(rom)
 
         assertEquals(size, romInformation.romSize)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0x00,false",
+        "0x02,true"
+    )
+    fun `Should retrieve batteryBackedRam`(bit6: Int, hasBatteryBackedRam: Boolean) {
+        val rom = setupMemory(
+            'N'.code.toUByte(),
+            'E'.code.toUByte(),
+            'S'.code.toUByte(),
+            0x1au,
+            0x0u,
+            0x0u,
+            bit6.toUByte(),
+            size = 16
+        )
+        val romInformation = RomInspector.inspectRom(rom)
+
+        assertEquals(hasBatteryBackedRam, romInformation.hasBatteryBackedRam)
     }
 }
 

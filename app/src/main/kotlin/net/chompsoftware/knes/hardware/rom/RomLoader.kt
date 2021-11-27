@@ -21,6 +21,7 @@ object RomInspector {
         return RomInformation(
             if (isRomTypeNes2) RomType.NES_2 else RomType.NES_1,
             rom.isVerticalMirroring(),
+            rom.hasBatteryBackedRam(),
             rom.mapperNumber(),
             rom.prgRomSize(),
             rom.chrRomSize(),
@@ -38,12 +39,14 @@ object RomInspector {
     private fun UByteArray.prgRomSize() = this[4].toInt() * 0x4000
 
     private fun UByteArray.chrRomSize() = this[5].toInt() * 0x2000
+
+    private fun UByteArray.hasBatteryBackedRam() = this[6] and 0x2u == (0x2u).toUByte()
 }
 
 @ExperimentalUnsignedTypes
 object RomLoader {
 
-    private const val headerSize = 16
+    private const val headerSize = HEADER_SIZE
 
     fun loadMemory(info: RomInformation, rom: UByteArray): BasicMemory {
         when (info.mapper) {
@@ -62,17 +65,62 @@ object RomLoader {
                 throw RomLoadError("Unsupported mapper type")
         }
     }
+
+    fun loadMapper(rom: UByteArray): RomMapper {
+        val info = RomInspector.inspectRom(rom)
+        return when (info.mapper) {
+            0 -> {
+                TypeZeroRomMapper(info, rom)
+            }
+            else ->
+                throw RomLoadError("Unsupported mapper type")
+        }
+    }
 }
 
+interface RomMapper {
+    fun getPrgRom(position: Int): UByte
+
+    fun getBatteryBackedRam(position: Int): UByte
+    fun setBatteryBackedRam(position: Int, value: UByte)
+}
+
+@ExperimentalUnsignedTypes
+class TypeZeroRomMapper(val info: RomInformation, val rom: UByteArray) : RomMapper {
+
+    private val batteryBackedRam = UByteArray(0x2000)
+
+    override fun getPrgRom(position: Int): UByte {
+        return when (position) {
+            in 0x8000 until 0xC000 -> rom[position - 0x8000 + HEADER_SIZE]
+            in 0xC000 until 0x10000 ->
+                if (info.prgRom > 0x4000) rom[position - 0x8000 + HEADER_SIZE]
+                else rom[position - 0xC000 + HEADER_SIZE]
+            else -> throw RomMapperError("TypeZeroRomMapper: (Read) Out of Range at $position")
+        }
+    }
+
+    override fun getBatteryBackedRam(position: Int): UByte {
+        return batteryBackedRam[position - 0x6000]
+    }
+
+    override fun setBatteryBackedRam(position: Int, value: UByte) {
+        batteryBackedRam[position - 0x6000] = value
+    }
+
+}
 
 data class RomInformation(
     val romType: RomType,
     val verticalMirroring: Boolean,
+    val hasBatteryBackedRam: Boolean,
     val mapper: Int,
     val prgRom: Int,
     val chrRom: Int,
     val romSize: Int
 )
+
+const val HEADER_SIZE = 16
 
 enum class RomType {
     NES_1,
@@ -80,4 +128,6 @@ enum class RomType {
 }
 
 class RomLoadError(message: String) : Error(message)
+
+class RomMapperError(message: String) : Error(message)
 
