@@ -3,7 +3,6 @@ package functional
 import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.NesMemory
 import net.chompsoftware.knes.hardware.OperationState
-import net.chompsoftware.knes.hardware.rom.RomInspector
 import net.chompsoftware.knes.hardware.rom.RomLoader
 import net.chompsoftware.knes.hardware.utilities.LoggingHarness
 import net.chompsoftware.knes.toHex
@@ -38,13 +37,11 @@ class NesSuiteTest {
 
         val suiteFile = readFileToByteArray(File(testDirectory + file))
 
-        val romInformation = RomInspector.inspectRom(suiteFile)
-
-        println(romInformation)
-
-        val mapper = RomLoader.loadMapper(suiteFile)
-
-        val memory = NesMemory(mapper, false, false)
+        val memory = NesMemory(
+            RomLoader.loadMapper(suiteFile),
+            failOnReadError = false,
+            failOnWriteError = false
+        )
 
         val initialCounter = toInt16(memory[0xfffc], memory[0xfffd])
 
@@ -58,15 +55,11 @@ class NesSuiteTest {
 
         val harness = LoggingHarness(cpuState, memory, maxSize = 10)
 
-//        val getSuiteMessage = {
-//            memory.store.drop(0x6004).takeWhile { it.toUInt() != 0u }.map { it.toInt().toChar() }.joinToString("")
-//        }
-
         val report = {
             val finish = System.nanoTime()
             val elapsed = (finish - start) / 1000000
             println("Operations done: ${operationsDone} Time taken: ${elapsed}ms. Ops per ms: ${operationsDone / elapsed}")
-//            println("Suite message: \n${getSuiteMessage()}")
+            println("Suite message: \n${getSuiteMessage(memory)}")
         }
 
         val reportThenFail = { message: String ->
@@ -104,16 +97,14 @@ class NesSuiteTest {
 
         val suiteFile = readFileToByteArray(File("../nesSuite/nestest.nes"))
 
-        val romInformation = RomInspector.inspectRom(suiteFile)
-
-        println(romInformation)
-
-        val memory = RomLoader.loadMemory(romInformation, suiteFile)
-
-        val initialCounter = 0xC000
+        val memory = NesMemory(
+            RomLoader.loadMapper(suiteFile),
+            failOnReadError = false,
+            failOnWriteError = false
+        )
 
         val cpuState = CpuState(
-            programCounter = initialCounter,
+            programCounter = 0xC000,
             stackReg = 0xfdu,
             breakLocation = 0xfffe
         )
@@ -155,4 +146,13 @@ class NesSuiteTest {
     }
 
     private fun readFileToByteArray(file: File) = file.inputStream().readBytes().asUByteArray()
+
+    private fun getSuiteMessage(memory: NesMemory): String {
+        return sequence {
+            var position = 0x6004
+            while (memory[position].toUInt() != 0u) {
+                yield(memory[position++].toInt().toChar())
+            }
+        }.joinToString("")
+    }
 }

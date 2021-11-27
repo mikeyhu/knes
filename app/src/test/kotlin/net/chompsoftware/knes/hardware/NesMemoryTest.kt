@@ -4,7 +4,7 @@ import net.chompsoftware.knes.hardware.rom.HEADER_SIZE
 import net.chompsoftware.knes.hardware.rom.RomLoader
 import net.chompsoftware.knes.hardware.rom.RomMapper
 import net.chompsoftware.knes.hardware.utilities.nextUByteNotZero
-import net.chompsoftware.knes.setupMemory
+import net.chompsoftware.knes.hardware.utilities.setupMemoryWithNES
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
@@ -76,10 +76,7 @@ class NesMemoryTest {
 
     @Test
     fun `Maps memory above 0x8000 into the mapper`() {
-        val rom = setupMemory(
-            'N'.code.toUByte(),
-            'E'.code.toUByte(),
-            'S'.code.toUByte(),
+        val rom = setupMemoryWithNES(
             0x1au,
             0x02u, // prgSize 8000
             size = 0x8000 + HEADER_SIZE

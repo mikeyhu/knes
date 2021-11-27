@@ -18,7 +18,6 @@ fun toInt16(c: UByte, c2: UByte) = toUInt16(c, c2).toInt()
 
 fun pageBoundaryCrossed(previous: Int, next: Int) = previous.shr(8) != next.shr(8)
 
-
 @ExperimentalUnsignedTypes
 fun setupMemory(vararg bytes: UByte, size: Int = 0x8000, memoryOffset: Int = 0): UByteArray {
     val array = UByteArray(size)
