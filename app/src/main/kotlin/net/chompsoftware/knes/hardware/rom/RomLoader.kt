@@ -1,6 +1,9 @@
 package net.chompsoftware.knes.hardware.rom
 
-import net.chompsoftware.knes.hardware.BasicMemory
+import net.chompsoftware.knes.readFileToByteArray
+import java.io.File
+
+const val HEADER_SIZE = 16
 
 
 @ExperimentalUnsignedTypes
@@ -45,27 +48,6 @@ object RomInspector {
 
 @ExperimentalUnsignedTypes
 object RomLoader {
-
-    private const val headerSize = HEADER_SIZE
-
-    fun loadMemory(info: RomInformation, rom: UByteArray): BasicMemory {
-        when (info.mapper) {
-            0 -> {
-                val array = UByteArray(0x10000)
-                rom.copyInto(array, 0x8000, 0 + headerSize, 0x4000 + headerSize)
-                if (info.prgRom > 0x4000) {
-                    rom.copyInto(array, 0xC000, 0x4000 + headerSize, 0x8000 + headerSize)
-                } else {
-                    rom.copyInto(array, 0xC000, 0 + headerSize, 0x4000 + headerSize)
-
-                }
-                return BasicMemory(array)
-            }
-            else ->
-                throw RomLoadError("Unsupported mapper type")
-        }
-    }
-
     fun loadMapper(rom: UByteArray): RomMapper {
         val info = RomInspector.inspectRom(rom)
         return when (info.mapper) {
@@ -86,7 +68,10 @@ interface RomMapper {
 }
 
 @ExperimentalUnsignedTypes
-class TypeZeroRomMapper(val info: RomInformation, val rom: UByteArray) : RomMapper {
+class TypeZeroRomMapper(
+    private val info: RomInformation,
+    private val rom: UByteArray
+) : RomMapper {
 
     private val batteryBackedRam = UByteArray(0x2000)
 
@@ -120,8 +105,6 @@ data class RomInformation(
     val romSize: Int
 )
 
-const val HEADER_SIZE = 16
-
 enum class RomType {
     NES_1,
     NES_2
@@ -131,3 +114,11 @@ class RomLoadError(message: String) : Error(message)
 
 class RomMapperError(message: String) : Error(message)
 
+// Alternate `main` that allows a ROM to be inspected
+@ExperimentalUnsignedTypes
+fun main(args: Array<String>) {
+    val inspector = RomInspector
+    val fileData = readFileToByteArray(File(args[0]))
+
+    println(inspector.inspectRom(fileData))
+}

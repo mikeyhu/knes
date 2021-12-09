@@ -5,6 +5,7 @@ import net.chompsoftware.knes.hardware.NesMemory
 import net.chompsoftware.knes.hardware.OperationState
 import net.chompsoftware.knes.hardware.rom.RomLoader
 import net.chompsoftware.knes.hardware.utilities.LoggingHarness
+import net.chompsoftware.knes.readFileToByteArray
 import net.chompsoftware.knes.toHex
 import net.chompsoftware.knes.toInt16
 import org.junit.jupiter.api.Test
@@ -144,8 +145,6 @@ class NesSuiteTest {
 
         report()
     }
-
-    private fun readFileToByteArray(file: File) = file.inputStream().readBytes().asUByteArray()
 
     private fun getSuiteMessage(memory: NesMemory): String {
         return sequence {
