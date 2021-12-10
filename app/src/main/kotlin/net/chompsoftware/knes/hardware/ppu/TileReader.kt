@@ -1,7 +1,23 @@
 package net.chompsoftware.knes.hardware.ppu
 
+import java.awt.Color
+import java.awt.image.BufferedImage
 
-class Tile(val pixels: ByteArray)
+
+class Tile(val pixels: ByteArray) {
+    fun asBufferedImage(palette: Array<Color>): BufferedImage {
+        if (palette.size != 4) {
+            throw TileError("expected palette of 4 colors. Found ${palette.size}")
+        }
+        val img = BufferedImage(8, 8, BufferedImage.TYPE_INT_RGB)
+        for (y in 0..7) {
+            for (x in 0..7) {
+                img.setRGB(x, y, palette[pixels[x + (y * 8)].toInt()].rgb)
+            }
+        }
+        return img
+    }
+}
 
 class TileError(message: String) : Error(message)
 
