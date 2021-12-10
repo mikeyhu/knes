@@ -60,8 +60,11 @@ object RomLoader {
     }
 }
 
+@ExperimentalUnsignedTypes
 interface RomMapper {
     fun getPrgRom(position: Int): UByte
+    fun getChrRom(position: Int): UByte
+    fun getChrRomSlice(position: Int, size: Int): UByteArray
 
     fun getBatteryBackedRam(position: Int): UByte
     fun setBatteryBackedRam(position: Int, value: UByte)
@@ -83,6 +86,14 @@ class TypeZeroRomMapper(
                 else rom[position - 0xC000 + HEADER_SIZE]
             else -> throw RomMapperError("TypeZeroRomMapper: (Read) Out of Range at $position")
         }
+    }
+
+    override fun getChrRom(position: Int): UByte {
+        return rom[position + info.prgRom + HEADER_SIZE]
+    }
+
+    override fun getChrRomSlice(position: Int, size: Int): UByteArray {
+        return rom.copyOfRange(position + info.prgRom + HEADER_SIZE, position + info.prgRom + HEADER_SIZE + size)
     }
 
     override fun getBatteryBackedRam(position: Int): UByte {
