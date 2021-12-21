@@ -13,14 +13,17 @@ class LoggingHarness(private val cpuState: CpuState, private val memory: Memory,
     private val processLog = ProcessLog(maxSize)
     var operationsDone = 0
     var cyclesDone = 7 // start at 7 due to initial bootstrapping?
+    var loggingType: LoggingType? = null
 
     lateinit var log: PrintWriter
 
     private var loggingEnabled = false
 
-    fun enableLogging() {
-        File(logFileName).delete()
-        log = File(logFileName).printWriter()
+    fun enableLogging(filenameOverride: String? = null, loggingType: LoggingType = LoggingType.CYCLE) {
+        this.loggingType = loggingType
+        val fileToUse = filenameOverride ?: logFileName
+        File(fileToUse).delete()
+        log = File(fileToUse).printWriter()
 
         loggingEnabled = true
     }
@@ -48,8 +51,10 @@ class LoggingHarness(private val cpuState: CpuState, private val memory: Memory,
         }
         operationsDone++
         if (loggingEnabled) {
-//            log.println("${processLogEntry.savedCpuState.programCounter.toLogHex()}  ${processLogEntry.savedCpuState}  ${processLogEntry.cycles}  CYC:${processLogEntry.cyclesDone}")
-            log.println("${processLogEntry.savedCpuState.programCounter.toLogHex()} CYC:${processLogEntry.cyclesDone}")
+            when (loggingType) {
+                LoggingType.CYCLE -> log.println("${processLogEntry.savedCpuState.programCounter.toLogHex()} CYC:${processLogEntry.cyclesDone}")
+                LoggingType.MEMORY -> log.println("${processLogEntry.savedCpuState.programCounter.toLogHex()}  ${processLogEntry.savedCpuState}  ${processLogEntry.cycles}  CYC:${processLogEntry.cyclesDone}")
+            }
         }
     }
 
@@ -108,6 +113,11 @@ class LoggingHarness(private val cpuState: CpuState, private val memory: Memory,
             }
         }
     }
+}
+
+enum class LoggingType {
+    CYCLE,
+    MEMORY
 }
 
 
