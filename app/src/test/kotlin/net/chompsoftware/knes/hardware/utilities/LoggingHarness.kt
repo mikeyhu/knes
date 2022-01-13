@@ -6,7 +6,7 @@ import net.chompsoftware.knes.toLogHex
 import java.io.File
 import java.io.PrintWriter
 
-@ExperimentalUnsignedTypes
+
 class LoggingHarness(private val cpuState: CpuState, private val memory: Memory, maxSize: Int = 10) {
 
     private val logFileName = "/tmp/knes.log"

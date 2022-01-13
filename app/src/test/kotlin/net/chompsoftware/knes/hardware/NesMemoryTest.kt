@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
 import kotlin.random.Random
 
-@ExperimentalUnsignedTypes
 class NesMemoryTest {
 
     inner class FakeRomMapper : RomMapper {

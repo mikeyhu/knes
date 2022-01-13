@@ -5,7 +5,7 @@ import net.chompsoftware.knes.toHex
 import org.junit.jupiter.api.Assertions.assertEquals
 
 
-@ExperimentalUnsignedTypes
+
 class HardwareInterrogator(private val cpuState: CpuState, private val memory: Memory) {
 
     private val cycleLog: MutableList<MutableList<Activity>> = mutableListOf()
@@ -133,7 +133,7 @@ class HardwareInterrogator(private val cpuState: CpuState, private val memory: M
 
 }
 
-@ExperimentalUnsignedTypes
+
 sealed class Activity {
     data class MemoryReadActivity(val position: Int, val returned: UByte) : Activity() {
         override fun toString() = "MemoryReadActivity(position=${position.toHex()}, returned=${returned.toHex()})"
@@ -144,7 +144,7 @@ sealed class Activity {
     }
 }
 
-@ExperimentalUnsignedTypes
+
 class CycleLog {
     val cycles = arrayListOf<Cycle>()
 
@@ -158,7 +158,7 @@ class CycleLog {
     fun build() = cycles.map { it.activities }
 }
 
-@ExperimentalUnsignedTypes
+
 class Cycle {
     val activities = arrayListOf<Activity>()
 

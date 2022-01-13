@@ -10,7 +10,6 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import org.junit.jupiter.api.fail
 import java.io.File
 
-@ExperimentalUnsignedTypes
 class SuiteTest {
 
     @EnabledIfEnvironmentVariable(named = "SUITE", matches = "true")

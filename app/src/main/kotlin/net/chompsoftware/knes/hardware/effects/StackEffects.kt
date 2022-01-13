@@ -4,7 +4,6 @@ import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.Memory
 import net.chompsoftware.knes.hardware.OperationState
 
-@ExperimentalUnsignedTypes
 object CpuStatusPositions {
     const val CARRY_BYTE_POSITION: UByte = 0x1u
     const val ZERO_BYTE_POSITION: UByte = 0x2u
@@ -21,21 +20,18 @@ object CpuStatusComparisons {
 }
 
 object PushAccumulator : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         memory[((cpuState.stackReg--) + 0x100u).toInt()] = cpuState.aReg
     }
 }
 
 object PullAccumulator : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         cpuState.setARegWithFlags(memory[((++cpuState.stackReg) + 0x100u).toInt()])
     }
 }
 
 object PullProcessorStatus : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         val processorStatus = memory[((++cpuState.stackReg) + 0x100u).toInt()]
         cpuState.isCarryFlag = processorStatus.isSetFor(CpuStatusPositions.CARRY_BYTE_POSITION)
@@ -53,7 +49,6 @@ object PullProcessorStatus : Effect() {
 class PushProcessorStatus(
     val interruptOverride: Boolean = false
 ) : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
 
         val processorStatus = 0x20u + //bit 5 always set
@@ -72,7 +67,6 @@ class PushProcessorStatus(
 }
 
 class PushProgramCounterLow(val alterBeforeWrite:Int) : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         memory[((cpuState.stackReg--) + 0x100u).toInt()] =
             (cpuState.programCounter + alterBeforeWrite).toUInt().and(0xffu).toUByte()
@@ -80,7 +74,6 @@ class PushProgramCounterLow(val alterBeforeWrite:Int) : Effect() {
 }
 
 class PushProgramCounterHigh(val alterBeforeWrite:Int) : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         memory[((cpuState.stackReg--) + 0x100u).toInt()] =
             (cpuState.programCounter + alterBeforeWrite).toUInt().and(0xff00u).shr(8).toUByte()
@@ -88,14 +81,12 @@ class PushProgramCounterHigh(val alterBeforeWrite:Int) : Effect() {
 }
 
 object PullProgramCounterLow : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         operationState.argumentLow = memory[((++cpuState.stackReg) + 0x100u).toInt()]
     }
 }
 
 object PullProgramCounterHigh : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         operationState.argumentHigh = memory[((++cpuState.stackReg) + 0x100u).toInt()]
     }

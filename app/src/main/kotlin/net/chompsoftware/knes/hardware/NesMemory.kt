@@ -3,7 +3,6 @@ package net.chompsoftware.knes.hardware
 import net.chompsoftware.knes.hardware.rom.RomMapper
 import net.chompsoftware.knes.toHex
 
-@ExperimentalUnsignedTypes
 class NesMemory(
     private val rom: RomMapper,
     private val failOnReadError: Boolean = true,

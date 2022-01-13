@@ -9,7 +9,6 @@ import net.chompsoftware.knes.pageBoundaryCrossed
 abstract class BranchOnEvaluation : Effect() {
     abstract fun branchEvaluation(cpuState: CpuState): Boolean
 
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         if (branchEvaluation(cpuState)) {
             val read = operationState.getMemoryValue()

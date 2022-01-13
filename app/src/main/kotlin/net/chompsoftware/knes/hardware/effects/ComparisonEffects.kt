@@ -6,7 +6,6 @@ import net.chompsoftware.knes.hardware.OperationState
 
 
 object CompareToAccumulator : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         cpuState.setComparisonFlags(cpuState.aReg, operationState.getMemoryValue())
     }
@@ -15,7 +14,6 @@ object CompareToAccumulator : Effect() {
 }
 
 object CompareToX : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         cpuState.setComparisonFlags(cpuState.xReg, operationState.getMemoryValue())
     }
@@ -24,7 +22,6 @@ object CompareToX : Effect() {
 }
 
 object CompareToY : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         cpuState.setComparisonFlags(cpuState.yReg, operationState.getMemoryValue())
     }

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
-@ExperimentalUnsignedTypes
+
 class RomInspectorTest {
     @Test
     fun `Should validate NES1 rom`() {

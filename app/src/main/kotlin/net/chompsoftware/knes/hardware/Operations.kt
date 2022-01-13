@@ -3,7 +3,6 @@ package net.chompsoftware.knes.hardware
 import net.chompsoftware.knes.hardware.effects.*
 import net.chompsoftware.knes.hardware.instructions.*
 
-@ExperimentalUnsignedTypes
 val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     //AddWithCarry
     ADC_I to ImmediateReadPipeline(AddWithCarry),
@@ -244,7 +243,6 @@ val instructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     TYA to SingleEffectPipeline(TransferYToAccumulator),
 )
 
-@ExperimentalUnsignedTypes
 val unofficialInstructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     // And + ASL
     ANC_I_UN_0B to ImmediateReadPipeline(AndWithCarry),
@@ -281,7 +279,6 @@ val unofficialInstructionList: Array<Pair<UByte, EffectPipeline>> = arrayOf(
     SBC_I_UN_EB to ImmediateReadPipeline(SubtractWithCarry),
 )
 
-@ExperimentalUnsignedTypes
 val instructionMap: Map<UByte, EffectPipeline> = mapOf(
     *instructionList,
     *unofficialInstructionList

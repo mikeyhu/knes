@@ -21,7 +21,6 @@ class Tile(val pixels: ByteArray) {
 
 class TileError(message: String) : Error(message)
 
-@ExperimentalUnsignedTypes
 object TileReader {
 
     fun getTileFromMemory(bytes: UByteArray): Tile {

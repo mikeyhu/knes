@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.random.Random
 
-@ExperimentalUnsignedTypes
+
 class RomMapperTest {
     @Nested
     inner class TypeZeroRomMapperTest {

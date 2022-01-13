@@ -5,7 +5,6 @@ import net.chompsoftware.knes.hardware.*
 import net.chompsoftware.knes.hardware.instructions.LDA_AB
 import kotlin.system.measureTimeMillis
 
-@ExperimentalUnsignedTypes
 fun processInstruction(cpuState: CpuState, memory: BasicMemory, operationState: OperationState) {
     var nextPipeline: EffectPipeline? = Operation.run(cpuState, memory, operationState)
     while (nextPipeline != null) {
@@ -13,7 +12,6 @@ fun processInstruction(cpuState: CpuState, memory: BasicMemory, operationState: 
     }
 }
 
-@ExperimentalUnsignedTypes
 fun main() {
     println("Starting")
     val time = measureTimeMillis {

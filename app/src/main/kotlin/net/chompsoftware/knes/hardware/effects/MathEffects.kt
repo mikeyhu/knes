@@ -6,7 +6,6 @@ import net.chompsoftware.knes.hardware.OperationState
 import net.chompsoftware.knes.isCarry
 
 object AddWithCarry : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         val toAdd: UByte = operationState.getMemoryValue()
         addWithCarry(toAdd, cpuState)
@@ -16,7 +15,6 @@ object AddWithCarry : Effect() {
 }
 
 object AndWithAccumulator : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         cpuState.setARegWithFlags(cpuState.aReg.and(operationState.getMemoryValue()))
     }
@@ -25,7 +23,6 @@ object AndWithAccumulator : Effect() {
 }
 
 object AndWithCarry : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         cpuState.setARegWithFlags(cpuState.aReg.and(operationState.getMemoryValue()))
         val toShift = operationState.getMemoryValue()
@@ -37,7 +34,6 @@ object AndWithCarry : Effect() {
 }
 
 object AndShiftRight : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         val anded = cpuState.aReg.and(operationState.getMemoryValue()).toUInt()
         val shifted = anded.shr(1)
@@ -51,7 +47,6 @@ object AndShiftRight : Effect() {
 }
 
 object ArithmeticShiftLeft : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         val useAccumulator = operationState.memoryValue == null
         val toShift = operationState.memoryValue ?: cpuState.aReg
@@ -68,7 +63,6 @@ object ArithmeticShiftLeft : Effect() {
 }
 
 object BitWithAccumulator : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         val memoryValue = operationState.getMemoryValue()
         val andByte: UByte = cpuState.aReg and memoryValue
@@ -82,7 +76,6 @@ object BitWithAccumulator : Effect() {
 }
 
 object Decrement : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         val value = (operationState.getMemoryValue() - 1u).toUByte()
         cpuState.setNegativeZeroFlags(value)
@@ -91,21 +84,18 @@ object Decrement : Effect() {
 }
 
 object DecrementX : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         cpuState.setXRegWithFlags((cpuState.xReg - 1u).toUByte())
     }
 }
 
 object DecrementY : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         cpuState.setYRegWithFlags((cpuState.yReg - 1u).toUByte())
     }
 }
 
 object Increment : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         val value = (operationState.getMemoryValue() + 1u).toUByte()
         cpuState.setNegativeZeroFlags(value)
@@ -114,21 +104,18 @@ object Increment : Effect() {
 }
 
 object IncrementX : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         cpuState.setXRegWithFlags((cpuState.xReg + 1u).toUByte())
     }
 }
 
 object IncrementY : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         cpuState.setYRegWithFlags((cpuState.yReg + 1u).toUByte())
     }
 }
 
 object ExclusiveOr : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         cpuState.setARegWithFlags(cpuState.aReg.xor(operationState.getMemoryValue()))
     }
@@ -137,7 +124,6 @@ object ExclusiveOr : Effect() {
 }
 
 object LogicalShiftRight : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         val useAccumulator = operationState.memoryValue == null
         val valueToShift = (operationState.memoryValue ?: cpuState.aReg).toUInt()
@@ -155,7 +141,6 @@ object LogicalShiftRight : Effect() {
 
 
 object OrWithAccumulator : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         cpuState.setARegWithFlags(cpuState.aReg.or(operationState.getMemoryValue()))
     }
@@ -164,7 +149,6 @@ object OrWithAccumulator : Effect() {
 }
 
 object RotateLeft : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         val useAccumulator = operationState.memoryValue == null
         val valueToShift = (operationState.memoryValue ?: cpuState.aReg).toUInt()
@@ -181,7 +165,6 @@ object RotateLeft : Effect() {
 }
 
 object RotateRight : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         val useAccumulator = operationState.memoryValue == null
         val valueToShift = (operationState.memoryValue ?: cpuState.aReg).toUInt()
@@ -198,7 +181,6 @@ object RotateRight : Effect() {
 }
 
 object SubtractWithCarry : Effect() {
-    @ExperimentalUnsignedTypes
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         val toSubtract: UByte = operationState.getMemoryValue().xor(0xffu)
         addWithCarry(toSubtract, cpuState)

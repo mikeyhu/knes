@@ -8,7 +8,6 @@ import net.chompsoftware.knes.hardware.utilities.randomisedCpuState
 import net.chompsoftware.knes.setupMemory
 import org.junit.jupiter.api.Test
 
-@ExperimentalUnsignedTypes
 class JumpOperationsTest {
     @Test
     fun `JMP - Jump to absolute position`() {

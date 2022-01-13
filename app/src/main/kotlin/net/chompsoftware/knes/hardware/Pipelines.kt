@@ -66,12 +66,10 @@ class OperationState(
     }
 }
 
-@ExperimentalUnsignedTypes
 interface EffectPipeline {
     fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline?
 }
 
-@ExperimentalUnsignedTypes
 object Operation : EffectPipeline {
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline {
         val instruction = memory[cpuState.programCounterWithIncrement()]
@@ -82,7 +80,6 @@ object Operation : EffectPipeline {
     }
 }
 
-@ExperimentalUnsignedTypes
 open class VariableLengthPipeline(vararg val effects: Effect) : EffectPipeline {
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline? {
         if (effects.size < operationState.pipelinePosition)
@@ -108,7 +105,6 @@ open class VariableLengthPipeline(vararg val effects: Effect) : EffectPipeline {
     }
 }
 
-@ExperimentalUnsignedTypes
 class SingleEffectPipeline(val effect: Effect) : EffectPipeline {
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline? {
         effect.run(cpuState, memory, operationState)
@@ -117,7 +113,6 @@ class SingleEffectPipeline(val effect: Effect) : EffectPipeline {
     }
 }
 
-@ExperimentalUnsignedTypes
 class DelayedSingleEffectPipeline(val effect: Effect, val delay: Int) : EffectPipeline {
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline? {
         if (operationState.pipelinePosition < delay) {
@@ -130,98 +125,82 @@ class DelayedSingleEffectPipeline(val effect: Effect, val delay: Int) : EffectPi
     }
 }
 
-@ExperimentalUnsignedTypes
 class ImmediateReadPipeline(vararg postEffects: Effect) : VariableLengthPipeline(
     ImmediateRead,
     *postEffects
 )
 
-@ExperimentalUnsignedTypes
 open class AbsoluteMemoryPipeline(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadAtProgramCounter,
     ReadAtProgramCounter,
     *postEffects
 )
 
-@ExperimentalUnsignedTypes
 class AbsoluteReadPipeline(vararg postEffects: Effect) : AbsoluteMemoryPipeline(
     AbsoluteRead,
     *postEffects
 )
 
-@ExperimentalUnsignedTypes
 class AbsoluteXReadPipeline(vararg postEffects: Effect) : AbsoluteMemoryPipeline(
     AbsoluteReadWithXOffset,
     *postEffects
 )
 
-@ExperimentalUnsignedTypes
 class AbsoluteYReadPipeline(vararg postEffects: Effect) : AbsoluteMemoryPipeline(
     AbsoluteReadWithYOffset,
     *postEffects
 )
 
-@ExperimentalUnsignedTypes
 class AbsoluteLocationPipeline(vararg postEffects: Effect) : AbsoluteMemoryPipeline(
     ArgumentsToLocation,
     *postEffects
 )
 
-@ExperimentalUnsignedTypes
 class AbsoluteXLocationPipeline(vararg postEffects: Effect) : AbsoluteMemoryPipeline(
     ArgumentsToLocationWithXOffset,
     *postEffects
 )
 
-@ExperimentalUnsignedTypes
 class AbsoluteYLocationPipeline(vararg postEffects: Effect) : AbsoluteMemoryPipeline(
     ArgumentsToLocationWithYOffset,
     *postEffects
 )
 
-@ExperimentalUnsignedTypes
 open class ZeroPagePipeline(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadAtProgramCounter,
     *postEffects
 )
 
-@ExperimentalUnsignedTypes
 class ZeroPageReadPipeline(vararg postEffects: Effect) : ZeroPagePipeline(
     ZeroPageRead,
     *postEffects
 )
 
-@ExperimentalUnsignedTypes
 class ZeroPageXReadPipeline(vararg postEffects: Effect) : ZeroPagePipeline(
     ZeroPageXRead,
     *postEffects
 )
 
-@ExperimentalUnsignedTypes
 class ZeroPageYReadPipeline(vararg postEffects: Effect) : ZeroPagePipeline(
     ZeroPageYRead,
     *postEffects
 )
 
-@ExperimentalUnsignedTypes
 class ZeroPageLocationPipeline(vararg postEffects: Effect) : ZeroPagePipeline(
     ZeroPageToLocation,
     *postEffects
 )
 
-@ExperimentalUnsignedTypes
 class ZeroPageXLocationPipeline(vararg postEffects: Effect) : ZeroPagePipeline(
     ZeroPageXToLocation,
     *postEffects
 )
 
-@ExperimentalUnsignedTypes
 class ZeroPageYLocationPipeline(vararg postEffects: Effect) : ZeroPagePipeline(
     ZeroPageYToLocation,
     *postEffects
 )
 
-@ExperimentalUnsignedTypes
 class IndirectIndexedReadPipeline(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadAtProgramCounter,
     ZeroPageToLocation,
@@ -231,7 +210,6 @@ class IndirectIndexedReadPipeline(vararg postEffects: Effect) : VariableLengthPi
     *postEffects
 )
 
-@ExperimentalUnsignedTypes
 class IndexedIndirectReadPipeline(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadAtProgramCounter,
     ZeroPageXToLocation,
@@ -241,7 +219,6 @@ class IndexedIndirectReadPipeline(vararg postEffects: Effect) : VariableLengthPi
     *postEffects
 )
 
-@ExperimentalUnsignedTypes
 class IndirectIndexedLocationPipeline(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadAtProgramCounter,
     ZeroPageToLocation,
@@ -251,7 +228,6 @@ class IndirectIndexedLocationPipeline(vararg postEffects: Effect) : VariableLeng
     *postEffects
 )
 
-@ExperimentalUnsignedTypes
 class IndexedIndirectLocationPipeline(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadAtProgramCounter,
     ZeroPageXToLocation,
@@ -261,7 +237,6 @@ class IndexedIndirectLocationPipeline(vararg postEffects: Effect) : VariableLeng
     *postEffects
 )
 
-@ExperimentalUnsignedTypes
 class IndirectPipeline(vararg postEffects: Effect) : VariableLengthPipeline(
     ReadAtProgramCounter,
     ReadAtProgramCounter,

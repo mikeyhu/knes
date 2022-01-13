@@ -19,7 +19,6 @@ fun toInt16(c: UByte, c2: UByte) = toUInt16(c, c2).toInt()
 
 fun pageBoundaryCrossed(previous: Int, next: Int) = previous.shr(8) != next.shr(8)
 
-@ExperimentalUnsignedTypes
 fun setupMemory(vararg bytes: UByte, size: Int = 0x8000, memoryOffset: Int = 0): UByteArray {
     val array = UByteArray(size)
     bytes.copyInto(array, memoryOffset, 0, bytes.size)
@@ -30,5 +29,4 @@ fun UByte.isZero() = this == CpuStatusComparisons.ZERO_FLAG
 fun UByte.isNegative() = (this and CpuStatusComparisons.NEGATIVE_FLAG) > 0u
 fun UInt.isCarry() = this.shr(8) > 0u
 
-@ExperimentalUnsignedTypes
 fun readFileToByteArray(file: File) = file.inputStream().readBytes().asUByteArray()

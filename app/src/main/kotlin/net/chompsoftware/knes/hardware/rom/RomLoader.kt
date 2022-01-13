@@ -6,7 +6,6 @@ import java.io.File
 const val HEADER_SIZE = 16
 
 
-@ExperimentalUnsignedTypes
 object RomInspector {
     fun inspectRom(rom: UByteArray): RomInformation {
         return retrieveHeader(rom)
@@ -46,7 +45,6 @@ object RomInspector {
     private fun UByteArray.hasBatteryBackedRam() = this[6] and 0x2u == (0x2u).toUByte()
 }
 
-@ExperimentalUnsignedTypes
 object RomLoader {
     fun loadMapper(rom: UByteArray): RomMapper {
         val info = RomInspector.inspectRom(rom)
@@ -60,7 +58,6 @@ object RomLoader {
     }
 }
 
-@ExperimentalUnsignedTypes
 interface RomMapper {
     fun getPrgRom(position: Int): UByte
     fun getChrRom(position: Int): UByte
@@ -70,7 +67,6 @@ interface RomMapper {
     fun setBatteryBackedRam(position: Int, value: UByte)
 }
 
-@ExperimentalUnsignedTypes
 class TypeZeroRomMapper(
     private val info: RomInformation,
     private val rom: UByteArray
@@ -126,7 +122,6 @@ class RomLoadError(message: String) : Error(message)
 class RomMapperError(message: String) : Error(message)
 
 // Alternate `main` that allows a ROM to be inspected
-@ExperimentalUnsignedTypes
 fun main(args: Array<String>) {
     val inspector = RomInspector
     val fileData = readFileToByteArray(File(args[0]))

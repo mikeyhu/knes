@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import org.junit.jupiter.api.fail
 
-@ExperimentalUnsignedTypes
 class TimingTest {
 
     @EnabledIfEnvironmentVariable(named = "TIMING", matches = "true")

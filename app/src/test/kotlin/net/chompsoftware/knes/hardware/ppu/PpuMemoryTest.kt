@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.random.Random
 
-@ExperimentalUnsignedTypes
+
 class PpuMemoryTest {
 
     @Test

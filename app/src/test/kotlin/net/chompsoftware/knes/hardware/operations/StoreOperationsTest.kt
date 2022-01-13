@@ -8,7 +8,6 @@ import net.chompsoftware.knes.setupMemory
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
-@ExperimentalUnsignedTypes
 class StoreOperationsTest {
 
     @Nested

@@ -12,7 +12,6 @@ import java.io.File
 import javax.swing.JFrame
 import javax.swing.JPanel
 
-@ExperimentalUnsignedTypes
 class RomViewerApp(romMapper: RomMapper) : JFrame() {
     init {
         title = "KNES - RomViewer"
@@ -22,7 +21,6 @@ class RomViewerApp(romMapper: RomMapper) : JFrame() {
     }
 }
 
-@ExperimentalUnsignedTypes
 class TileViewSurface(private val romMapper: RomMapper) : JPanel() {
 
     private val tileSize = 8 * 4
@@ -55,7 +53,6 @@ class TileViewSurface(private val romMapper: RomMapper) : JPanel() {
     }
 }
 
-@ExperimentalUnsignedTypes
 fun main(args: Array<String>) {
     val inspector = RomInspector
     val fileData = readFileToByteArray(File(args[0]))
