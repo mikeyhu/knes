@@ -1,6 +1,7 @@
 package functional
 
 import net.chompsoftware.knes.hardware.CpuState
+import net.chompsoftware.knes.hardware.NesBus
 import net.chompsoftware.knes.hardware.NesMemory
 import net.chompsoftware.knes.hardware.OperationState
 import net.chompsoftware.knes.hardware.rom.RomLoader
@@ -40,6 +41,7 @@ class NesSuiteTest {
 
         val memory = NesMemory(
             RomLoader.loadMapper(suiteFile),
+            NesBus(),
             failOnReadError = false,
             failOnWriteError = false
         )
@@ -56,12 +58,14 @@ class NesSuiteTest {
 
         val harness = LoggingHarness(cpuState, memory, maxSize = 10)
 
-//        harness.enableLogging("/tmp/knes.${file}.log", LoggingType.MEMORY)
+        harness.enableLogging("/tmp/knes.${file}.log", LoggingType.MEMORY)
 
         val report = {
             val finish = System.nanoTime()
             val elapsed = (finish - start) / 1000000
-            println("Operations done: ${operationsDone} Time taken: ${elapsed}ms. Ops per ms: ${operationsDone / elapsed}")
+            if( elapsed > 0) {
+                println("Operations done: ${operationsDone} Time taken: ${elapsed}ms. Ops per ms: ${operationsDone / elapsed}")
+            }
             println("Suite message: \n${getSuiteMessage(memory)}")
             harness.finishLogging()
         }
@@ -103,6 +107,7 @@ class NesSuiteTest {
 
         val memory = NesMemory(
             RomLoader.loadMapper(suiteFile),
+            NesBus(),
             failOnReadError = false,
             failOnWriteError = false
         )
