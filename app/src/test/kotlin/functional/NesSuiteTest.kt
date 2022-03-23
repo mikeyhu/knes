@@ -4,6 +4,8 @@ import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.NesBus
 import net.chompsoftware.knes.hardware.NesMemory
 import net.chompsoftware.knes.hardware.OperationState
+import net.chompsoftware.knes.hardware.ppu.NesPpuMemory
+import net.chompsoftware.knes.hardware.ppu.Ppu
 import net.chompsoftware.knes.hardware.rom.RomLoader
 import net.chompsoftware.knes.hardware.utilities.LoggingHarness
 import net.chompsoftware.knes.hardware.utilities.LoggingType
@@ -39,9 +41,11 @@ class NesSuiteTest {
 
         val suiteFile = readFileToByteArray(File(testDirectory + file))
 
+        val mapper = RomLoader.loadMapper(suiteFile)
+        val ppu = Ppu(NesPpuMemory(mapper))
         val memory = NesMemory(
-            RomLoader.loadMapper(suiteFile),
-            NesBus(),
+            mapper,
+            NesBus(ppu),
             failOnReadError = false,
             failOnWriteError = false
         )
@@ -105,9 +109,11 @@ class NesSuiteTest {
 
         val suiteFile = readFileToByteArray(File("../nesSuite/nestest.nes"))
 
+        val mapper = RomLoader.loadMapper(suiteFile)
+        val ppu = Ppu(NesPpuMemory(mapper))
         val memory = NesMemory(
-            RomLoader.loadMapper(suiteFile),
-            NesBus(),
+            mapper,
+            NesBus(ppu),
             failOnReadError = false,
             failOnWriteError = false
         )

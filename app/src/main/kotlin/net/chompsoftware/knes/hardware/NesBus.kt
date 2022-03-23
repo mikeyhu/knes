@@ -1,16 +1,18 @@
 package net.chompsoftware.knes.hardware
 
+import net.chompsoftware.knes.hardware.ppu.Ppu
+
 interface Bus {
     fun ppuRegisterWrite(position: Int, value: UByte)
     fun ppuRegisterRead(position: Int): UByte
 }
 
-class NesBus : Bus {
+class NesBus(private val ppu: Ppu) : Bus {
     override fun ppuRegisterWrite(position: Int, value: UByte) {
-        TODO("Bus Write not yet implemented")
+        ppu.busMemoryWriteEvent(position, value)
     }
 
     override fun ppuRegisterRead(position: Int): UByte {
-        TODO("Bus Read not yet implemented")
+        return ppu.busMemoryReadEvent(position)
     }
 }

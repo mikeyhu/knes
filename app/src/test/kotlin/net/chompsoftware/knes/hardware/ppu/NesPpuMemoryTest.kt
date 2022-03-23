@@ -11,7 +11,7 @@ import org.junit.jupiter.api.assertThrows
 import kotlin.random.Random
 
 
-class PpuMemoryTest {
+class NesPpuMemoryTest {
 
     @Test
     fun `Maps memory from 0x0000 to 0x2000 into the mapper chr-rom`() {
@@ -26,7 +26,7 @@ class PpuMemoryTest {
             rom[i + HEADER_SIZE] = Random.nextUByteNotZero()
         }
         val mapper = RomLoader.loadMapper(rom)
-        val ppuMemory = PpuMemory(mapper)
+        val ppuMemory = NesPpuMemory(mapper)
 
         for (i in 0x0 until 0x2000) {
             assertTrue(mapper.getChrRom(i) > 0u)
@@ -47,7 +47,7 @@ class PpuMemoryTest {
             rom[i + HEADER_SIZE] = Random.nextUByteNotZero()
         }
         val mapper = RomLoader.loadMapper(rom)
-        val ppuMemory = PpuMemory(mapper)
+        val ppuMemory = NesPpuMemory(mapper)
 
         val expectedTile = mapper.getChrRomSlice(0, 0x10)
         val actualTile = ppuMemory.getSlice(0, 0x10)
@@ -68,7 +68,7 @@ class PpuMemoryTest {
         )
 
         val mapper = RomLoader.loadMapper(rom)
-        val ppuMemory = PpuMemory(mapper)
+        val ppuMemory = NesPpuMemory(mapper)
 
         assertThrows<Error> {
             ppuMemory.getSlice(0x2000, 0x10)
