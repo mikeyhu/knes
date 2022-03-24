@@ -30,3 +30,6 @@ fun UByte.isNegative() = (this and CpuStatusComparisons.NEGATIVE_FLAG) > 0u
 fun UInt.isCarry() = this.shr(8) > 0u
 
 fun readFileToByteArray(file: File) = file.inputStream().readBytes().asUByteArray()
+
+fun UByte.maskedEquals(mask: UByte, equals: UByte) = this.and(mask) == equals
+fun UByte.maskedEquals(mask: UByte) = this.maskedEquals(mask, mask)

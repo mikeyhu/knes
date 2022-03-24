@@ -3,6 +3,7 @@ package net.chompsoftware.knes.hardware.effects
 import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.Memory
 import net.chompsoftware.knes.hardware.OperationState
+import net.chompsoftware.knes.maskedEquals
 
 object CpuStatusPositions {
     const val CARRY_BYTE_POSITION: UByte = 0x1u
@@ -34,16 +35,14 @@ object PullAccumulator : Effect() {
 object PullProcessorStatus : Effect() {
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
         val processorStatus = memory[((++cpuState.stackReg) + 0x100u).toInt()]
-        cpuState.isCarryFlag = processorStatus.isSetFor(CpuStatusPositions.CARRY_BYTE_POSITION)
-        cpuState.isZeroFlag = processorStatus.isSetFor(CpuStatusPositions.ZERO_BYTE_POSITION)
-        cpuState.isInterruptDisabledFlag = processorStatus.isSetFor(CpuStatusPositions.INTERRUPT_BYTE_POSITION)
-        cpuState.isDecimalFlag = processorStatus.isSetFor(CpuStatusPositions.DECIMAL_BYTE_POSITION)
-        cpuState.isBreakCommandFlag = processorStatus.isSetFor(CpuStatusPositions.BREAK_BYTE_POSITION)
-        cpuState.isOverflowFlag = processorStatus.isSetFor(CpuStatusPositions.OVERFLOW_BYTE_POSITION)
-        cpuState.isNegativeFlag = processorStatus.isSetFor(CpuStatusPositions.NEGATIVE_BYTE_POSITION)
+        cpuState.isCarryFlag = processorStatus.maskedEquals(CpuStatusPositions.CARRY_BYTE_POSITION)
+        cpuState.isZeroFlag = processorStatus.maskedEquals(CpuStatusPositions.ZERO_BYTE_POSITION)
+        cpuState.isInterruptDisabledFlag = processorStatus.maskedEquals(CpuStatusPositions.INTERRUPT_BYTE_POSITION)
+        cpuState.isDecimalFlag = processorStatus.maskedEquals(CpuStatusPositions.DECIMAL_BYTE_POSITION)
+        cpuState.isBreakCommandFlag = processorStatus.maskedEquals(CpuStatusPositions.BREAK_BYTE_POSITION)
+        cpuState.isOverflowFlag = processorStatus.maskedEquals(CpuStatusPositions.OVERFLOW_BYTE_POSITION)
+        cpuState.isNegativeFlag = processorStatus.maskedEquals(CpuStatusPositions.NEGATIVE_BYTE_POSITION)
     }
-
-    private fun UByte.isSetFor(mask: UByte) = this.and(mask) == mask
 }
 
 class PushProcessorStatus(
