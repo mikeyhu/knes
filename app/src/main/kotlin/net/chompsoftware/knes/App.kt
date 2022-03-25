@@ -17,10 +17,10 @@ fun main() {
     val time = measureTimeMillis {
         val memory = BasicMemory(setupMemory(LDA_AB, 0x01u, 0x00u))
         val cpu = CpuState(0, 0x0u, 0x0u)
-        val effectState = OperationState(0)
+        val operationState = OperationState(0)
         for (i in 1..40_000_000) {
 
-            processInstruction(cpu, memory, effectState)
+            processInstruction(cpu, memory, operationState)
             if (cpu.programCounter != 3) {
                 throw Error("CPU State Incorrect")
             }

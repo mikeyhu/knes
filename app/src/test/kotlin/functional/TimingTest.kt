@@ -50,11 +50,11 @@ class TimingTest {
         do {
             val counter = cpuState.programCounter
             try {
-                val effectState = OperationState(0, null, null, null)
-                var nextPipeline: EffectPipeline? = Operation.run(cpuState, memory, effectState)
+                val operationState = OperationState(0, null, null, null)
+                var nextPipeline: EffectPipeline? = Operation.run(cpuState, memory, operationState)
                 cyclesDone++
                 while (nextPipeline != null) {
-                    nextPipeline = nextPipeline.run(cpuState, memory, effectState)
+                    nextPipeline = nextPipeline.run(cpuState, memory, operationState)
                     cyclesDone++
                 }
             } catch (error: Error) {
