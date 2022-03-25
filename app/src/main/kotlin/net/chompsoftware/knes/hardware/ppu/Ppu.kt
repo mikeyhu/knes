@@ -9,6 +9,12 @@ class Ppu(private val ppuMemory: PpuMemory) {
 
     private val memoryReadBuffer = MemoryReadBuffer()
 
+    private val scanlineCounter = ScanlineCounter(0, 0)
+
+    fun cpuTick(): Boolean {
+        return scanlineCounter.cpuTick()
+    }
+
     fun busMemoryWriteEvent(position: Int, value: UByte) {
         println("PPU WRITE: $position => ${value.toLogHex()}")
         when (position) {
@@ -28,15 +34,9 @@ class Ppu(private val ppuMemory: PpuMemory) {
         println("PPU READ: $position")
         return when (position) {
             PPU_REG_DATA -> {
-                val ppuMemoryPosition = toInt16(ppuAddressLow, ppuAddressHigh)
-                when (ppuMemoryPosition) {
+                when (val ppuMemoryPosition = toInt16(ppuAddressLow, ppuAddressHigh)) {
                     in 0 until 0x2000 -> memoryReadBuffer.buffer {
-                        ppuMemory.get(
-                            toInt16(
-                                ppuAddressLow,
-                                ppuAddressHigh
-                            )
-                        )
+                        ppuMemory.get(ppuMemoryPosition)
                     }
                     else -> TODO("read outside CHR-ROM not supported yet")
                 }
@@ -51,5 +51,34 @@ class Ppu(private val ppuMemory: PpuMemory) {
         fun buffer(nextItem: () -> UByte): UByte {
             return bufferedValue.also { bufferedValue = nextItem() }
         }
+    }
+}
+
+class ScanlineCounter(
+    var currentScanline: Int = 0,
+    var currentScanlinePosition: Int = 0
+) {
+    /*
+    NTSC systems have PPU 3 ticks per CPU
+    PAL systems have 3.2 tickes per CPU
+    This only supports NTSC for now
+    https://www.nesdev.org/wiki/PPU
+    */
+    private val ppuTicksPerCpuTick = 3
+
+    fun cpuTick(): Boolean {
+
+        currentScanlinePosition += ppuTicksPerCpuTick
+        if (currentScanlinePosition > PPU_SCANLINE_SIZE) {
+            currentScanlinePosition -= PPU_SCANLINE_SIZE
+            currentScanline++
+            if (currentScanline == PPU_SCANLINE_NMI_INTERRUPT) {
+                return true
+            }
+            if (currentScanline >= PPU_SCANLINE_FRAME) {
+                currentScanline = 0
+            }
+        }
+        return false
     }
 }

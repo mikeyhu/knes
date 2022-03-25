@@ -12,3 +12,8 @@ const val PPU_REG_DATA = 0x7
 
 
 const val PPU_REG_OAM_DMA = 0x4014
+
+
+const val PPU_SCANLINE_SIZE = 341
+const val PPU_SCANLINE_FRAME = 262
+const val PPU_SCANLINE_NMI_INTERRUPT = 241
