@@ -17,7 +17,8 @@ data class CpuState(
     var isDecimalFlag: Boolean = false,
     var isOverflowFlag: Boolean = false,
     var isBreakCommandFlag: Boolean = false,
-    var isInterruptDisabledFlag: Boolean = false
+    var isInterruptDisabledFlag: Boolean = false,
+    var isNMIInterrupt: Boolean = false
 ) {
     fun programCounterWithIncrement(): Int {
         return programCounter++
@@ -59,7 +60,7 @@ data class CpuState(
                 "negative=${isNegativeFlag}, zero=${isZeroFlag}, " +
                 "overflow=${isOverflowFlag}, carry=${isCarryFlag}, " +
                 "decimal=${isDecimalFlag}, break=${isBreakCommandFlag}, " +
-                "interrupt=${isInterruptDisabledFlag})"
+                "interrupt=${isInterruptDisabledFlag}, nmi=${isNMIInterrupt})"
     }
 
     private fun Int.paddedToHex() = this.toHex().padEnd(5)

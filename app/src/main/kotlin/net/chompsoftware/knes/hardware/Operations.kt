@@ -288,4 +288,15 @@ val instructionMap: Map<UByte, EffectPipeline> = mapOf(
     }
 }
 
+val nmiInterruptPipeline = VariableLengthPipeline(
+    NoOperation,
+    PushProgramCounterHigh(0),
+    PushProgramCounterLow(0),
+    PushProcessorStatus(interruptOverride = false),
+    LocationFromNMIInterrupt,
+    ReadLocationLow,
+    ReadLocationHigh,
+    ArgumentsToLocation,
+    JumpWithBreak
+)
 

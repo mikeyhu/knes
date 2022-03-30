@@ -83,6 +83,14 @@ object LocationFromBreak : Effect() {
     override fun requiresCycle() = false
 }
 
+object LocationFromNMIInterrupt : Effect() {
+    override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
+        operationState.location = 0xfffa
+    }
+
+    override fun requiresCycle() = false
+}
+
 
 
 

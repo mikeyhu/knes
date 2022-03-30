@@ -126,6 +126,10 @@ class HardwareInterrogator(private val cpuState: CpuState, private val memory: M
             checkState.isInterruptDisabledFlag = expected
         }
 
+        fun isNMIInterrupt(expected: Boolean) {
+            assertEquals(expected, cpuState.isNMIInterrupt, "assertIsNMIInterrupt")
+            checkState.isNMIInterrupt = expected
+        }
         fun assertNothingElseChanged() {
             assertEquals(checkState, cpuState, "Unexpected CpuState change occurred,")
         }

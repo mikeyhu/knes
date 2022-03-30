@@ -72,6 +72,11 @@ interface EffectPipeline {
 
 object Operation : EffectPipeline {
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState): EffectPipeline {
+        if (cpuState.isNMIInterrupt) {
+            memory[cpuState.programCounter]
+            cpuState.isNMIInterrupt = false
+            return nmiInterruptPipeline
+        }
         val instruction = memory[cpuState.programCounterWithIncrement()]
 
         return instructionMap.getOrElse(instruction) {
