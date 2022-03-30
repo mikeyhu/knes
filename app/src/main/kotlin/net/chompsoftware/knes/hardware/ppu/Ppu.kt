@@ -12,7 +12,7 @@ class Ppu(private val ppuMemory: PpuMemory) {
     private val scanlineCounter = ScanlineCounter(0, 0)
 
     fun cpuTick(): Boolean {
-        return scanlineCounter.cpuTick()
+        return scanlineCounter.cpuCycle()
     }
 
     fun busMemoryWriteEvent(position: Int, value: UByte) {
@@ -66,7 +66,7 @@ class ScanlineCounter(
     */
     private val ppuTicksPerCpuTick = 3
 
-    fun cpuTick(): Boolean {
+    fun cpuCycle(): Boolean {
 
         currentScanlinePosition += ppuTicksPerCpuTick
         if (currentScanlinePosition > PPU_SCANLINE_SIZE) {

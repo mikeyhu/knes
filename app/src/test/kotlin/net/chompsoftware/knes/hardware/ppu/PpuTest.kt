@@ -37,14 +37,14 @@ class PpuTest {
             val counter = ScanlineCounter()
 
             for (i in 0 until (PPU_SCANLINE_SIZE * PPU_SCANLINE_NMI_INTERRUPT) - 3 step 3) {
-                assertFalse(counter.cpuTick(), "should have been false for ppuTick $i")
+                assertFalse(counter.cpuCycle(), "should have been false for ppuTick $i")
             }
-            assertTrue(counter.cpuTick())
+            assertTrue(counter.cpuCycle())
             for (i in 0 until (PPU_SCANLINE_SIZE * PPU_SCANLINE_FRAME) - 3 step 3) {
-                assertFalse(counter.cpuTick(), "should have been false for ppuTick $i")
+                assertFalse(counter.cpuCycle(), "should have been false for ppuTick $i")
                 assertTrue(counter.currentScanline < PPU_SCANLINE_FRAME)
             }
-            assertTrue(counter.cpuTick())
+            assertTrue(counter.cpuCycle())
         }
     }
 
