@@ -293,7 +293,19 @@ val nmiInterruptPipeline = VariableLengthPipeline(
     PushProgramCounterHigh(0),
     PushProgramCounterLow(0),
     PushProcessorStatus(interruptOverride = false),
-    LocationFromNMIInterrupt,
+    LocationFromInterrupt(0xfffa),
+    ReadLocationLow,
+    ReadLocationHigh,
+    ArgumentsToLocation,
+    JumpWithBreak
+)
+
+val irqInterruptPipeline = VariableLengthPipeline(
+    NoOperation,
+    PushProgramCounterHigh(0),
+    PushProgramCounterLow(0),
+    PushProcessorStatus(interruptOverride = false),
+    LocationFromInterrupt(0xfffe),
     ReadLocationLow,
     ReadLocationHigh,
     ArgumentsToLocation,

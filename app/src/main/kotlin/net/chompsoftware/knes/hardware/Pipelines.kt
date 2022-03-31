@@ -77,6 +77,11 @@ object Operation : EffectPipeline {
             cpuState.isNMIInterrupt = false
             return nmiInterruptPipeline
         }
+        if (cpuState.isIRQInterrupt && !cpuState.isInterruptDisabledFlag) {
+            memory[cpuState.programCounter]
+            cpuState.isIRQInterrupt = false
+            return irqInterruptPipeline
+        }
         val instruction = memory[cpuState.programCounterWithIncrement()]
 
         return instructionMap.getOrElse(instruction) {

@@ -83,9 +83,9 @@ object LocationFromBreak : Effect() {
     override fun requiresCycle() = false
 }
 
-object LocationFromNMIInterrupt : Effect() {
+class LocationFromInterrupt(private val location:Int) : Effect() {
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-        operationState.location = 0xfffa
+        operationState.location = location
     }
 
     override fun requiresCycle() = false

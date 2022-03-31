@@ -17,7 +17,9 @@ fun randomisedCpuState(
     isDecimalFlag: Boolean? = null,
     isOverflowFlag: Boolean? = null,
     isBreakCommandFlag: Boolean? = null,
-    isInterruptDisabledFlag: Boolean? = null
+    isInterruptDisabledFlag: Boolean? = null,
+    isNMIInterrupt: Boolean = false,
+    isIRQInterrupt: Boolean = false
 ): CpuState {
     return CpuState(
         programCounter = programCounter,
@@ -32,7 +34,9 @@ fun randomisedCpuState(
         isDecimalFlag = isDecimalFlag ?: randomBoolean(),
         isOverflowFlag = isOverflowFlag ?: randomBoolean(),
         isBreakCommandFlag = isBreakCommandFlag ?: randomBoolean(),
-        isInterruptDisabledFlag = isInterruptDisabledFlag ?: randomBoolean()
+        isInterruptDisabledFlag = isInterruptDisabledFlag ?: randomBoolean(),
+        isNMIInterrupt = isNMIInterrupt,
+        isIRQInterrupt = isIRQInterrupt
     )
 }
 
