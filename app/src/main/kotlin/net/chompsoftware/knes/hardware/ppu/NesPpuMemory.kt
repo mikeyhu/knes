@@ -5,14 +5,24 @@ import net.chompsoftware.knes.toHex
 
 interface PpuMemory {
     fun get(position: Int): UByte
+    fun set(position: Int, value: UByte)
 }
 
 class NesPpuMemory(val mapper: RomMapper) : PpuMemory {
+    private val vram = UByteArray(0x3F00-0x2000)
+
     override fun get(position: Int): UByte {
         return when (position) {
             in 0 until 0x2000 -> mapper.getChrRom(position)
+            in 0x2000 until 0x3F00 -> vram[position - 0x2000]
             else ->
                 throw Error("PpuMemory: (Read) Out of Range at ${position.toHex()}")
+        }
+    }
+
+    override fun set(position: Int, value: UByte) {
+        when (position) {
+            in 0x2000 until 0x3F00 -> vram[position - 0x2000] = value
         }
     }
 

@@ -1,6 +1,7 @@
 package net.chompsoftware.knes.hardware.ppu
 
 import net.chompsoftware.knes.maskedEquals
+import net.chompsoftware.knes.paddedToHex
 
 
 data class PpuOperationState(
@@ -21,6 +22,16 @@ data class PpuOperationState(
     enum class ExtPinSelect {
         ReadBackdrop,
         OutputColour
+    }
+
+    override fun toString(): String {
+        return "PpuOperationState(baseNametable=${baseNametableAddress.paddedToHex()}, " +
+                "vRamInc=${vRamAddressIncrement.paddedToHex()}, " +
+                "spritePat=${spritePatternAddress.paddedToHex()}, " +
+                "backgroundPat=${backgroundPatternAddress.paddedToHex()}, " +
+                "spriteSize=$spriteSize, " +
+                "extPin=$extPinSelect, " +
+                "genNMI=$generateNMIOnInterval)"
     }
 
     companion object {

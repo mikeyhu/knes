@@ -10,6 +10,8 @@ fun UByte.toLogHex() = this.toString(16).uppercase()
 fun UInt.toLogHex() = this.toString(16).uppercase()
 fun Int.toLogHex() = this.toString(16).uppercase()
 
+fun Int.paddedToHex() = this.toHex().padEnd(5)
+
 fun String.toHexUByte() = Integer.parseInt(this.removePrefix("0x").removeSuffix("u"), 16).toUByte()
 fun String.toHexUInt() = Integer.parseInt(this.removePrefix("0x").removeSuffix("u"), 16).toUInt()
 

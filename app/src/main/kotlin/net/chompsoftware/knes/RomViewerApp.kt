@@ -53,9 +53,11 @@ class TileViewSurface(private val romMapper: RomMapper) : JPanel() {
     }
 }
 
+val defaultFile = "../nes-test-roms/instr_test-v3/rom_singles/" + "01-implied.nes"
+
 fun main(args: Array<String>) {
     val inspector = RomInspector
-    val fileData = readFileToByteArray(File(args[0]))
+    val fileData = readFileToByteArray(File(args.getOrNull(0) ?: defaultFile))
 
     println(inspector.inspectRom(fileData))
 

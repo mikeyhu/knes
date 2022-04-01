@@ -11,9 +11,13 @@ class Ppu(private val ppuMemory: PpuMemory) {
 
     private val scanlineCounter = ScanlineCounter(0, 0)
 
+    private var nextPpuWrite: Int = 0
+
     fun cpuTick(): Boolean {
         return scanlineCounter.cpuCycle()
     }
+
+    fun getPpuMemory(position: Int) = ppuMemory.get(position)
 
     fun busMemoryWriteEvent(position: Int, value: UByte) {
         println("PPU WRITE: $position => ${value.toLogHex()}")
@@ -25,13 +29,17 @@ class Ppu(private val ppuMemory: PpuMemory) {
             PPU_REG_ADDRESS -> {
                 ppuAddressHigh = ppuAddressLow
                 ppuAddressLow = value
+                nextPpuWrite = toInt16(ppuAddressLow, ppuAddressHigh)
+            }
+            PPU_REG_DATA -> {
+                ppuMemory.set(nextPpuWrite++, value)
             }
 //            else -> TODO("busMemoryWriteEvent not implemented for ${position.toHex()}")
         }
     }
 
     fun busMemoryReadEvent(position: Int): UByte {
-        println("PPU READ: $position")
+        if (position != 2) println("PPU READ: $position")
         return when (position) {
             PPU_REG_DATA -> {
                 when (val ppuMemoryPosition = toInt16(ppuAddressLow, ppuAddressHigh)) {

@@ -2,6 +2,7 @@ package net.chompsoftware.knes.hardware
 
 import net.chompsoftware.knes.isNegative
 import net.chompsoftware.knes.isZero
+import net.chompsoftware.knes.paddedToHex
 import net.chompsoftware.knes.toHex
 
 data class CpuState(
@@ -64,8 +65,6 @@ data class CpuState(
                 "interrupt=${isInterruptDisabledFlag}, nmi=${isNMIInterrupt}," +
                 "irq=${isIRQInterrupt})"
     }
-
-    private fun Int.paddedToHex() = this.toHex().padEnd(5)
 
     private fun UByte.paddedToHex() = this.toHex().padEnd(4)
 }
