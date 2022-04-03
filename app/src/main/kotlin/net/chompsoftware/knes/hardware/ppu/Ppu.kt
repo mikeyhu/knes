@@ -5,27 +5,23 @@ import net.chompsoftware.knes.toLogHex
 import java.awt.Color
 import java.awt.image.BufferedImage
 
-private const val screenHeight = 240
-private const val screenWidth = 256 // only first 256 are visible
-private const val tileSize = 8
-private const val tileWidth = 32 // screenWidth / 8
 
 class Ppu(private val ppuMemory: PpuMemory) {
     private var ppuAddressLow: UByte = 0x00u
     private var ppuAddressHigh: UByte = 0x00u
+    private var nextPpuWrite: Int = 0
 
     private val memoryReadBuffer = MemoryReadBuffer()
 
     private val scanlineCounter = ScanlineCounter(0, 0, ::renderScanline)
 
-    private var nextPpuWrite: Int = 0
+    val bufferedImage = BufferedImage(HORIZONTAL_RESOLUTION, VERTICAL_RESOLUTION, BufferedImage.TYPE_INT_RGB)
 
     fun cpuTick(): Boolean {
         return scanlineCounter.cpuCycle()
     }
 
-    private val bufferedImage = BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB)
-
+    // this is probably not correct
     private fun selectPalette(tileH: Int, tileW: Int): Array<Color> {
         val paletteByte = ppuMemory.get(0x2000 + 0x3c0 + (tileH / 4 * 8) + tileH / 4)
 
@@ -51,16 +47,16 @@ class Ppu(private val ppuMemory: PpuMemory) {
     private fun renderScanline(scanlineRow: Int) {
         val tileRow = scanlineRow / 8
         val rowWithinTile = scanlineRow % 8
-        for (tilew in 0 until tileWidth) {
+        for (tilew in 0 until TILES_PER_ROW) {
             //each row by tile
             val palette = selectPalette(tileRow, tilew)
-            val tileRequired = ppuMemory.get(0x2000 + tilew + (tileRow * tileWidth)).toInt()
+            val tileRequired = ppuMemory.get(0x2000 + tilew + (tileRow * TILES_PER_ROW)).toInt()
             val tileByteA = ppuMemory.get(tileRequired * 16 + rowWithinTile)
             val tileByteB = ppuMemory.get(tileRequired * 16 + rowWithinTile + 8)
             for (w in 0..7) {
                 //each tile by horizontal pixel
                 bufferedImage.setRGB(
-                    (tilew * tileSize) + w,
+                    (tilew * TILE_SIZE) + w,
                     scanlineRow,
                     palette[pixelFor(tileByteA, tileByteB, w)].rgb
                 )
@@ -71,10 +67,6 @@ class Ppu(private val ppuMemory: PpuMemory) {
     private fun pixelFor(tile: UByte, tilePlus8: UByte, bit: Int) =
         tile.bitAsByte(7 - bit) + tilePlus8.bitAsByte(7 - bit) * 2
 
-
-    fun renderScreenAsBufferedImage(): BufferedImage {
-        return bufferedImage
-    }
 
     private fun UByte.bitAsByte(position: Int): Byte {
         return this.toUInt().shr(position).and(1u).toByte()

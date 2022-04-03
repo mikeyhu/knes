@@ -2,11 +2,11 @@ package net.chompsoftware.knes
 
 
 import net.chompsoftware.knes.hardware.*
+import net.chompsoftware.knes.hardware.ppu.HORIZONTAL_RESOLUTION
 import net.chompsoftware.knes.hardware.ppu.NesPpuMemory
 import net.chompsoftware.knes.hardware.ppu.Ppu
-import net.chompsoftware.knes.hardware.ppu.defaultPalette
+import net.chompsoftware.knes.hardware.ppu.VERTICAL_RESOLUTION
 import net.chompsoftware.knes.hardware.rom.RomLoader
-import net.chompsoftware.knes.hardware.rom.RomMapper
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.event.WindowEvent
@@ -23,14 +23,15 @@ fun processInstruction(cpuState: CpuState, memory: BasicMemory, operationState: 
     }
 }
 
-const val resolutionMultiplier = 4
+const val verticalMultiple = 4
+const val horizontalMultiple = 4
 
-class App(ppu: Ppu, mapper: RomMapper) : JFrame() {
+class App(ppu: Ppu) : JFrame() {
 
     init {
         title = "KNES"
-        setSize(320 * resolutionMultiplier, 240 * resolutionMultiplier)
-        add(RenderSurface(ppu, mapper))
+        setSize(HORIZONTAL_RESOLUTION * horizontalMultiple, VERTICAL_RESOLUTION * verticalMultiple)
+        add(RenderSurface(ppu))
 
         addWindowListener(object : WindowListener {
             override fun windowOpened(e: WindowEvent?) {}
@@ -53,22 +54,13 @@ class App(ppu: Ppu, mapper: RomMapper) : JFrame() {
     }
 }
 
-class RenderSurface(val ppu: Ppu, val mapper: RomMapper) : JPanel() {
+class RenderSurface(val ppu: Ppu) : JPanel() {
     var repaints = 0
 
     var currentFrame = 0
     var maxFrame = 0
 
     var second = System.currentTimeMillis() / 1000
-
-    private val palette = arrayOf(
-        defaultPalette[21],
-        defaultPalette[41],
-        defaultPalette[39],
-        defaultPalette[34],
-    )
-
-    val tileSize = 8 * resolutionMultiplier
 
     override fun paintComponent(g: Graphics) {
         val currentSecond = System.currentTimeMillis() / 1000
@@ -83,8 +75,8 @@ class RenderSurface(val ppu: Ppu, val mapper: RomMapper) : JPanel() {
         super.paintComponent(g)
         val g2d = g as Graphics2D
 
-        val image = ppu.renderScreenAsBufferedImage()
-        g2d.drawImage(image, 0, 0, 320 * resolutionMultiplier, 240 * resolutionMultiplier, this)
+        val image = ppu.bufferedImage
+        g2d.drawImage(image, 0, 0, HORIZONTAL_RESOLUTION * horizontalMultiple, VERTICAL_RESOLUTION * verticalMultiple, this)
 
         g2d.drawString("repaints: ${repaints++}, per second: ${maxFrame}", 10, 10)
     }
@@ -93,7 +85,8 @@ class RenderSurface(val ppu: Ppu, val mapper: RomMapper) : JPanel() {
 
 fun main() {
 
-    val file = File("../nes-test-roms/instr_test-v3/rom_singles/" + "13-rti.nes")
+//    val file = File("../nes-test-roms/instr_test-v3/rom_singles/" + "13-rti.nes")
+    val file = File("../nes-test-roms/PaddleTest3/PaddleTest.nes")
 //    val file = File("../../emulation/nes/pacman.nes")
 
     val mapper = RomLoader.loadMapper(readFileToByteArray(file))
@@ -112,7 +105,7 @@ fun main() {
 
     println("starting app")
 
-    val app = App(ppu, mapper)
+    val app = App(ppu)
     app.isVisible = true
 
     println("started app")
@@ -136,6 +129,6 @@ fun main() {
     } catch (e: Throwable) {
         println(e.message)
     }
-    println(ticksDone)
+    println("finished at $ticksDone")
 
 }
