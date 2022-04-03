@@ -21,7 +21,6 @@ class Ppu(private val ppuMemory: PpuMemory) {
         return scanlineCounter.cpuCycle()
     }
 
-    // this is probably not correct
     private fun selectPalette(tileH: Int, tileW: Int): Array<Color> {
         val paletteByte = ppuMemory.get(0x2000 + 0x3c0 + (tileH / 4 * 8) + tileH / 4)
 
@@ -41,7 +40,12 @@ class Ppu(private val ppuMemory: PpuMemory) {
             }
         }
         val start = index * 4 + 1
-        return arrayOf(defaultPalette[0], defaultPalette[start], defaultPalette[start + 1], defaultPalette[start + 2])
+        return arrayOf(
+            defaultPalette[ppuMemory.paletteTable(0)],
+            defaultPalette[ppuMemory.paletteTable(start)],
+            defaultPalette[ppuMemory.paletteTable(start + 1)],
+            defaultPalette[ppuMemory.paletteTable(start + 2)]
+        )
     }
 
     private fun renderScanline(scanlineRow: Int) {

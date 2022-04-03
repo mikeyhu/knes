@@ -85,9 +85,11 @@ class RenderSurface(val ppu: Ppu) : JPanel() {
 
 fun main() {
 
-//    val file = File("../nes-test-roms/instr_test-v3/rom_singles/" + "13-rti.nes")
-    val file = File("../nes-test-roms/PaddleTest3/PaddleTest.nes")
+    val file = File("../nes-test-roms/instr_test-v3/rom_singles/" + "13-rti.nes")
+//    val file = File("../nes-test-roms/full_palette/full_palette.nes")
+//    val file = File("../nes-test-roms/PaddleTest3/PaddleTest.nes")
 //    val file = File("../../emulation/nes/pacman.nes")
+//    val file = File("otherRoms/color_test.nes")
 
     val mapper = RomLoader.loadMapper(readFileToByteArray(file))
     val ppu = Ppu(NesPpuMemory(mapper))
@@ -127,7 +129,7 @@ fun main() {
             ticksDone++
         }
     } catch (e: Throwable) {
-        println(e.message)
+        println(e)
     }
     println("finished at $ticksDone")
 

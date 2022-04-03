@@ -6,15 +6,22 @@ import net.chompsoftware.knes.toHex
 interface PpuMemory {
     fun get(position: Int): UByte
     fun set(position: Int, value: UByte)
+    fun paletteTable(position: Int): Int
 }
 
+private const val PPU_CHROM_START = 0x0
+private const val PPU_VRAM_START = 0x2000
+private const val PPU_VRAM_SIZE = 0x2000
+private const val PPU_VRAM_END = PPU_VRAM_START + PPU_VRAM_SIZE
+private const val PALETTE_TABLE_START = 0x3F00
+
 class NesPpuMemory(val mapper: RomMapper) : PpuMemory {
-    private val vram = UByteArray(0x3F00-0x2000)
+    private val vram = UByteArray(PPU_VRAM_SIZE)
 
     override fun get(position: Int): UByte {
         return when (position) {
-            in 0 until 0x2000 -> mapper.getChrRom(position)
-            in 0x2000 until 0x3F00 -> vram[position - 0x2000]
+            in PPU_CHROM_START until PPU_VRAM_START -> mapper.getChrRom(position)
+            in PPU_VRAM_START until PPU_VRAM_END -> vram[position - PPU_VRAM_START]
             else ->
                 throw Error("PpuMemory: (Read) Out of Range at ${position.toHex()}")
         }
@@ -22,13 +29,19 @@ class NesPpuMemory(val mapper: RomMapper) : PpuMemory {
 
     override fun set(position: Int, value: UByte) {
         when (position) {
-            in 0x2000 until 0x3F00 -> vram[position - 0x2000] = value
+            in PPU_VRAM_START until PPU_VRAM_END -> vram[position - PPU_VRAM_START] = value
+            else ->
+                throw Error("PpuMemory: (Write) Out of Range at ${position.toHex()}")
         }
+    }
+
+    override fun paletteTable(position: Int): Int {
+        return vram[position + PALETTE_TABLE_START - PPU_VRAM_START].toInt() // 0x3F00 - 0x2000
     }
 
     fun getSlice(position: Int, size: Int): UByteArray {
         return when (position) {
-            in 0 until 0x2000 - size -> mapper.getChrRomSlice(position, size)
+            in 0 until PPU_VRAM_START - size -> mapper.getChrRomSlice(position, size)
             else ->
                 throw Error("PpuMemory: (Read) Out of Range at ${position.toHex()}")
         }
