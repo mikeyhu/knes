@@ -4,7 +4,6 @@ package net.chompsoftware.knes
 import net.chompsoftware.knes.hardware.*
 import net.chompsoftware.knes.hardware.ppu.NesPpuMemory
 import net.chompsoftware.knes.hardware.ppu.Ppu
-import net.chompsoftware.knes.hardware.ppu.TileReader
 import net.chompsoftware.knes.hardware.ppu.defaultPalette
 import net.chompsoftware.knes.hardware.rom.RomLoader
 import net.chompsoftware.knes.hardware.rom.RomMapper
@@ -84,17 +83,8 @@ class RenderSurface(val ppu: Ppu, val mapper: RomMapper) : JPanel() {
         super.paintComponent(g)
         val g2d = g as Graphics2D
 
-        for (t in 0x0000..0x03c0) {
-            val tile = ppu.getPpuMemory(t + 0x2000)
-            val x = t % 32
-            val y = t / 32
-
-            val slice = mapper.getChrRomSlice(tile.toInt() * 16, 16)
-            val image = TileReader.getTileFromMemory(slice).asBufferedImage(palette)
-            g2d.drawImage(
-                image, x * tileSize, y * tileSize, tileSize, tileSize, this
-            )
-        }
+        val image = ppu.renderScreenAsBufferedImage(palette)
+        g2d.drawImage(image, 0, 0, 320 * resolutionMultiplier, 240 * resolutionMultiplier, this)
 
         g2d.drawString("repaints: ${repaints++}, per second: ${maxFrame}", 10, 10)
     }
