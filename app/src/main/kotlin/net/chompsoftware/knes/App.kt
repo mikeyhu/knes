@@ -83,7 +83,7 @@ class RenderSurface(val ppu: Ppu, val mapper: RomMapper) : JPanel() {
         super.paintComponent(g)
         val g2d = g as Graphics2D
 
-        val image = ppu.renderScreenAsBufferedImage(palette)
+        val image = ppu.renderScreenAsBufferedImage()
         g2d.drawImage(image, 0, 0, 320 * resolutionMultiplier, 240 * resolutionMultiplier, this)
 
         g2d.drawString("repaints: ${repaints++}, per second: ${maxFrame}", 10, 10)

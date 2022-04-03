@@ -26,13 +26,36 @@ class Ppu(private val ppuMemory: PpuMemory) {
 
     private val bufferedImage = BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB)
 
-    fun renderScreenAsBufferedImage(palette: Array<Color>): BufferedImage {
+    private fun selectPalette(tileH: Int, tileW: Int): Array<Color> {
+        val paletteByte = ppuMemory.get(0x2000 + 0x3c0 + (tileH / 4 * 8) + tileH / 4)
+
+        val tc = tileH % 4 / 2
+        val tw = tileW % 4 / 2
+        val index = if (tc == 0) {
+            if (tw == 0) {
+                paletteByte.toInt().shr(2).and(0x11)
+            } else {
+                paletteByte.toInt().shr(6).and(0x11)
+            }
+        } else {
+            if (tw == 0) {
+                paletteByte.toInt().and(0x11)
+            } else {
+                paletteByte.toInt().shr(4).and(0x11)
+            }
+        }
+        val start = index * 4 + 1
+        return arrayOf(defaultPalette[0], defaultPalette[start], defaultPalette[start + 1], defaultPalette[start + 2])
+    }
+
+    fun renderScreenAsBufferedImage(): BufferedImage {
         for (h in 0 until screenHeight) {
             // each scanline
             val tileh = h / 8
             val hInTile = h % 8
             for (tilew in 0 until tileWidth) {
                 //each row by tile
+                val palette = selectPalette(tileh, tilew)
                 val tileRequired = ppuMemory.get(0x2000 + tilew + (tileh * tileWidth)).toInt()
                 val tileByteA = ppuMemory.get(tileRequired * 16 + hInTile)
                 val tileByteB = ppuMemory.get(tileRequired * 16 + hInTile + 8)
@@ -42,7 +65,8 @@ class Ppu(private val ppuMemory: PpuMemory) {
                     bufferedImage.setRGB(
                         (tilew * tileSize) + w,
                         h,
-                        palette[pixelValue].rgb)
+                        palette[pixelValue].rgb
+                    )
                 }
             }
         }
@@ -114,7 +138,7 @@ class ScanlineCounter(
         currentScanlinePosition += ppuTicksPerCpuTick
         if (currentScanlinePosition > PPU_SCANLINE_SIZE) {
             currentScanlinePosition -= PPU_SCANLINE_SIZE
-            if(currentScanline < PPU_SCANLINE_NMI_INTERRUPT) {
+            if (currentScanline < PPU_SCANLINE_NMI_INTERRUPT) {
                 onScanlineFinished(currentScanline)
             }
             currentScanline++
