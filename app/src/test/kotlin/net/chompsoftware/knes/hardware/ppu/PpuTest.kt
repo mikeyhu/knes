@@ -42,14 +42,14 @@ class PpuTest {
             var scanlineFinishedCalled = 0
             val counter = ScanlineCounter() {
                 scanlineFinishedCalled++
-                assertTrue(it < 241)
+                assertTrue(it < 240)
             }
 
             for (i in 0 until (PPU_SCANLINE_SIZE * PPU_SCANLINE_NMI_INTERRUPT) - 3 step 3) {
                 assertFalse(counter.cpuCycle(), "should have been false for ppuTick $i")
             }
             assertTrue(counter.cpuCycle())
-            assertEquals(241, scanlineFinishedCalled)
+            assertEquals(240, scanlineFinishedCalled)
             for (i in 0 until (PPU_SCANLINE_SIZE * PPU_SCANLINE_FRAME) - 3 step 3) {
                 assertFalse(counter.cpuCycle(), "should have been false for ppuTick $i")
                 assertTrue(counter.currentScanline < PPU_SCANLINE_FRAME)

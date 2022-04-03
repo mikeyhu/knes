@@ -16,7 +16,7 @@ class Ppu(private val ppuMemory: PpuMemory) {
 
     private val memoryReadBuffer = MemoryReadBuffer()
 
-    private val scanlineCounter = ScanlineCounter(0, 0) {}
+    private val scanlineCounter = ScanlineCounter(0, 0, ::renderScanline)
 
     private var nextPpuWrite: Int = 0
 
@@ -48,28 +48,31 @@ class Ppu(private val ppuMemory: PpuMemory) {
         return arrayOf(defaultPalette[0], defaultPalette[start], defaultPalette[start + 1], defaultPalette[start + 2])
     }
 
-    fun renderScreenAsBufferedImage(): BufferedImage {
-        for (h in 0 until screenHeight) {
-            // each scanline
-            val tileh = h / 8
-            val hInTile = h % 8
-            for (tilew in 0 until tileWidth) {
-                //each row by tile
-                val palette = selectPalette(tileh, tilew)
-                val tileRequired = ppuMemory.get(0x2000 + tilew + (tileh * tileWidth)).toInt()
-                val tileByteA = ppuMemory.get(tileRequired * 16 + hInTile)
-                val tileByteB = ppuMemory.get(tileRequired * 16 + hInTile + 8)
-                for (w in 0..7) {
-                    //each tile by horizontal pixel
-                    val pixelValue = (tileByteA.bitAsByte(7 - w) + tileByteB.bitAsByte(7 - w) * 2)
-                    bufferedImage.setRGB(
-                        (tilew * tileSize) + w,
-                        h,
-                        palette[pixelValue].rgb
-                    )
-                }
+    private fun renderScanline(scanlineRow: Int) {
+        val tileRow = scanlineRow / 8
+        val rowWithinTile = scanlineRow % 8
+        for (tilew in 0 until tileWidth) {
+            //each row by tile
+            val palette = selectPalette(tileRow, tilew)
+            val tileRequired = ppuMemory.get(0x2000 + tilew + (tileRow * tileWidth)).toInt()
+            val tileByteA = ppuMemory.get(tileRequired * 16 + rowWithinTile)
+            val tileByteB = ppuMemory.get(tileRequired * 16 + rowWithinTile + 8)
+            for (w in 0..7) {
+                //each tile by horizontal pixel
+                bufferedImage.setRGB(
+                    (tilew * tileSize) + w,
+                    scanlineRow,
+                    palette[pixelFor(tileByteA, tileByteB, w)].rgb
+                )
             }
         }
+    }
+
+    private fun pixelFor(tile: UByte, tilePlus8: UByte, bit: Int) =
+        tile.bitAsByte(7 - bit) + tilePlus8.bitAsByte(7 - bit) * 2
+
+
+    fun renderScreenAsBufferedImage(): BufferedImage {
         return bufferedImage
     }
 
@@ -138,7 +141,7 @@ class ScanlineCounter(
         currentScanlinePosition += ppuTicksPerCpuTick
         if (currentScanlinePosition > PPU_SCANLINE_SIZE) {
             currentScanlinePosition -= PPU_SCANLINE_SIZE
-            if (currentScanline < PPU_SCANLINE_NMI_INTERRUPT) {
+            if (currentScanline < (PPU_SCANLINE_VISIBLE)) {
                 onScanlineFinished(currentScanline)
             }
             currentScanline++
