@@ -16,7 +16,7 @@ class Ppu(private val ppuMemory: PpuMemory) {
 
     private val memoryReadBuffer = MemoryReadBuffer()
 
-    private val scanlineCounter = ScanlineCounter(0, 0)
+    private val scanlineCounter = ScanlineCounter(0, 0) {}
 
     private var nextPpuWrite: Int = 0
 
@@ -24,9 +24,9 @@ class Ppu(private val ppuMemory: PpuMemory) {
         return scanlineCounter.cpuCycle()
     }
 
-    private var screen = ByteArray(screenWidth * screenHeight)
+    private val bufferedImage = BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB)
 
-    fun renderScreenAsBufferedImage(palette: Array<Color>):BufferedImage {
+    fun renderScreenAsBufferedImage(palette: Array<Color>): BufferedImage {
         for (h in 0 until screenHeight) {
             // each scanline
             val tileh = h / 8
@@ -38,21 +38,15 @@ class Ppu(private val ppuMemory: PpuMemory) {
                 val tileByteB = ppuMemory.get(tileRequired * 16 + hInTile + 8)
                 for (w in 0..7) {
                     //each tile by horizontal pixel
-                    val pixelToSet = (h * screenWidth) + (tilew * tileSize) + w
-                    val pixelValue = (tileByteA.bitAsByte(7 - w) + tileByteB.bitAsByte(7 - w) * 2).toByte()
-                    screen[pixelToSet] = pixelValue
+                    val pixelValue = (tileByteA.bitAsByte(7 - w) + tileByteB.bitAsByte(7 - w) * 2)
+                    bufferedImage.setRGB(
+                        (tilew * tileSize) + w,
+                        h,
+                        palette[pixelValue].rgb)
                 }
             }
         }
-
-        val img = BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB)
-        for (h in 0 until screenHeight) {
-            for (w in 0 until screenWidth) {
-                val screenPixel = screen[(h * screenWidth) + w]
-                img.setRGB(w, h, palette[screenPixel.toInt()].rgb)
-            }
-        }
-        return img
+        return bufferedImage
     }
 
     private fun UByte.bitAsByte(position: Int): Byte {
@@ -104,7 +98,8 @@ class Ppu(private val ppuMemory: PpuMemory) {
 
 class ScanlineCounter(
     var currentScanline: Int = 0,
-    var currentScanlinePosition: Int = 0
+    var currentScanlinePosition: Int = 0,
+    val onScanlineFinished: (Int) -> Unit
 ) {
     /*
     NTSC systems have PPU 3 ticks per CPU
@@ -119,6 +114,9 @@ class ScanlineCounter(
         currentScanlinePosition += ppuTicksPerCpuTick
         if (currentScanlinePosition > PPU_SCANLINE_SIZE) {
             currentScanlinePosition -= PPU_SCANLINE_SIZE
+            if(currentScanline < PPU_SCANLINE_NMI_INTERRUPT) {
+                onScanlineFinished(currentScanline)
+            }
             currentScanline++
             if (currentScanline == PPU_SCANLINE_NMI_INTERRUPT) {
                 return true
