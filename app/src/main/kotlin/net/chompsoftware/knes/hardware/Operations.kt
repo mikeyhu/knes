@@ -305,7 +305,7 @@ val irqInterruptPipeline = VariableLengthPipeline(
     PushProgramCounterHigh(0),
     PushProgramCounterLow(0),
     PushProcessorStatus(interruptOverride = false),
-    LocationFromInterrupt(0xfffe),
+    LocationFromInterrupt(BREAK_LOCATION),
     ReadLocationLow,
     ReadLocationHigh,
     ArgumentsToLocation,

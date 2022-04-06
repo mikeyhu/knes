@@ -1,38 +1,30 @@
 package net.chompsoftware.knes.hardware
 
-
-class CycleCoordinator {
-
-    /*
-    accept:
-      ppu, ppumemory romloader
-      cpuState, memory, operationState - needed for loading / saving state?
-      pending interrupts?
-     */
+import net.chompsoftware.knes.hardware.ppu.Ppu
+import net.chompsoftware.knes.toInt16
 
 
+class CycleCoordinator(
+    private val operation: EffectPipeline,
+    private val ppu: Ppu,
+    private val memory: Memory,
+    private val cpuState: CpuState = initialCpuState(memory),
+    private val operationState: OperationState = OperationState(0)
+) {
+    private var nextPipeline: EffectPipeline? = null
 
-    fun cycle() {
-        /*
-            fun processInstruction(cpuState: CpuState, memory: BasicMemory, operationState: OperationState) {
-                var nextPipeline: EffectPipeline? = Operation.run(cpuState, memory, operationState)
-                while (nextPipeline != null) {
-                    nextPipeline = nextPipeline.run(cpuState, memory, operationState)
-                }
-            }
+    fun cycle(onNMICallback: () -> Unit) {
+        val isNMIInterrupt = ppu.cpuTick(onNMICallback)
+        if (isNMIInterrupt) {
+            cpuState.isNMIInterrupt = true
+        }
+        nextPipeline = (nextPipeline ?: operation).run(cpuState, memory, operationState)
+    }
 
-            CPU:
-            if an instruction is already in progress continue it.
-            if not, check for any interrupts (could be more than 1?!) and start that
-            otherwise use Operation.run to start next instruction
-
-            PPU:
-            increment ppu.cpuTick (naming?) get info on NMI interrupt
-            set it if required
-
-            APU:
-            TODO("Not started")
-         */
-
+    companion object {
+        private fun initialCpuState(memory: Memory) = CpuState(
+            programCounter = toInt16(memory[0xfffc], memory[0xfffd]),
+            breakLocation = BREAK_LOCATION
+        )
     }
 }

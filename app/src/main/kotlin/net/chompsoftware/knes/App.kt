@@ -4,7 +4,7 @@ package net.chompsoftware.knes
 import net.chompsoftware.knes.hardware.*
 import net.chompsoftware.knes.hardware.ppu.HORIZONTAL_RESOLUTION
 import net.chompsoftware.knes.hardware.ppu.NesPpuMemory
-import net.chompsoftware.knes.hardware.ppu.Ppu
+import net.chompsoftware.knes.hardware.ppu.NesPpu
 import net.chompsoftware.knes.hardware.ppu.VERTICAL_RESOLUTION
 import net.chompsoftware.knes.hardware.rom.RomLoader
 import java.awt.Graphics
@@ -26,7 +26,7 @@ fun processInstruction(cpuState: CpuState, memory: BasicMemory, operationState: 
 const val verticalMultiple = 4
 const val horizontalMultiple = 4
 
-class App(ppu: Ppu) : JFrame() {
+class App(ppu: NesPpu) : JFrame() {
 
     init {
         title = "KNES"
@@ -54,7 +54,7 @@ class App(ppu: Ppu) : JFrame() {
     }
 }
 
-class RenderSurface(val ppu: Ppu) : JPanel() {
+class RenderSurface(val ppu: NesPpu) : JPanel() {
     var repaints = 0
 
     var currentFrame = 0
@@ -75,8 +75,15 @@ class RenderSurface(val ppu: Ppu) : JPanel() {
         super.paintComponent(g)
         val g2d = g as Graphics2D
 
-        val image = ppu.bufferedImage
-        g2d.drawImage(image, 0, 0, HORIZONTAL_RESOLUTION * horizontalMultiple, VERTICAL_RESOLUTION * verticalMultiple, this)
+        val image = ppu.getBufferedImage()
+        g2d.drawImage(
+            image,
+            0,
+            0,
+            HORIZONTAL_RESOLUTION * horizontalMultiple,
+            VERTICAL_RESOLUTION * verticalMultiple,
+            this
+        )
 
         g2d.drawString("repaints: ${repaints++}, per second: ${maxFrame}", 10, 10)
     }
@@ -92,18 +99,12 @@ fun main() {
 //    val file = File("otherRoms/color_test.nes")
 
     val mapper = RomLoader.loadMapper(readFileToByteArray(file))
-    val ppu = Ppu(NesPpuMemory(mapper))
+    val ppu = NesPpu(NesPpuMemory(mapper))
     val memory = NesMemory(
         mapper, NesBus(ppu), failOnReadError = false, failOnWriteError = false
     )
 
-    val initialCounter = toInt16(memory[0xfffc], memory[0xfffd])
-
-    println(initialCounter.toLogHex())
-
-    val cpuState = CpuState(
-        programCounter = initialCounter, breakLocation = 0xfffe
-    )
+    val cycleCoordinator = CycleCoordinator(Operation, ppu, memory)
 
     println("starting app")
 
@@ -112,20 +113,10 @@ fun main() {
 
     println("started app")
 
-    val operationState = OperationState(0)
     var ticksDone = 0
     try {
-        var nextPipeline: EffectPipeline? = null
         while (true) {
-            val nmiInterrupt = ppu.cpuTick()
-            nextPipeline = if (nextPipeline != null) {
-                nextPipeline.run(cpuState, memory, operationState)
-            } else {
-                Operation.run(cpuState, memory, operationState)
-            }
-            if (nmiInterrupt) {
-                app.repaint()
-            }
+            cycleCoordinator.cycle(onNMICallback = app::repaint)
             ticksDone++
         }
     } catch (e: Throwable) {
