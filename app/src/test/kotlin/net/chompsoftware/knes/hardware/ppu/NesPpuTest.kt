@@ -16,13 +16,9 @@ class NesPpuTest {
             }
         }
 
-        override fun set(position: Int, value: UByte) {
-            TODO("Not yet implemented")
-        }
+        override fun set(position: Int, value: UByte) {}
 
-        override fun paletteTable(position: Int): Int {
-            TODO("Not yet implemented")
-        }
+        override fun paletteTable(position: Int) = 0
 
     }
 
@@ -69,6 +65,45 @@ class NesPpuTest {
 
         ppu.cpuTick({ onNMIInterruptCalled = true })
         assertTrue(onNMIInterruptCalled)
+    }
+
+    @Test
+    fun `reading status will return inVBlank false if it's not been set`() {
+        val ppu = NesPpu(FakePpuMemory())
+        val expectedStatus: UByte = 0u
+
+        val status = ppu.busMemoryReadEvent(PPU_REG_STATUS)
+
+        assertEquals(expectedStatus, status)
+    }
+
+    @Test
+    fun `reading status will return inVBlank true if it has been set by a cpuTick`() {
+        val ppu = NesPpu(FakePpuMemory())
+        ppu.scanlineCounter.currentScanline = 239
+        ppu.scanlineCounter.currentScanlinePosition = 340
+        ppu.cpuTick {}
+
+        val expectedStatus: UByte = 0x80u
+
+        val status = ppu.busMemoryReadEvent(PPU_REG_STATUS)
+
+        assertEquals(expectedStatus, status)
+    }
+
+    @Test
+    fun `reading status will return inVBlank false once it's been read`() {
+        val ppu = NesPpu(FakePpuMemory())
+        ppu.scanlineCounter.currentScanline = 239
+        ppu.scanlineCounter.currentScanlinePosition = 340
+        ppu.cpuTick {}
+
+        val expectedStatus: UByte = 0u
+
+        ppu.busMemoryReadEvent(PPU_REG_STATUS)
+        val status = ppu.busMemoryReadEvent(PPU_REG_STATUS)
+
+        assertEquals(expectedStatus, status)
     }
 
     @Nested

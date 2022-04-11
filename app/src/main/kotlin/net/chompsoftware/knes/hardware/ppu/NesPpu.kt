@@ -37,12 +37,15 @@ class NesPpu(
     private val memoryReadBuffer = MemoryReadBuffer()
     private var ppuOperationState = PpuOperationState.fromUByte(1u)
 
-    private val scanlineCounter = scanlineCounterOverride ?: ScanlineCounter(0, 0, ::renderScanline)
+    val scanlineCounter = scanlineCounterOverride ?: ScanlineCounter(0, 0, ::renderScanline)
 
     private val bufferedImage = BufferedImage(HORIZONTAL_RESOLUTION, VERTICAL_RESOLUTION, BufferedImage.TYPE_INT_RGB)
 
+    private val nesPpuStatus = NesPpuStatus(false)
+
     override fun cpuTick(onNMIInterrupt: () -> Unit): Boolean {
         val isNMIInterrupt = scanlineCounter.cpuCycle()
+
         if (isNMIInterrupt) {
             onNMIInterrupt()
         }
@@ -79,6 +82,10 @@ class NesPpu(
     }
 
     private fun renderScanline(scanlineRow: Int) {
+        if (scanlineRow == PPU_SCANLINE_VISIBLE - 1) {
+            // last row that calls renderScanline
+            nesPpuStatus.setInVBlank(true)
+        }
         val tileRow = scanlineRow / 8
         val rowWithinTile = scanlineRow % 8
         for (tilew in 0 until TILES_PER_ROW) {
@@ -126,7 +133,7 @@ class NesPpu(
     }
 
     fun busMemoryReadEvent(position: Int): UByte {
-        if (position != 2) println("PPU READ: $position")
+        println("PPU READ: $position")
         return when (position) {
             PPU_REG_DATA -> {
                 when (val ppuMemoryPosition = toInt16(ppuAddressLow, ppuAddressHigh)) {
@@ -135,6 +142,10 @@ class NesPpu(
                     }
                     else -> TODO("read outside CHR-ROM not supported yet")
                 }
+            }
+            PPU_REG_STATUS -> {
+                print(scanlineCounter.currentScanline)
+                nesPpuStatus.toStatusUByte()
             }
             else -> 0u // TODO("busMemoryReadEvent not implemented for ${position.toHex()}")
         }
@@ -179,5 +190,24 @@ class ScanlineCounter(
             }
         }
         return false
+    }
+}
+
+class NesPpuStatus(
+    private var inVBlank: Boolean = false
+) {
+
+    private fun getInVBlank(): Boolean {
+        return inVBlank.also {
+            inVBlank = false
+        }
+    }
+
+    fun setInVBlank(value: Boolean) {
+        inVBlank = value
+    }
+
+    fun toStatusUByte(): UByte {
+        return if (getInVBlank()) 0x80u else 0u
     }
 }
