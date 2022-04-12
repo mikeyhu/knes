@@ -55,24 +55,9 @@ class NesPpu(
     override fun getBufferedImage() = bufferedImage
 
     private fun selectPalette(tileH: Int, tileW: Int): Array<Color> {
-        val paletteByte = ppuMemory.get(0x2000 + 0x3c0 + (tileH / 4 * 8) + tileH / 4)
+        val paletteNumber = selectPaletteNumber(ppuMemory, tileW, tileH)
+        val start = paletteNumber * 4 + 1
 
-        val tc = tileH % 4 / 2
-        val tw = tileW % 4 / 2
-        val index = if (tc == 0) {
-            if (tw == 0) {
-                paletteByte.toInt().shr(2).and(0x11)
-            } else {
-                paletteByte.toInt().shr(6).and(0x11)
-            }
-        } else {
-            if (tw == 0) {
-                paletteByte.toInt().and(0x11)
-            } else {
-                paletteByte.toInt().shr(4).and(0x11)
-            }
-        }
-        val start = index * 4 + 1
         return arrayOf(
             defaultPalette[ppuMemory.paletteTable(0)],
             defaultPalette[ppuMemory.paletteTable(start)],

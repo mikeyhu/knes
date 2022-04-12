@@ -7,6 +7,7 @@ import net.chompsoftware.knes.hardware.ppu.NesPpuMemory
 import net.chompsoftware.knes.hardware.ppu.NesPpu
 import net.chompsoftware.knes.hardware.ppu.VERTICAL_RESOLUTION
 import net.chompsoftware.knes.hardware.rom.RomLoader
+import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.event.WindowEvent
@@ -85,6 +86,7 @@ class RenderSurface(val ppu: NesPpu) : JPanel() {
             this
         )
 
+        g2d.color = Color.lightGray
         g2d.drawString("repaints: ${repaints++}, per second: ${maxFrame}", 10, 10)
     }
 }
@@ -92,10 +94,10 @@ class RenderSurface(val ppu: NesPpu) : JPanel() {
 
 fun main() {
 
-    val file = File("../nes-test-roms/instr_test-v3/rom_singles/" + "13-rti.nes")
+//    val file = File("../nes-test-roms/instr_test-v3/rom_singles/" + "13-rti.nes")
 //    val file = File("../nes-test-roms/full_palette/full_palette.nes")
-//    val file = File("../nes-test-roms/PaddleTest3/PaddleTest.nes")
-//    val file = File("../../emulation/nes/pacman.nes")
+//    val file = File("../nes-test-rom¢®s/PaddleTest3/PaddleTest.nes")
+    val file = File("../../emulation/nes/pacman.nes")
 //    val file = File("otherRoms/color_test.nes")
 
     val mapper = RomLoader.loadMapper(readFileToByteArray(file))
