@@ -132,6 +132,20 @@ class NesPpuTest {
         assertEquals(0, ppuMemory.oamDmaWriteStartPosition)
     }
 
+    @Test
+    fun `Oam dma writes get written from the specified position`() {
+        val ppuMemory = FakePpuMemory()
+        val ppu = NesPpu(ppuMemory)
+
+        val expectedBytesWritten = Random.ubyteArrayOfSize(0x100)
+
+        ppu.busMemoryWriteEvent(PPU_REG_OAM_ADDRESS, 0x80u)
+        ppu.oamDmaWrite(expectedBytesWritten)
+
+        assertEquals(expectedBytesWritten, ppuMemory.oamDmaWriteBytesWritten)
+        assertEquals(0x80, ppuMemory.oamDmaWriteStartPosition)
+    }
+
     @Nested
     inner class ScanlineCounterTest {
         @Test

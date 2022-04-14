@@ -4,6 +4,7 @@ import net.chompsoftware.knes.hardware.ppu.Ppu
 import net.chompsoftware.knes.setupMemory
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
@@ -47,6 +48,7 @@ class FakeOperation(private val effectPipelineReturn: EffectPipeline? = null) : 
 }
 
 class FakeBus : Bus {
+    var registeredCallback: ((Int) -> Unit)? = null
     override fun ppuRegisterWrite(position: Int, value: UByte) {
         fail("should not be used")
     }
@@ -60,7 +62,7 @@ class FakeBus : Bus {
     }
 
     override fun registerCallbackForCpuSuspend(callback: (Int) -> Unit) {
-        fail("should not be used")
+        registeredCallback = callback
     }
 
     override fun oamDmaWrite(bytes: UByteArray) {
@@ -126,5 +128,23 @@ class CycleCoordinatorTest {
 
         assertNotNull(fakeOperation.capturedCpuState)
         assertNotNull(fakeSecondOperation.capturedCpuState)
+    }
+
+    @Test
+    fun `Registers itself for a cpuSuspend callback and pauses the CPU if one is sent`() {
+        val fakeOperation = FakeOperation()
+        val fakePpu = FakePpu()
+        val fakeBus =  FakeBus()
+        val cycleCoordinator = CycleCoordinator(fakeOperation, fakePpu, fakeMemory, fakeBus)
+        assertNotNull(fakeBus.registeredCallback)
+
+        fakeBus.registeredCallback!!.invoke(2)
+
+        cycleCoordinator.cycle {}
+        assertNull(fakeOperation.capturedCpuState)
+        cycleCoordinator.cycle {}
+        assertNull(fakeOperation.capturedCpuState)
+        cycleCoordinator.cycle {}
+        assertNotNull(fakeOperation.capturedCpuState)
     }
 }

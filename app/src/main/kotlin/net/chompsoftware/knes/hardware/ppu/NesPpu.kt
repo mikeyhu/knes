@@ -37,6 +37,7 @@ class NesPpu(
     private var ppuAddressLow: UByte = 0x00u
     private var ppuAddressHigh: UByte = 0x00u
     private var nextPpuWrite: Int = 0
+    private var nextOamWrite: Int = 0
     private val memoryReadBuffer = MemoryReadBuffer()
     private var ppuOperationState = PpuOperationState.fromUByte(1u)
 
@@ -116,6 +117,9 @@ class NesPpu(
             PPU_REG_DATA -> {
                 ppuMemory.set(nextPpuWrite++, value)
             }
+            PPU_REG_OAM_ADDRESS -> {
+                nextOamWrite = value.toInt()
+            }
             else -> println("PPU IGNORED WRITE: $position => ${value.toLogHex()}")
 //            else -> TODO("busMemoryWriteEvent not implemented for ${position.toHex()}")
         }
@@ -140,7 +144,7 @@ class NesPpu(
     }
 
     override fun oamDmaWrite(bytes: UByteArray) {
-        ppuMemory.oamDmaWrite(bytes, 0)
+        ppuMemory.oamDmaWrite(bytes, nextOamWrite)
     }
 
     private inner class MemoryReadBuffer(initialValue: UByte = 0u) {

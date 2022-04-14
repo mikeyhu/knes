@@ -90,6 +90,31 @@ class NesPpuMemoryTest {
         }
     }
 
+    @Test
+    fun `OAM DMA writes get written to OAM memory with offset`() {
+        val originallyWrittenBytes = Random.ubyteArrayOfSize(0x100)
+        val subsequentlyWrittenBytes = Random.ubyteArrayOfSize(0x100)
+        val ppuMemory = NesPpuMemory(getMapper())
+
+        ppuMemory.oamDmaWrite(originallyWrittenBytes, 0)
+        ppuMemory.oamDmaWrite(subsequentlyWrittenBytes, 0x80)
+
+        for (i in 0 until 0x80) {
+            assertEquals(
+                originallyWrittenBytes[i],
+                ppuMemory.getOam(i),
+                "Failed at position $i of originallyWrittenCheck"
+            )
+        }
+        for (i in 0 until 0x80) {
+            assertEquals(
+                subsequentlyWrittenBytes[i],
+                ppuMemory.getOam(i + 0x80),
+                "Failed at position $i of subsequentlyWrittenCheck"
+            )
+        }
+    }
+
     private fun getMapper(): RomMapper {
         val rom = setupMemoryWithNES(
             0x1au,

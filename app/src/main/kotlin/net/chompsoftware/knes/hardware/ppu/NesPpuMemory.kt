@@ -44,7 +44,7 @@ class NesPpuMemory(val mapper: RomMapper) : PpuMemory {
     }
 
     override fun oamDmaWrite(bytes: UByteArray, startPosition: Int) {
-        bytes.copyInto(oam, 0, 0, PPU_OAM_SIZE)
+        bytes.copyInto(oam, startPosition, 0, PPU_OAM_SIZE - startPosition)
     }
 
     override fun getOam(position: Int): UByte {
