@@ -1,6 +1,7 @@
 package net.chompsoftware.knes.hardware.ppu
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
@@ -31,6 +32,13 @@ class PaletteTest {
         override fun set(position: Int, value: UByte) {}
 
         override fun paletteTable(position: Int) = 0
+        override fun oamDmaWrite(bytes: UByteArray, startPosition: Int) {
+            fail("should not be used")
+        }
+
+        override fun getOam(position: Int): UByte {
+            fail("should not be used")
+        }
 
     }
 

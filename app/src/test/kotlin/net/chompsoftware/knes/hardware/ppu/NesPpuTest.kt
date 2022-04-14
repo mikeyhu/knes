@@ -1,14 +1,20 @@
 package net.chompsoftware.knes.hardware.ppu
 
+import net.chompsoftware.knes.hardware.utilities.ubyteArrayOfSize
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.fail
+import kotlin.random.Random
 
 class NesPpuTest {
 
     inner class FakePpuMemory() : PpuMemory {
+        var oamDmaWriteBytesWritten: UByteArray? = null
+        var oamDmaWriteStartPosition: Int? = null
+
         override fun get(position: Int): UByte {
             return when (position) {
                 0x600 -> 0xFFu
@@ -20,6 +26,14 @@ class NesPpuTest {
 
         override fun paletteTable(position: Int) = 0
 
+        override fun oamDmaWrite(bytes: UByteArray, startPosition: Int) {
+            oamDmaWriteBytesWritten = bytes
+            oamDmaWriteStartPosition = startPosition
+        }
+
+        override fun getOam(position: Int): UByte {
+            fail("should not be used")
+        }
     }
 
     @Test
@@ -104,6 +118,18 @@ class NesPpuTest {
         val status = ppu.busMemoryReadEvent(PPU_REG_STATUS)
 
         assertEquals(expectedStatus, status)
+    }
+
+    @Test
+    fun `Oam dma writes get written to memory`() {
+        val ppuMemory = FakePpuMemory()
+        val ppu = NesPpu(ppuMemory)
+
+        val expectedBytesWritten = Random.ubyteArrayOfSize(0x100)
+        ppu.oamDmaWrite(expectedBytesWritten)
+
+        assertEquals(expectedBytesWritten, ppuMemory.oamDmaWriteBytesWritten)
+        assertEquals(0, ppuMemory.oamDmaWriteStartPosition)
     }
 
     @Nested

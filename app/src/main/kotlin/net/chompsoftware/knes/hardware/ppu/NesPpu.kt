@@ -9,6 +9,9 @@ import java.awt.image.BufferedImage
 interface Ppu {
     fun cpuTick(onNMIInterrupt: () -> Unit): Boolean
     fun getBufferedImage(): BufferedImage
+    fun busMemoryWriteEvent(position: Int, value: UByte)
+    fun busMemoryReadEvent(position: Int): UByte
+    fun oamDmaWrite(bytes: UByteArray)
 }
 
 class NesPpu(
@@ -98,8 +101,8 @@ class NesPpu(
         return this.toUInt().shr(position).and(1u).toByte()
     }
 
-    fun busMemoryWriteEvent(position: Int, value: UByte) {
-        println("PPU WRITE: $position => ${value.toLogHex()}")
+    override fun busMemoryWriteEvent(position: Int, value: UByte) {
+//        println("PPU WRITE: $position => ${value.toLogHex()}")
         when (position) {
             PPU_REG_CONTROLLER -> {
                 ppuOperationState = PpuOperationState.fromUByte(value)
@@ -113,12 +116,13 @@ class NesPpu(
             PPU_REG_DATA -> {
                 ppuMemory.set(nextPpuWrite++, value)
             }
+            else -> println("PPU IGNORED WRITE: $position => ${value.toLogHex()}")
 //            else -> TODO("busMemoryWriteEvent not implemented for ${position.toHex()}")
         }
     }
 
-    fun busMemoryReadEvent(position: Int): UByte {
-        println("PPU READ: $position")
+    override fun busMemoryReadEvent(position: Int): UByte {
+//        println("PPU READ: $position")
         return when (position) {
             PPU_REG_DATA -> {
                 when (val ppuMemoryPosition = toInt16(ppuAddressLow, ppuAddressHigh)) {
@@ -129,11 +133,14 @@ class NesPpu(
                 }
             }
             PPU_REG_STATUS -> {
-                print(scanlineCounter.currentScanline)
                 nesPpuStatus.toStatusUByte()
             }
             else -> 0u // TODO("busMemoryReadEvent not implemented for ${position.toHex()}")
         }
+    }
+
+    override fun oamDmaWrite(bytes: UByteArray) {
+        ppuMemory.oamDmaWrite(bytes, 0)
     }
 
     private inner class MemoryReadBuffer(initialValue: UByte = 0u) {

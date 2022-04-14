@@ -2,8 +2,10 @@ package net.chompsoftware.knes.hardware.ppu
 
 import net.chompsoftware.knes.hardware.rom.HEADER_SIZE
 import net.chompsoftware.knes.hardware.rom.RomLoader
+import net.chompsoftware.knes.hardware.rom.RomMapper
 import net.chompsoftware.knes.hardware.utilities.nextUByteNotZero
 import net.chompsoftware.knes.hardware.utilities.setupMemoryWithNES
+import net.chompsoftware.knes.hardware.utilities.ubyteArrayOfSize
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -73,5 +75,29 @@ class NesPpuMemoryTest {
         assertThrows<Error> {
             ppuMemory.getSlice(0x2000, 0x10)
         }
+    }
+
+    @Test
+    fun `OAM DMA writes get written to OAM memory`() {
+        val expectedBytes = Random.ubyteArrayOfSize(0x100)
+
+        val ppuMemory = NesPpuMemory(getMapper())
+
+        ppuMemory.oamDmaWrite(expectedBytes, 0)
+
+        for (i in 0 until 0x100) {
+            assertEquals(expectedBytes[i], ppuMemory.getOam(i), "Failed at position $i")
+        }
+    }
+
+    private fun getMapper(): RomMapper {
+        val rom = setupMemoryWithNES(
+            0x1au,
+            0x01u, // prgSize 4000
+            0x02u, // chrSize 4000
+            size = 0x8000 + HEADER_SIZE
+        )
+
+        return RomLoader.loadMapper(rom)
     }
 }

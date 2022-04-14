@@ -10,7 +10,6 @@ const val PPU_REG_SCROLL = 0x5
 const val PPU_REG_ADDRESS = 0x6
 const val PPU_REG_DATA = 0x7
 
-
 const val PPU_REG_OAM_DMA = 0x4014
 
 
@@ -21,7 +20,7 @@ const val PPU_SCANLINE_VISIBLE = 240
 
 const val HORIZONTAL_RESOLUTION = 256
 const val VERTICAL_RESOLUTION = 240
-
 const val TILE_SIZE = 8
-
 const val TILES_PER_ROW = HORIZONTAL_RESOLUTION / TILE_SIZE
+
+const val OAM_CPU_SUSPEND_CYCLES = 513

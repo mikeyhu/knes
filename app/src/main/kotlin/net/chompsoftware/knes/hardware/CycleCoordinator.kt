@@ -8,6 +8,7 @@ class CycleCoordinator(
     private val operation: EffectPipeline,
     private val ppu: Ppu,
     private val memory: Memory,
+    private val bus: Bus,
     private val cpuState: CpuState = initialCpuState(memory),
     private val operationState: OperationState = OperationState(0)
 ) {

@@ -1,5 +1,6 @@
 package net.chompsoftware.knes.hardware
 
+import net.chompsoftware.knes.hardware.ppu.PPU_REG_OAM_DMA
 import net.chompsoftware.knes.hardware.rom.RomMapper
 import net.chompsoftware.knes.toHex
 
@@ -28,6 +29,7 @@ class NesMemory(
         when (position) {
             in 0 until 0x2000 -> ram[mapToRam(position)] = value
             in 0x2000 until 0x4000 -> ppuWrite(mapToPPU(position), value)
+            PPU_REG_OAM_DMA -> ppuOmaDmaWrite(value)
             in 0x6000 until 0x8000 -> rom.setBatteryBackedRam(position, value)
             else -> if (failOnWriteError) throw Error("NesMemory: (Write) Out of Range at ${position.toHex()}")
         }
@@ -47,5 +49,15 @@ class NesMemory(
 
     private fun ppuRead(position: Int): UByte {
         return bus.ppuRegisterRead(position)
+    }
+
+    private fun ppuOmaDmaWrite(value: UByte) {
+        println("OAM DMA WRITE : $value")
+        val data = UByteArray(0x100)
+        val startLocation = value.toInt().shl(8)
+        for (i in 0..0xff) {
+            data[i] = get(startLocation + i)
+        }
+        bus.oamDmaWrite(data)
     }
 }

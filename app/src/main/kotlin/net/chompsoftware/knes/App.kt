@@ -102,11 +102,12 @@ fun main() {
 
     val mapper = RomLoader.loadMapper(readFileToByteArray(file))
     val ppu = NesPpu(NesPpuMemory(mapper))
+    val bus = NesBus(ppu)
     val memory = NesMemory(
-        mapper, NesBus(ppu), failOnReadError = false, failOnWriteError = false
+        mapper, bus, failOnReadError = false, failOnWriteError = false
     )
 
-    val cycleCoordinator = CycleCoordinator(Operation, ppu, memory)
+    val cycleCoordinator = CycleCoordinator(Operation, ppu, memory, bus)
 
     println("starting app")
 

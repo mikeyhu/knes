@@ -20,6 +20,18 @@ class FakePpu(private val cpuTickReturn: Boolean = false) : Ppu {
     override fun getBufferedImage(): BufferedImage {
         fail("should not be called")
     }
+
+    override fun busMemoryWriteEvent(position: Int, value: UByte) {
+        fail("should not be used")
+    }
+
+    override fun busMemoryReadEvent(position: Int): UByte {
+        fail("should not be used")
+    }
+
+    override fun oamDmaWrite(bytes: UByteArray) {
+        fail("should not be used")
+    }
 }
 
 class FakeOperation(private val effectPipelineReturn: EffectPipeline? = null) : EffectPipeline {
@@ -31,6 +43,28 @@ class FakeOperation(private val effectPipelineReturn: EffectPipeline? = null) : 
         capturedMemory = memory
         capturedOperationState = operationState
         return effectPipelineReturn ?: this
+    }
+}
+
+class FakeBus : Bus {
+    override fun ppuRegisterWrite(position: Int, value: UByte) {
+        fail("should not be used")
+    }
+
+    override fun ppuRegisterRead(position: Int): UByte {
+        fail("should not be used")
+    }
+
+    override fun performCallbackForCpuSuspend(cycles: Int) {
+        fail("should not be used")
+    }
+
+    override fun registerCallbackForCpuSuspend(callback: (Int) -> Unit) {
+        fail("should not be used")
+    }
+
+    override fun oamDmaWrite(bytes: UByteArray) {
+        fail("should not be used")
     }
 
 }
@@ -47,7 +81,7 @@ class CycleCoordinatorTest {
     fun `Will send a cycle to the PPU`() {
         val fakeOperation = FakeOperation()
         val fakePpu = FakePpu()
-        val cycleCoordinator = CycleCoordinator(fakeOperation, fakePpu, fakeMemory)
+        val cycleCoordinator = CycleCoordinator(fakeOperation, fakePpu, fakeMemory, FakeBus())
 
         cycleCoordinator.cycle {}
 
@@ -59,7 +93,7 @@ class CycleCoordinatorTest {
         val fakeOperation = FakeOperation()
         val fakePpu = FakePpu()
 
-        val cycleCoordinator = CycleCoordinator(fakeOperation, fakePpu, fakeMemory)
+        val cycleCoordinator = CycleCoordinator(fakeOperation, fakePpu, fakeMemory, FakeBus())
 
         cycleCoordinator.cycle {}
 
@@ -72,7 +106,7 @@ class CycleCoordinatorTest {
         val fakeOperation = FakeOperation()
         val fakePpu = FakePpu(cpuTickReturn = true)
 
-        val cycleCoordinator = CycleCoordinator(fakeOperation, fakePpu, fakeMemory)
+        val cycleCoordinator = CycleCoordinator(fakeOperation, fakePpu, fakeMemory, FakeBus())
 
         cycleCoordinator.cycle {}
 
@@ -85,7 +119,7 @@ class CycleCoordinatorTest {
         val fakeOperation = FakeOperation(fakeSecondOperation)
         val fakePpu = FakePpu()
 
-        val cycleCoordinator = CycleCoordinator(fakeOperation, fakePpu, fakeMemory)
+        val cycleCoordinator = CycleCoordinator(fakeOperation, fakePpu, fakeMemory, FakeBus())
 
         cycleCoordinator.cycle {}
         cycleCoordinator.cycle {}

@@ -1,5 +1,6 @@
 package net.chompsoftware.knes.hardware
 
+import net.chompsoftware.knes.hardware.ppu.PPU_REG_OAM_DMA
 import net.chompsoftware.knes.hardware.rom.HEADER_SIZE
 import net.chompsoftware.knes.hardware.rom.RomLoader
 import net.chompsoftware.knes.hardware.rom.RomMapper
@@ -8,7 +9,9 @@ import net.chompsoftware.knes.hardware.utilities.nextUByteNotZero
 import net.chompsoftware.knes.hardware.utilities.setupMemoryWithNES
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.fail
 import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
@@ -36,7 +39,10 @@ class NesMemoryTest {
         }
     }
 
-    inner class FakeBus(var fakeReadValue:UByte = 0u) : Bus {
+    inner class FakeBus(
+        var fakeReadValue: UByte = 0u,
+        var fakeOamDmaReceived: UByteArray? = null
+    ) : Bus {
 
         var mostRecentEvent: BusEvent? = null
 
@@ -47,6 +53,18 @@ class NesMemoryTest {
         override fun ppuRegisterRead(position: Int): UByte {
             mostRecentEvent = BusReadEvent(position, fakeReadValue)
             return fakeReadValue
+        }
+
+        override fun performCallbackForCpuSuspend(cycles: Int) {
+            fail("should not be used")
+        }
+
+        override fun registerCallbackForCpuSuspend(callback: (Int) -> Unit) {
+            fail("should not be used")
+        }
+
+        override fun oamDmaWrite(bytes: UByteArray) {
+            fakeOamDmaReceived = bytes
         }
     }
 
@@ -137,6 +155,25 @@ class NesMemoryTest {
 
         for (i in 0x8000 until 0x10000) {
             assertEquals(mapper.getPrgRom(i), memory[i])
+        }
+    }
+
+    @Test
+    fun `Performs OAM DMA when initiated by a write to 0x4014`() {
+        val bus = FakeBus()
+        val memory = NesMemory(FakeRomMapper(), bus)
+
+        for (i in 0x0..0xff) {
+            memory[0x0700 + i] = i.toUByte()
+        }
+
+        memory[PPU_REG_OAM_DMA] = 0x07u
+
+        assertNotNull(bus.fakeOamDmaReceived)
+        bus.fakeOamDmaReceived?.also {
+            for (i in 0x0..0xff) {
+                assertEquals(i.toUByte(), it[i])
+            }
         }
     }
 }
