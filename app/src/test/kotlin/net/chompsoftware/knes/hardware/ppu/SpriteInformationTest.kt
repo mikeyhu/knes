@@ -15,7 +15,7 @@ class SpriteInformationTest {
         }
 
         for (i in 0 until 64 step 4) {
-            assertEquals((i * 4).toUByte(), bytes.spriteYPosition(i))
+            assertEquals((i * 4), bytes.spriteYPosition(i))
         }
     }
 
@@ -26,7 +26,7 @@ class SpriteInformationTest {
         }
 
         for (i in 0 until 64 step 4) {
-            assertEquals((i * 4 + 1).toUByte(), bytes.spriteIndexNumber(i))
+            assertEquals((i * 4 + 1), bytes.spriteIndexNumber(i))
         }
     }
 
@@ -48,7 +48,7 @@ class SpriteInformationTest {
         }
 
         for (i in 0 until 64 step 4) {
-            assertEquals((i * 4 + 3).toUByte(), bytes.spriteXPosition(i))
+            assertEquals((i * 4 + 3), bytes.spriteXPosition(i))
         }
     }
 

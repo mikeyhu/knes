@@ -34,6 +34,10 @@ class NesPpuTest {
         override fun getOam(position: Int): UByte {
             fail("should not be used")
         }
+
+        override fun oam(): UByteArray {
+            fail("should not be used")
+        }
     }
 
     @Test

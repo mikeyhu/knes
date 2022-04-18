@@ -4,6 +4,7 @@ import net.chompsoftware.knes.toInt16
 import net.chompsoftware.knes.toLogHex
 import java.awt.Color
 import java.awt.image.BufferedImage
+import java.lang.Math.abs
 
 
 interface Ppu {
@@ -70,7 +71,24 @@ class NesPpu(
         )
     }
 
+    private fun selectPalette(paletteNumber: Int): Array<Color> {
+        val start = paletteNumber * 4 + 1
+
+        return arrayOf(
+            defaultPalette[ppuMemory.paletteTable(0)],
+            defaultPalette[ppuMemory.paletteTable(start)],
+            defaultPalette[ppuMemory.paletteTable(start + 1)],
+            defaultPalette[ppuMemory.paletteTable(start + 2)]
+        )
+    }
+
+
     private fun renderScanline(scanlineRow: Int) {
+        renderBackgroundScanline(scanlineRow)
+        renderSpriteScanline(scanlineRow)
+    }
+
+    private fun renderBackgroundScanline(scanlineRow: Int) {
         if (scanlineRow == PPU_SCANLINE_VISIBLE - 1) {
             // last row that calls renderScanline
             nesPpuStatus.setInVBlank(true)
@@ -90,6 +108,37 @@ class NesPpu(
                     scanlineRow,
                     palette[pixelFor(tileByteA, tileByteB, w)].rgb
                 )
+            }
+        }
+    }
+
+    private fun renderSpriteScanline(scanlineRow: Int) {
+        for (spriteNum in MAX_SPRITES - 1 downTo 0) {
+            val spriteYPosition = ppuMemory.oam().spriteYPosition(spriteNum)
+            if (spriteYPosition >= scanlineRow && spriteYPosition < scanlineRow + 8) {
+                //sprite on row
+                val spriteIndex = ppuMemory.oam().spriteIndexNumber(spriteNum)
+                val spriteAttributes = ppuMemory.oam().spriteAttributes(spriteNum)
+
+                val spriteLine = (spriteYPosition - scanlineRow).let {
+                    // TODO understand why we need to do the opposite here? Presumably as we're writing up from 0?
+                    if (!spriteAttributes.spriteFlipVertical()) flip(it) else it
+                }
+                val tileByteA = ppuMemory.get(0x1000 + spriteIndex * 16 + spriteLine)
+                val tileByteB = ppuMemory.get(0x1000 + spriteIndex * 16 + spriteLine + 8)
+                val palette = selectPalette(spriteAttributes.spritePalette() + 4)
+                for (w in 0..7) {
+                    val offset = if (spriteAttributes.spriteFlipHorizontal()) flip(w) else w
+                    //each tile by horizontal pixel
+                    val pixel = pixelFor(tileByteA, tileByteB, w)
+                    if (pixel > 0) {
+                        bufferedImage.setRGB(
+                            ppuMemory.oam().spriteXPosition(spriteNum) + offset,
+                            scanlineRow,
+                            palette[pixel].rgb
+                        )
+                    }
+                }
             }
         }
     }

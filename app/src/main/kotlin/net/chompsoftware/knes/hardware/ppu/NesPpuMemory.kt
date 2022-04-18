@@ -9,6 +9,7 @@ interface PpuMemory {
     fun paletteTable(position: Int): Int
     fun oamDmaWrite(bytes: UByteArray, startPosition: Int)
     fun getOam(position: Int): UByte
+    fun oam(): UByteArray
 }
 
 private const val PPU_CHROM_START = 0x0
@@ -49,6 +50,10 @@ class NesPpuMemory(val mapper: RomMapper) : PpuMemory {
 
     override fun getOam(position: Int): UByte {
         return oam[position]
+    }
+
+    override fun oam(): UByteArray {
+        return oam
     }
 
     fun getSlice(position: Int, size: Int): UByteArray {

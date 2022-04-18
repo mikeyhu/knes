@@ -40,6 +40,10 @@ class PaletteTest {
             fail("should not be used")
         }
 
+        override fun oam(): UByteArray {
+            fail("should not be used")
+        }
+
     }
 
     @ParameterizedTest
