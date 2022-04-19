@@ -120,15 +120,14 @@ class NesPpu(
     private fun renderSpriteScanline(scanlineRow: Int) {
         val bufferedImage = getInProgressImage()
         for (spriteNum in MAX_SPRITES - 1 downTo 0) {
-            val spriteYPosition = ppuMemory.oam().spriteYPosition(spriteNum)
-            if (spriteYPosition >= scanlineRow && spriteYPosition < scanlineRow + 8) {
+            val spriteYPosition = ppuMemory.oam().spriteYPosition(spriteNum) + 1
+            if (spriteYPosition > scanlineRow -8 && spriteYPosition <= scanlineRow) {
                 //sprite on row
                 val spriteIndex = ppuMemory.oam().spriteIndexNumber(spriteNum)
                 val spriteAttributes = ppuMemory.oam().spriteAttributes(spriteNum)
 
-                val spriteLine = (spriteYPosition - scanlineRow).let {
-                    // TODO understand why we need to do the opposite here? Presumably as we're writing up from 0?
-                    if (!spriteAttributes.spriteFlipVertical()) flip(it) else it
+                val spriteLine = (scanlineRow - spriteYPosition).let {
+                    if (spriteAttributes.spriteFlipVertical()) flip(it) else it
                 }
                 val tileByteA = ppuMemory.get(0x1000 + spriteIndex * 16 + spriteLine)
                 val tileByteB = ppuMemory.get(0x1000 + spriteIndex * 16 + spriteLine + 8)
@@ -185,7 +184,7 @@ class NesPpu(
         return when (position) {
             PPU_REG_DATA -> {
                 when (val ppuMemoryPosition = toInt16(ppuAddressLow, ppuAddressHigh)) {
-                    in 0 until 0x2000 -> memoryReadBuffer.buffer {
+                    in 0 until 0x4000 -> memoryReadBuffer.buffer {
                         ppuMemory.get(ppuMemoryPosition)
                     }
                     else -> TODO("read outside CHR-ROM not supported yet")
