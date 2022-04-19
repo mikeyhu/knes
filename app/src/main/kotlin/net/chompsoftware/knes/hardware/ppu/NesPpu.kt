@@ -4,12 +4,11 @@ import net.chompsoftware.knes.toInt16
 import net.chompsoftware.knes.toLogHex
 import java.awt.Color
 import java.awt.image.BufferedImage
-import java.lang.Math.abs
 
 
 interface Ppu {
     fun cpuTick(onNMIInterrupt: () -> Unit): Boolean
-    fun getBufferedImage(): BufferedImage
+    fun getFinishedImage(): BufferedImage
     fun busMemoryWriteEvent(position: Int, value: UByte)
     fun busMemoryReadEvent(position: Int): UByte
     fun oamDmaWrite(bytes: UByteArray)
@@ -44,7 +43,9 @@ class NesPpu(
 
     val scanlineCounter = scanlineCounterOverride ?: ScanlineCounter(0, 0, ::renderScanline)
 
-    private val bufferedImage = BufferedImage(HORIZONTAL_RESOLUTION, VERTICAL_RESOLUTION, BufferedImage.TYPE_INT_RGB)
+    private var finishedImageSwitch = false
+    private val bufferedImage0 = BufferedImage(HORIZONTAL_RESOLUTION, VERTICAL_RESOLUTION, BufferedImage.TYPE_INT_RGB)
+    private val bufferedImage1 = BufferedImage(HORIZONTAL_RESOLUTION, VERTICAL_RESOLUTION, BufferedImage.TYPE_INT_RGB)
 
     private val nesPpuStatus = NesPpuStatus(false)
 
@@ -52,12 +53,15 @@ class NesPpu(
         val isNMIInterrupt = scanlineCounter.cpuCycle()
 
         if (isNMIInterrupt) {
+            finishedImageSwitch = !finishedImageSwitch
             onNMIInterrupt()
         }
         return isNMIInterrupt && ppuOperationState.generateNMIOnInterval
     }
 
-    override fun getBufferedImage() = bufferedImage
+    override fun getFinishedImage() = if (finishedImageSwitch) bufferedImage0 else bufferedImage1
+
+    private fun getInProgressImage() = if (finishedImageSwitch) bufferedImage1 else bufferedImage0
 
     private fun selectPalette(tileH: Int, tileW: Int): Array<Color> {
         val paletteNumber = selectPaletteNumber(ppuMemory, tileW, tileH)
@@ -89,6 +93,7 @@ class NesPpu(
     }
 
     private fun renderBackgroundScanline(scanlineRow: Int) {
+        val bufferedImage = getInProgressImage()
         if (scanlineRow == PPU_SCANLINE_VISIBLE - 1) {
             // last row that calls renderScanline
             nesPpuStatus.setInVBlank(true)
@@ -113,6 +118,7 @@ class NesPpu(
     }
 
     private fun renderSpriteScanline(scanlineRow: Int) {
+        val bufferedImage = getInProgressImage()
         for (spriteNum in MAX_SPRITES - 1 downTo 0) {
             val spriteYPosition = ppuMemory.oam().spriteYPosition(spriteNum)
             if (spriteYPosition >= scanlineRow && spriteYPosition < scanlineRow + 8) {

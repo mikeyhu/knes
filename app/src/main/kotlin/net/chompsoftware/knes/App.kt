@@ -76,7 +76,7 @@ class RenderSurface(val ppu: NesPpu) : JPanel() {
         super.paintComponent(g)
         val g2d = g as Graphics2D
 
-        val image = ppu.getBufferedImage()
+        val image = ppu.getFinishedImage()
         g2d.drawImage(
             image,
             0,

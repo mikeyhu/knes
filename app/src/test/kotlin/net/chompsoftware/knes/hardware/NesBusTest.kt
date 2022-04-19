@@ -18,7 +18,7 @@ class NesBusTest {
             fail("should not be used")
         }
 
-        override fun getBufferedImage(): BufferedImage {
+        override fun getFinishedImage(): BufferedImage {
             fail("should not be used")
         }
 

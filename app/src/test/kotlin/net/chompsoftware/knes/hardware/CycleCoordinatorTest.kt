@@ -18,7 +18,7 @@ class FakePpu(private val cpuTickReturn: Boolean = false) : Ppu {
         return cpuTickReturn
     }
 
-    override fun getBufferedImage(): BufferedImage {
+    override fun getFinishedImage(): BufferedImage {
         fail("should not be called")
     }
 
