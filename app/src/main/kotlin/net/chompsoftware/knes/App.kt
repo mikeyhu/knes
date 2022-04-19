@@ -88,6 +88,7 @@ class RenderSurface(val ppu: NesPpu) : JPanel() {
 
         g2d.color = Color.lightGray
         g2d.drawString("repaints: ${repaints++}, per second: ${maxFrame}", 10, 10)
+
     }
 }
 
@@ -110,6 +111,8 @@ fun main() {
     val cycleCoordinator = CycleCoordinator(Operation, ppu, memory, bus)
 
     println("starting app")
+
+    Configuration.limitSpeed = true
 
     val app = App(ppu)
     app.isVisible = true

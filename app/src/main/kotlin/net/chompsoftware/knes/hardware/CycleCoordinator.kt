@@ -1,5 +1,6 @@
 package net.chompsoftware.knes.hardware
 
+import net.chompsoftware.knes.Configuration
 import net.chompsoftware.knes.hardware.ppu.Ppu
 import net.chompsoftware.knes.toInt16
 
@@ -19,8 +20,11 @@ class CycleCoordinator(
     private var nextPipeline: EffectPipeline? = null
     private var cpuCyclesToSuspend = 0
 
+    private var previousCallbackMillis: Long = System.currentTimeMillis()
+    private val millisecondsPerFrame = 1000 / Configuration.limitToFPS
+
     fun cycle(onNMICallback: () -> Unit) {
-        val isNMIInterrupt = ppu.cpuTick(onNMICallback)
+        val isNMIInterrupt = ppu.cpuTick(callbackInterceptor(onNMICallback))
         if (isNMIInterrupt) {
             cpuState.isNMIInterrupt = true
         }
@@ -29,6 +33,20 @@ class CycleCoordinator(
         } else {
             cpuCyclesToSuspend--
         }
+    }
+
+    private fun callbackInterceptor(onNMICallback: () -> Unit): () -> Unit = {
+        if (Configuration.limitSpeed) {
+            val currentMillis = System.currentTimeMillis()
+            val elapsed = currentMillis - previousCallbackMillis
+
+            if (elapsed < millisecondsPerFrame) {
+                Thread.sleep(millisecondsPerFrame - elapsed)
+            }
+
+            previousCallbackMillis = System.currentTimeMillis()
+        }
+        onNMICallback()
     }
 
     private fun suspendCpu(cycles: Int) {
