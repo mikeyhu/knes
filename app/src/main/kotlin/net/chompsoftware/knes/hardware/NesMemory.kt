@@ -1,5 +1,7 @@
 package net.chompsoftware.knes.hardware
 
+import net.chompsoftware.knes.hardware.input.CONTROLLER0_POSITION
+import net.chompsoftware.knes.hardware.input.CONTROLLER1_POSITION
 import net.chompsoftware.knes.hardware.ppu.PPU_REG_OAM_DMA
 import net.chompsoftware.knes.hardware.rom.RomMapper
 import net.chompsoftware.knes.toHex
@@ -17,6 +19,7 @@ class NesMemory(
         return when (position) {
             in 0 until 0x2000 -> ram[mapToRam(position)]
             in 0x2000 until 0x4000 -> ppuRead(mapToPPU(position))
+            in CONTROLLER0_POSITION..CONTROLLER1_POSITION -> bus.controllerInputRead(position)
             in 0x6000 until 0x8000 -> rom.getBatteryBackedRam(position)
             in 0x8000 until 0x10000 -> rom.getPrgRom(position)
             else ->
@@ -29,6 +32,7 @@ class NesMemory(
         when (position) {
             in 0 until 0x2000 -> ram[mapToRam(position)] = value
             in 0x2000 until 0x4000 -> ppuWrite(mapToPPU(position), value)
+            in CONTROLLER0_POSITION..CONTROLLER1_POSITION -> bus.controllerInputWrite(position, value)
             PPU_REG_OAM_DMA -> ppuOmaDmaWrite(value)
             in 0x6000 until 0x8000 -> rom.setBatteryBackedRam(position, value)
             else -> if (failOnWriteError) throw Error("NesMemory: (Write) Out of Range at ${position.toHex()}")

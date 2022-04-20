@@ -2,6 +2,8 @@ package net.chompsoftware.knes
 
 
 import net.chompsoftware.knes.hardware.*
+import net.chompsoftware.knes.hardware.input.ControllerInput
+import net.chompsoftware.knes.hardware.input.NesControllerInput
 import net.chompsoftware.knes.hardware.ppu.HORIZONTAL_RESOLUTION
 import net.chompsoftware.knes.hardware.ppu.NesPpuMemory
 import net.chompsoftware.knes.hardware.ppu.NesPpu
@@ -10,6 +12,8 @@ import net.chompsoftware.knes.hardware.rom.RomLoader
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
+import java.awt.event.KeyEvent
+import java.awt.event.KeyListener
 import java.awt.event.WindowEvent
 import java.awt.event.WindowListener
 import java.io.File
@@ -27,7 +31,7 @@ fun processInstruction(cpuState: CpuState, memory: BasicMemory, operationState: 
 const val verticalMultiple = 4
 const val horizontalMultiple = 4
 
-class App(ppu: NesPpu) : JFrame() {
+class App(ppu: NesPpu, controllerInput: ControllerInput) : JFrame() {
 
     init {
         title = "KNES"
@@ -51,6 +55,35 @@ class App(ppu: NesPpu) : JFrame() {
 
             override fun windowDeactivated(e: WindowEvent?) {}
 
+        })
+
+        addKeyListener(object : KeyListener {
+            override fun keyTyped(e: KeyEvent?) {}
+
+            override fun keyPressed(e: KeyEvent?) {
+                e?.also {
+                    setKey(it, true)
+                }
+            }
+
+            override fun keyReleased(e: KeyEvent?) {
+                e?.also {
+                    setKey(it, false)
+                }
+            }
+
+            private fun setKey(keyEvent: KeyEvent, value: Boolean) {
+                when (keyEvent.keyCode) {
+                    KeyEvent.VK_A -> controllerInput.getControllerO().buttonLeft = value
+                    KeyEvent.VK_S -> controllerInput.getControllerO().buttonDown = value
+                    KeyEvent.VK_D -> controllerInput.getControllerO().buttonRight = value
+                    KeyEvent.VK_W -> controllerInput.getControllerO().buttonUp = value
+                    KeyEvent.VK_F -> controllerInput.getControllerO().buttonA = value
+                    KeyEvent.VK_G -> controllerInput.getControllerO().buttonB = value
+                    KeyEvent.VK_R -> controllerInput.getControllerO().buttonSelect = value
+                    KeyEvent.VK_T -> controllerInput.getControllerO().buttonStart = value
+                }
+            }
         })
     }
 }
@@ -103,7 +136,8 @@ fun main() {
 
     val mapper = RomLoader.loadMapper(readFileToByteArray(file))
     val ppu = NesPpu(NesPpuMemory(mapper))
-    val bus = NesBus(ppu)
+    val controllerInput = NesControllerInput()
+    val bus = NesBus(ppu, controllerInput)
     val memory = NesMemory(
         mapper, bus, failOnReadError = false, failOnWriteError = false
     )
@@ -114,7 +148,7 @@ fun main() {
 
     Configuration.limitSpeed = true
 
-    val app = App(ppu)
+    val app = App(ppu, controllerInput)
     app.isVisible = true
 
     println("started app")

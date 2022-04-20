@@ -1,5 +1,8 @@
 package net.chompsoftware.knes.hardware
 
+import net.chompsoftware.knes.hardware.input.CONTROLLER0_POSITION
+import net.chompsoftware.knes.hardware.input.CONTROLLER1_POSITION
+import net.chompsoftware.knes.hardware.input.CONTROLLER_POSITIVE
 import net.chompsoftware.knes.hardware.ppu.PPU_REG_OAM_DMA
 import net.chompsoftware.knes.hardware.rom.HEADER_SIZE
 import net.chompsoftware.knes.hardware.rom.RomLoader
@@ -12,6 +15,8 @@ import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
@@ -45,6 +50,9 @@ class NesMemoryTest {
     ) : Bus {
 
         var mostRecentEvent: BusEvent? = null
+        var fakeReadPosition: Int? = null
+        var fakeWritePosition: Int? = null
+        var fakeWriteValue: UByte? = null
 
         override fun ppuRegisterWrite(position: Int, value: UByte) {
             mostRecentEvent = BusWriteEvent(position, value)
@@ -65,6 +73,16 @@ class NesMemoryTest {
 
         override fun oamDmaWrite(bytes: UByteArray) {
             fakeOamDmaReceived = bytes
+        }
+
+        override fun controllerInputWrite(position: Int, value: UByte) {
+            fakeWritePosition = position
+            fakeWriteValue = value
+        }
+
+        override fun controllerInputRead(position: Int): UByte {
+            fakeReadPosition = position
+            return fakeReadValue
         }
     }
 
@@ -175,6 +193,28 @@ class NesMemoryTest {
                 assertEquals(i.toUByte(), it[i])
             }
         }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = [CONTROLLER0_POSITION, CONTROLLER1_POSITION])
+    fun `Reads from bus controller input when reading 0x4016 or 0x4017`(position: Int) {
+        val bus = FakeBus(fakeReadValue = 0x1u)
+        val memory = NesMemory(FakeRomMapper(), bus)
+        val result = memory[position]
+
+        assertEquals(bus.fakeReadValue, result)
+        assertEquals(position, bus.fakeReadPosition)
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = [CONTROLLER0_POSITION, CONTROLLER1_POSITION])
+    fun `Writes to bus controller input when writing 0x4016 or 0x4017`(position: Int) {
+        val bus = FakeBus()
+        val memory = NesMemory(FakeRomMapper(), bus)
+        memory[position] = CONTROLLER_POSITIVE
+
+        assertEquals(CONTROLLER_POSITIVE, bus.fakeWriteValue)
+        assertEquals(position, bus.fakeWritePosition)
     }
 }
 

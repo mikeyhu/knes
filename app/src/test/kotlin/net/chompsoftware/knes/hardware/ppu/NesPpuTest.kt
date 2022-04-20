@@ -36,7 +36,7 @@ class NesPpuTest {
         }
 
         override fun oam(): UByteArray {
-            fail("should not be used")
+            return oamDmaWriteBytesWritten!!
         }
     }
 
@@ -100,6 +100,7 @@ class NesPpuTest {
         val ppu = NesPpu(FakePpuMemory())
         ppu.scanlineCounter.currentScanline = 239
         ppu.scanlineCounter.currentScanlinePosition = 340
+        ppu.oamDmaWrite(Random.ubyteArrayOfSize(0x100))
         ppu.cpuTick {}
 
         val expectedStatus: UByte = 0x80u
@@ -114,6 +115,7 @@ class NesPpuTest {
         val ppu = NesPpu(FakePpuMemory())
         ppu.scanlineCounter.currentScanline = 239
         ppu.scanlineCounter.currentScanlinePosition = 340
+        ppu.oamDmaWrite(Random.ubyteArrayOfSize(0x100))
         ppu.cpuTick {}
 
         val expectedStatus: UByte = 0u

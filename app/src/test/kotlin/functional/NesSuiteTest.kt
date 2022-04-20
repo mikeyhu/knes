@@ -4,6 +4,7 @@ import net.chompsoftware.knes.hardware.CpuState
 import net.chompsoftware.knes.hardware.NesBus
 import net.chompsoftware.knes.hardware.NesMemory
 import net.chompsoftware.knes.hardware.OperationState
+import net.chompsoftware.knes.hardware.input.NesControllerInput
 import net.chompsoftware.knes.hardware.ppu.NesPpuMemory
 import net.chompsoftware.knes.hardware.ppu.NesPpu
 import net.chompsoftware.knes.hardware.rom.RomLoader
@@ -45,7 +46,7 @@ class NesSuiteTest {
         val ppu = NesPpu(NesPpuMemory(mapper))
         val memory = NesMemory(
             mapper,
-            NesBus(ppu),
+            NesBus(ppu, NesControllerInput()),
             failOnReadError = false,
             failOnWriteError = false
         )
@@ -67,7 +68,7 @@ class NesSuiteTest {
         val report = {
             val finish = System.nanoTime()
             val elapsed = (finish - start) / 1000000
-            if( elapsed > 0) {
+            if (elapsed > 0) {
                 println("Operations done: ${operationsDone} Time taken: ${elapsed}ms. Ops per ms: ${operationsDone / elapsed}")
             }
             println("Suite message: \n${getSuiteMessage(memory)}")
@@ -113,7 +114,7 @@ class NesSuiteTest {
         val ppu = NesPpu(NesPpuMemory(mapper))
         val memory = NesMemory(
             mapper,
-            NesBus(ppu),
+            NesBus(ppu, NesControllerInput()),
             failOnReadError = false,
             failOnWriteError = false
         )

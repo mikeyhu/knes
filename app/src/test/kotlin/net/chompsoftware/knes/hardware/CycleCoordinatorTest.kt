@@ -69,6 +69,14 @@ class FakeBus : Bus {
         fail("should not be used")
     }
 
+    override fun controllerInputWrite(position: Int, value: UByte) {
+        fail("should not be used")
+    }
+
+    override fun controllerInputRead(position: Int): UByte {
+        fail("should not be used")
+    }
+
 }
 
 
