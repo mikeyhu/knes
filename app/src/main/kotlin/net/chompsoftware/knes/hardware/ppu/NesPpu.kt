@@ -121,7 +121,7 @@ class NesPpu(
         val bufferedImage = getInProgressImage()
         for (spriteNum in MAX_SPRITES - 1 downTo 0) {
             val spriteYPosition = ppuMemory.oam().spriteYPosition(spriteNum) + 1
-            if (spriteYPosition > scanlineRow -8 && spriteYPosition <= scanlineRow) {
+            if (spriteYPosition > scanlineRow - 8 && spriteYPosition <= scanlineRow) {
                 //sprite on row
                 val spriteIndex = ppuMemory.oam().spriteIndexNumber(spriteNum)
                 val spriteAttributes = ppuMemory.oam().spriteAttributes(spriteNum)
@@ -137,11 +137,14 @@ class NesPpu(
                     //each tile by horizontal pixel
                     val pixel = pixelFor(tileByteA, tileByteB, w)
                     if (pixel > 0) {
-                        bufferedImage.setRGB(
-                            ppuMemory.oam().spriteXPosition(spriteNum) + offset,
-                            scanlineRow,
-                            palette[pixel].rgb
-                        )
+                        val pixelXPosition = ppuMemory.oam().spriteXPosition(spriteNum) + offset
+                        if (pixelXPosition < HORIZONTAL_RESOLUTION) {
+                            bufferedImage.setRGB(
+                                pixelXPosition,
+                                scanlineRow,
+                                palette[pixel].rgb
+                            )
+                        }
                     }
                 }
             }
