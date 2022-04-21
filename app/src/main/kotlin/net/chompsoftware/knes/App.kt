@@ -54,7 +54,6 @@ class App(ppu: NesPpu, controllerInput: ControllerInput) : JFrame() {
             override fun windowActivated(e: WindowEvent?) {}
 
             override fun windowDeactivated(e: WindowEvent?) {}
-
         })
 
         addKeyListener(object : KeyListener {
@@ -82,6 +81,15 @@ class App(ppu: NesPpu, controllerInput: ControllerInput) : JFrame() {
                     KeyEvent.VK_G -> controllerInput.getControllerO().buttonB = value
                     KeyEvent.VK_R -> controllerInput.getControllerO().buttonSelect = value
                     KeyEvent.VK_T -> controllerInput.getControllerO().buttonStart = value
+
+                    KeyEvent.VK_J -> controllerInput.getController1().buttonLeft = value
+                    KeyEvent.VK_K -> controllerInput.getController1().buttonDown = value
+                    KeyEvent.VK_L -> controllerInput.getController1().buttonRight = value
+                    KeyEvent.VK_I -> controllerInput.getController1().buttonUp = value
+                    KeyEvent.VK_COLON -> controllerInput.getController1().buttonA = value
+                    KeyEvent.VK_QUOTEDBL -> controllerInput.getController1().buttonB = value
+                    KeyEvent.VK_P -> controllerInput.getController1().buttonSelect = value
+                    KeyEvent.VK_BRACELEFT -> controllerInput.getController1().buttonStart = value
                 }
             }
         })
@@ -129,8 +137,9 @@ class RenderSurface(val ppu: NesPpu) : JPanel() {
 fun main() {
 
 //    val file = File("../nes-test-roms/instr_test-v3/rom_singles/" + "13-rti.nes")
+//    val file = File("../nes-test-roms/spritecans-2011/spritecans.nes")
 //    val file = File("../nes-test-roms/full_palette/full_palette.nes")
-//    val file = File("../nes-test-rom¢®s/PaddleTest3/PaddleTest.nes")
+//    val file = File("../nes-test-roms/PaddleTest3/PaddleTest.nes")
     val file = File("../../emulation/nes/pacman.nes")
 //    val file = File("otherRoms/color_test.nes")
 

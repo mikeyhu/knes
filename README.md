@@ -10,11 +10,12 @@ This is a non-functioning NES emulator written in Kotlin.
 ### Things still to do
 * 6502 unofficial instructions - some of these are implemented
 * Memory mirroring
-* More complex ROM types  
-* PPU
+* More complex ROM types
 * APU
-* Interrupts
-* Input
+* Scrolling sprites
+* Scrolling backgrounds
+* PpuOperationState changing pattern tables
+* 8*16 sprites
 
 ## Useful Links
 This is a list of information I found useful while researching how to make this:

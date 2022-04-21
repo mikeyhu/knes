@@ -103,7 +103,7 @@ class NesPpu(
         for (tilew in 0 until TILES_PER_ROW) {
             // row by tile
             val palette = selectPalette(tileRow, tilew)
-            val tileRequired = ppuMemory.get(0x2000 + tilew + (tileRow * TILES_PER_ROW)).toInt()
+            val tileRequired = ppuMemory.get(ppuOperationState.baseNametableAddress + tilew + (tileRow * TILES_PER_ROW)).toInt()
             val tileByteA = ppuMemory.get(tileRequired * 16 + rowWithinTile)
             val tileByteB = ppuMemory.get(tileRequired * 16 + rowWithinTile + 8)
             for (w in 0..7) {
@@ -129,8 +129,8 @@ class NesPpu(
                 val spriteLine = (scanlineRow - spriteYPosition).let {
                     if (spriteAttributes.spriteFlipVertical()) flip(it) else it
                 }
-                val tileByteA = ppuMemory.get(0x1000 + spriteIndex * 16 + spriteLine)
-                val tileByteB = ppuMemory.get(0x1000 + spriteIndex * 16 + spriteLine + 8)
+                val tileByteA = ppuMemory.get(ppuOperationState.spritePatternAddress + spriteIndex * 16 + spriteLine)
+                val tileByteB = ppuMemory.get(ppuOperationState.spritePatternAddress + spriteIndex * 16 + spriteLine + 8)
                 val palette = selectPalette(spriteAttributes.spritePalette() + 4)
                 for (w in 0..7) {
                     val offset = if (spriteAttributes.spriteFlipHorizontal()) flip(w) else w
@@ -160,7 +160,6 @@ class NesPpu(
     }
 
     override fun busMemoryWriteEvent(position: Int, value: UByte) {
-//        println("PPU WRITE: $position => ${value.toLogHex()}")
         when (position) {
             PPU_REG_CONTROLLER -> {
                 ppuOperationState = PpuOperationState.fromUByte(value)
@@ -178,7 +177,6 @@ class NesPpu(
                 nextOamWrite = value.toInt()
             }
             else -> println("PPU IGNORED WRITE: $position => ${value.toLogHex()}")
-//            else -> TODO("busMemoryWriteEvent not implemented for ${position.toHex()}")
         }
     }
 
