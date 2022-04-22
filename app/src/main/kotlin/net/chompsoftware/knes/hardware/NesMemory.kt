@@ -56,7 +56,6 @@ class NesMemory(
     }
 
     private fun ppuOmaDmaWrite(value: UByte) {
-        println("OAM DMA WRITE : $value")
         val data = UByteArray(0x100)
         val startLocation = value.toInt().shl(8)
         for (i in 0..0xff) {

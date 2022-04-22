@@ -49,6 +49,8 @@ class NesPpu(
 
     private val nesPpuStatus = NesPpuStatus(false)
 
+    private val nesScrollStatus = NesScrollStatus()
+
     override fun cpuTick(onNMIInterrupt: () -> Unit): Boolean {
         val isNMIInterrupt = scanlineCounter.cpuCycle()
 
@@ -175,6 +177,9 @@ class NesPpu(
             }
             PPU_REG_OAM_ADDRESS -> {
                 nextOamWrite = value.toInt()
+            }
+            PPU_REG_SCROLL -> {
+                nesScrollStatus.write(value)
             }
             else -> println("PPU IGNORED WRITE: $position => ${value.toLogHex()}")
         }
