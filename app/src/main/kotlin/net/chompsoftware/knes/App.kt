@@ -1,6 +1,7 @@
 package net.chompsoftware.knes
 
 
+import net.chompsoftware.knes.app.FPSTimer
 import net.chompsoftware.knes.hardware.*
 import net.chompsoftware.knes.hardware.input.ControllerInput
 import net.chompsoftware.knes.hardware.input.NesControllerInput
@@ -20,13 +21,6 @@ import java.io.File
 import javax.swing.JFrame
 import javax.swing.JPanel
 import kotlin.system.exitProcess
-
-fun processInstruction(cpuState: CpuState, memory: BasicMemory, operationState: OperationState) {
-    var nextPipeline: EffectPipeline? = Operation.run(cpuState, memory, operationState)
-    while (nextPipeline != null) {
-        nextPipeline = nextPipeline.run(cpuState, memory, operationState)
-    }
-}
 
 const val verticalMultiple = 4
 const val horizontalMultiple = 4
@@ -97,23 +91,10 @@ class App(ppu: NesPpu, controllerInput: ControllerInput) : JFrame() {
 }
 
 class RenderSurface(val ppu: NesPpu) : JPanel() {
-    var repaints = 0
-
-    var currentFrame = 0
-    var maxFrame = 0
-
-    var second = System.currentTimeMillis() / 1000
+    val timer = FPSTimer()
 
     override fun paintComponent(g: Graphics) {
-        val currentSecond = System.currentTimeMillis() / 1000
-        if (currentSecond != second) {
-            maxFrame = currentFrame
-            currentFrame = 0
-            second = currentSecond
-
-        } else {
-            currentFrame++
-        }
+        timer.increment()
         super.paintComponent(g)
         val g2d = g as Graphics2D
 
@@ -126,13 +107,12 @@ class RenderSurface(val ppu: NesPpu) : JPanel() {
             VERTICAL_RESOLUTION * verticalMultiple,
             this
         )
-
-        g2d.color = Color.lightGray
-        g2d.drawString("repaints: ${repaints++}, per second: ${maxFrame}", 10, 10)
-
+        if (Configuration.showFPS) {
+            g2d.color = Color.lightGray
+            g2d.drawString("FPS per second: ${timer.mostRecent()}", 10, 10)
+        }
     }
 }
-
 
 fun main() {
 
@@ -140,27 +120,22 @@ fun main() {
 //    val file = File("../nes-test-roms/spritecans-2011/spritecans.nes")
 //    val file = File("../nes-test-roms/full_palette/full_palette.nes")
 //    val file = File("../nes-test-roms/PaddleTest3/PaddleTest.nes")
-    val file = File("../../emulation/nes/pacman.nes")
 //    val file = File("otherRoms/color_test.nes")
+    val file = File("../../emulation/nes/pacman.nes")
 
     val mapper = RomLoader.loadMapper(readFileToByteArray(file))
     val ppu = NesPpu(NesPpuMemory(mapper))
     val controllerInput = NesControllerInput()
     val bus = NesBus(ppu, controllerInput)
-    val memory = NesMemory(
-        mapper, bus, failOnReadError = false, failOnWriteError = false
-    )
+    val memory = NesMemory(mapper, bus, failOnReadError = false, failOnWriteError = false)
 
     val cycleCoordinator = CycleCoordinator(Operation, ppu, memory, bus)
 
-    println("starting app")
-
     Configuration.limitSpeed = true
+    Configuration.showFPS = false
 
     val app = App(ppu, controllerInput)
     app.isVisible = true
-
-    println("started app")
 
     var ticksDone = 0
     try {
@@ -172,5 +147,4 @@ fun main() {
         println(e)
     }
     println("finished at $ticksDone")
-
 }
