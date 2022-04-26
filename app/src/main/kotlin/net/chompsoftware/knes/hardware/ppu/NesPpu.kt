@@ -1,5 +1,6 @@
 package net.chompsoftware.knes.hardware.ppu
 
+import net.chompsoftware.knes.Configuration
 import net.chompsoftware.knes.toInt16
 import net.chompsoftware.knes.toLogHex
 import java.awt.Color
@@ -66,7 +67,7 @@ class NesPpu(
     private fun getInProgressImage() = if (finishedImageSwitch) bufferedImage1 else bufferedImage0
 
     private fun selectPalette(tileH: Int, tileW: Int): Array<Color> {
-        val paletteNumber = selectPaletteNumber(ppuMemory, tileW, tileH)
+        val paletteNumber = selectPaletteNumber(ppuMemory, tileW, tileH, ppuOperationState.baseNametableAddress)
         val start = paletteNumber * 4 + 1
 
         return arrayOf(
@@ -100,12 +101,21 @@ class NesPpu(
             // last row that calls renderScanline
             nesPpuStatus.setInVBlank(true)
         }
-        val tileRow = scanlineRow / 8
-        val rowWithinTile = scanlineRow % 8
+
+        val offsetRow = scanlineRow + nesScrollStatus.getY()
+        val tileRow = offsetRow / 8
+        val rowWithinTile = horizontalPixelOffset(scanlineRow, nesScrollStatus.getY())
         for (tilew in 0 until TILES_PER_ROW) {
             // row by tile
             val palette = selectPalette(tileRow, tilew)
-            val tileRequired = ppuMemory.get(ppuOperationState.baseNametableAddress + tilew + (tileRow * TILES_PER_ROW)).toInt()
+            val tileRequired = ppuMemory.get(
+                horizontalMirroringPosition(
+                    ppuOperationState.baseNametableAddress,
+                    tilew,
+                    scanlineRow,
+                    nesScrollStatus.getY()
+                )
+            ).toInt()
             val tileByteA = ppuMemory.get(tileRequired * 16 + rowWithinTile)
             val tileByteB = ppuMemory.get(tileRequired * 16 + rowWithinTile + 8)
             for (w in 0..7) {
@@ -115,6 +125,17 @@ class NesPpu(
                     scanlineRow,
                     palette[pixelFor(tileByteA, tileByteB, w)].rgb
                 )
+            }
+        }
+        if (Configuration.showHorizontalTileBars && scanlineRow % 8 == 0) {
+            for (x in 0 until TILES_PER_ROW * TILE_SIZE) {
+                bufferedImage.setRGB(x, scanlineRow, Color.CYAN.rgb)
+            }
+        }
+
+        if (Configuration.showHorizontalScrollYBars && rowWithinTile == 0) {
+            for (x in 128 until TILES_PER_ROW * TILE_SIZE) {
+                bufferedImage.setRGB(x, scanlineRow, Color.MAGENTA.rgb)
             }
         }
     }
@@ -132,7 +153,8 @@ class NesPpu(
                     if (spriteAttributes.spriteFlipVertical()) flip(it) else it
                 }
                 val tileByteA = ppuMemory.get(ppuOperationState.spritePatternAddress + spriteIndex * 16 + spriteLine)
-                val tileByteB = ppuMemory.get(ppuOperationState.spritePatternAddress + spriteIndex * 16 + spriteLine + 8)
+                val tileByteB =
+                    ppuMemory.get(ppuOperationState.spritePatternAddress + spriteIndex * 16 + spriteLine + 8)
                 val palette = selectPalette(spriteAttributes.spritePalette() + 4)
                 for (w in 0..7) {
                     val offset = if (spriteAttributes.spriteFlipHorizontal()) flip(w) else w
@@ -267,3 +289,38 @@ class NesPpuStatus(
         return if (getInVBlank()) 0x80u else 0u
     }
 }
+
+/*  Vertical scrolling
+    horizontal mirroring = vertical scrolling
+    each nametable is 0x400
+    each have a palette table at the end of 0x40 in size
+    so each is 3c0 of screen data
+
+    in horizontal mirroring:
+    first and second nametables (and third and fourth) are mirrors of each other
+
+    ignoring 0x2000 which is the start position for the memory.
+    0x0 until 0x3c0 -> first nametable (no minus)
+    0x3c0 until 0x780 -> first nametable (minus 0x3c0)
+    0x780 until 0xb40 -> second nametable (minus 0x380)
+    0xb40 until 0x2f00 -> second nametable (minus 0x740)
+
+    But... wraparound need to happen so that reading further down:
+    * 0x2800 rolls back to 0x2000
+
+    in vertical mirroring:
+    first and third nametables (and second and fourth) are mirrors of each other
+*/
+fun horizontalMirroringPosition(baseNameTableAddress: Int, tileX: Int, scanlineRow: Int, scrollY: Int): Int {
+
+    var tileYWithOffset = (scanlineRow + scrollY) / 8
+    val basetable = if (tileYWithOffset >= ROWS) {
+        tileYWithOffset -= ROWS
+        if (baseNameTableAddress == 0x2800) 0x2000 else 0x2400
+    } else {
+        if (baseNameTableAddress == 0x2800) 0x2400 else 0x2000
+    }
+    return basetable + tileX + (tileYWithOffset * TILES_PER_ROW)
+}
+
+fun horizontalPixelOffset(scanlineRow: Int, scrollY: Int) = (scanlineRow + scrollY) % 8

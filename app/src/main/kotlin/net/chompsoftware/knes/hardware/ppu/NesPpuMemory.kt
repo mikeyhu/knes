@@ -14,19 +14,22 @@ interface PpuMemory {
 
 private const val PPU_CHROM_START = 0x0
 private const val PPU_VRAM_START = 0x2000
-private const val PPU_VRAM_SIZE = 0x2000
-private const val PPU_VRAM_END = PPU_VRAM_START + PPU_VRAM_SIZE
+private const val PPU_VRAM_SIZE = 0x800
 private const val PALETTE_TABLE_START = 0x3F00
+private const val PALETTE_SIZE = 0x20
+private const val PALETTE_TABLE_END = PALETTE_TABLE_START + PALETTE_SIZE
 private const val PPU_OAM_SIZE = 0x100
 
-class NesPpuMemory(val mapper: RomMapper) : PpuMemory {
+class NesPpuMemory(private val mapper: RomMapper) : PpuMemory {
     private val vram = UByteArray(PPU_VRAM_SIZE)
     private val oam = UByteArray(PPU_OAM_SIZE)
+    private val palette = UByteArray(0x20)
 
     override fun get(position: Int): UByte {
         return when (position) {
             in PPU_CHROM_START until PPU_VRAM_START -> mapper.getChrRom(position)
-            in PPU_VRAM_START until PPU_VRAM_END -> vram[position - PPU_VRAM_START]
+            in PPU_VRAM_START until PALETTE_TABLE_START -> vram[mapToVRamPosition(position)]
+            in PALETTE_TABLE_START until PALETTE_TABLE_END -> palette[position - PALETTE_TABLE_START]
             else ->
                 throw Error("PpuMemory: (Read) Out of Range at ${position.toHex()}")
         }
@@ -34,14 +37,15 @@ class NesPpuMemory(val mapper: RomMapper) : PpuMemory {
 
     override fun set(position: Int, value: UByte) {
         when (position) {
-            in PPU_VRAM_START until PPU_VRAM_END -> vram[position - PPU_VRAM_START] = value
+            in PPU_VRAM_START until PALETTE_TABLE_START -> vram[mapToVRamPosition(position)] = value
+            in PALETTE_TABLE_START until PALETTE_TABLE_END -> palette[position - PALETTE_TABLE_START] = value
             else ->
                 throw Error("PpuMemory: (Write) Out of Range at ${position.toHex()}")
         }
     }
 
     override fun paletteTable(position: Int): Int {
-        return vram[position + PALETTE_TABLE_START - PPU_VRAM_START].toInt() // 0x3F00 - 0x2000
+        return palette[position].toInt()
     }
 
     override fun oamDmaWrite(bytes: UByteArray, startPosition: Int) {
@@ -63,6 +67,8 @@ class NesPpuMemory(val mapper: RomMapper) : PpuMemory {
                 throw Error("PpuMemory: (Read) Out of Range at ${position.toHex()}")
         }
     }
+
+    private fun mapToVRamPosition(position: Int) = (position - 0x2000) % 0x800
 }
 
 /* PPU Memory Map

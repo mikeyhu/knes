@@ -24,23 +24,23 @@ class NesMemoryTest {
 
     inner class FakeRomMapper : RomMapper {
         override fun getPrgRom(position: Int): UByte {
-            throw Error("Interacting with FakeRomMapper")
+            fail("Interacting with FakeRomMapper")
         }
 
         override fun getChrRom(position: Int): UByte {
-            throw Error("Interacting with FakeRomMapper")
+            fail("Interacting with FakeRomMapper")
         }
 
         override fun getChrRomSlice(position: Int, size: Int): UByteArray {
-            throw Error("Interacting with FakeRomMapper")
+            fail("Interacting with FakeRomMapper")
         }
 
         override fun getBatteryBackedRam(position: Int): UByte {
-            throw Error("Interacting with FakeRomMapper")
+            fail("Interacting with FakeRomMapper")
         }
 
         override fun setBatteryBackedRam(position: Int, value: UByte) {
-            throw Error("Interacting with FakeRomMapper")
+            fail("Interacting with FakeRomMapper")
         }
     }
 

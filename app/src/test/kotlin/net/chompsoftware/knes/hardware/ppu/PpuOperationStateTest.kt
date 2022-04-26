@@ -10,15 +10,20 @@ class PpuOperationStateTest {
 
     @ParameterizedTest
     @CsvSource(
-        "0x00,0x2000",
-        "0x01,0x2400",
-        "0x02,0x2800",
-        "0x03,0x2C00",
-        "0x04,0x2000"
+        "0x00,0x2000,0x0000",
+        "0x01,0x2400,0x0400",
+        "0x02,0x2800,0x0800",
+        "0x03,0x2C00,0x0C00",
+        "0x04,0x2000,0x0000"
     )
-    fun `Will set baseNameTableAddress correctly`(input: Int, baseNameTableAddress: Int) {
+    fun `Will set baseNameTableAddress correctly and can get the offset only`(
+        input: Int,
+        baseNameTableAddress: Int,
+        baseNameTableOffset: Int
+    ) {
         val operationState = PpuOperationState.fromUByte(input.toUByte())
         assertEquals(baseNameTableAddress, operationState.baseNametableAddress)
+        assertEquals(baseNameTableOffset, operationState.getBaseNameTableOffset())
     }
 
     @ParameterizedTest

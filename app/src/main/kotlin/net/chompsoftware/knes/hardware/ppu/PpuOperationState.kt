@@ -34,6 +34,8 @@ data class PpuOperationState(
                 "genNMI=$generateNMIOnInterval)"
     }
 
+    fun getBaseNameTableOffset() = baseNametableAddress - 0x2000
+
     companion object {
         private const val BASE_NAME_TABLE_ADDRESS_MASK = 0x3
         private const val VRAM_ADDRESS_INCREMENT_POSITION: UByte = 0x4u

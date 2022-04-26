@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import kotlin.random.Random
 
 class NesPpuTest {
@@ -172,6 +174,117 @@ class NesPpuTest {
                 assertTrue(counter.currentScanline < PPU_SCANLINE_FRAME)
             }
             assertTrue(counter.cpuCycle())
+        }
+    }
+
+    @Nested
+    inner class HorizontalMirroringLocationTest {
+        @ParameterizedTest
+        @CsvSource(
+            "0x2000,  0,   0, 0, 0x2000", // top left
+            "0x2000,  1,   0, 0, 0x2001",
+            "0x2000,  0,   8, 0, 0x2020",
+            "0x2000, 31, 232, 0, 0x23bf", // bottom right
+        )
+        fun `Items in 0x2000 map directly back to position 0x2000`(
+            baseNametable: Int,
+            tileX: Int,
+            scanlineRow: Int,
+            scrollY: Int,
+            expected: Int
+        ) {
+            val result = horizontalMirroringPosition(baseNametable, tileX, scanlineRow, scrollY)
+            assertEquals(expected, result)
+        }
+
+        @ParameterizedTest
+        @CsvSource(
+            "0x2800,  0,   0, 0, 0x2400", // top left
+            "0x2800,  1,   0, 0, 0x2401",
+            "0x2800,  0,   8, 0, 0x2420",
+            "0x2800, 31, 232, 0, 0x27bf", // bottom right
+        )
+        fun `Items in 0x2800 map directly back to position 0x2400`(
+            baseNametable: Int,
+            tileX: Int,
+            scanlineRow: Int,
+            scrollY: Int,
+            expected: Int
+        ) {
+            val result = horizontalMirroringPosition(baseNametable, tileX, scanlineRow, scrollY)
+            assertEquals(expected, result)
+        }
+
+        @ParameterizedTest
+        @CsvSource(
+            "0x2800,  0,   0, 1, 0x2400", // still top left
+            "0x2800,  0,   0, 7, 0x2400", // still top left
+            "0x2800,  0,   0, 8, 0x2420", // top row down left
+            "0x2800,  1,   0, 8, 0x2421",
+            "0x2800,  0,   4, 4, 0x2420",
+            "0x2800,  0,   8, 8, 0x2440",
+            "0x2800, 31, 224, 8, 0x27bf", // second row from bottom
+        )
+        fun `The scrollY increments the tile selected within the table`(
+            baseNametable: Int,
+            tileX: Int,
+            scanlineRow: Int,
+            scrollY: Int,
+            expected: Int
+        ) {
+            val result = horizontalMirroringPosition(baseNametable, tileX, scanlineRow, scrollY)
+            assertEquals(expected, result)
+        }
+
+        @ParameterizedTest
+        @CsvSource(
+            "0x2800, 0, 232, 8, 0x2000",
+        )
+        fun `The scrollY wraps round to the alternate table`(
+            baseNametable: Int,
+            tileX: Int,
+            scanlineRow: Int,
+            scrollY: Int,
+            expected: Int
+        ) {
+            val result = horizontalMirroringPosition(baseNametable, tileX, scanlineRow, scrollY)
+            assertEquals(expected, result)
+        }
+    }
+
+    @Nested
+    inner class HorizontalPixelOffsetTest {
+        @ParameterizedTest
+        @CsvSource(
+            "0, 0, 0",
+            "1, 0, 1",
+            "8, 0, 0",
+            "9, 0, 1"
+        )
+        fun `decides on the correct row within the tile when there is no scroll`(
+            scanlineRow: Int,
+            scrollY: Int,
+            expected: Int
+        ) {
+            val result = horizontalPixelOffset(scanlineRow, scrollY)
+            assertEquals(expected, result)
+        }
+
+        @ParameterizedTest
+        @CsvSource(
+            "0, 1, 1",
+            "1, 1, 2",
+            "0, 8, 0",
+            "7, 1, 0",
+            "8, 1, 1"
+        )
+        fun `decides on the correct row within the tile when there is a scroll`(
+            scanlineRow: Int,
+            scrollY: Int,
+            expected: Int
+        ) {
+            val result = horizontalPixelOffset(scanlineRow, scrollY)
+            assertEquals(expected, result)
         }
     }
 

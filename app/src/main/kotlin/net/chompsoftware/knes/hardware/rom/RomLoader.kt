@@ -48,6 +48,7 @@ object RomInspector {
 object RomLoader {
     fun loadMapper(rom: UByteArray): RomMapper {
         val info = RomInspector.inspectRom(rom)
+        println(info)
         return when (info.mapper) {
             0 -> {
                 TypeZeroRomMapper(info, rom)
@@ -99,7 +100,6 @@ class TypeZeroRomMapper(
     override fun setBatteryBackedRam(position: Int, value: UByte) {
         batteryBackedRam[position - 0x6000] = value
     }
-
 }
 
 data class RomInformation(

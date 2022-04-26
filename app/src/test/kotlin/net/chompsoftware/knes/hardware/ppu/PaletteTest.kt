@@ -43,7 +43,6 @@ class PaletteTest {
         override fun oam(): UByteArray {
             fail("should not be used")
         }
-
     }
 
     @ParameterizedTest
@@ -71,7 +70,7 @@ class PaletteTest {
         expectedPalette: Int
     ) {
         val memory = FakePpuMemory()
-        val result = selectPaletteNumber(memory, testTileX + offsetX, testTileY + offsetY)
+        val result = selectPaletteNumber(memory, testTileX + offsetX, testTileY + offsetY, 0x2000)
         assertEquals(expectedPalette, result)
     }
 }

@@ -72,10 +72,11 @@ val defaultPalette = arrayOf(
 fun selectPaletteNumber(
     ppuMemory: PpuMemory,
     tileX: Int,
-    tileY: Int
+    tileY: Int,
+    baseNameTable: Int
 ): Int {
     val tilePosition = (tileY / 4 * 8) + tileX / 4
-    val byte = ppuMemory.get(0x2000 + 0x3c0 + tilePosition)
+    val byte = ppuMemory.get(baseNameTable + 0x3c0 + tilePosition)
     val ty = tileY % 4 / 2
     val tx = tileX % 4 / 2
     return when {
