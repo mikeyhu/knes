@@ -64,13 +64,13 @@ class PaletteTest {
         "2, 3, 3",
         "3, 3, 3",
     )
-    fun `can generate a palette of 4 colours by retrieving data from the PPU Palette memory`(
+    fun `can generate a palette of 4 colours by retrieving data from the PPU Palette memory when there is no scroll `(
         offsetX: Int,
         offsetY: Int,
         expectedPalette: Int
     ) {
         val memory = FakePpuMemory()
-        val result = selectPaletteNumber(memory, testTileX + offsetX, testTileY + offsetY, 0x2000)
+        val result = selectPaletteNumber(memory, (testTileY + offsetY) * 8, testTileX + offsetX, 0, 0x2000)
         assertEquals(expectedPalette, result)
     }
 }

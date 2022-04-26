@@ -71,13 +71,21 @@ val defaultPalette = arrayOf(
 
 fun selectPaletteNumber(
     ppuMemory: PpuMemory,
+    scanlineRow: Int,
     tileX: Int,
-    tileY: Int,
-    baseNameTable: Int
+    scrollY: Int,
+    baseNameTableAddress: Int
 ): Int {
-    val tilePosition = (tileY / 4 * 8) + tileX / 4
-    val byte = ppuMemory.get(baseNameTable + 0x3c0 + tilePosition)
-    val ty = tileY % 4 / 2
+    var tileYWithOffset = (scanlineRow + scrollY) / 8
+    val basetable = if (tileYWithOffset >= ROWS) {
+        tileYWithOffset -= ROWS
+        if (baseNameTableAddress == 0x2800) 0x2000 else 0x2400
+    } else {
+        if (baseNameTableAddress == 0x2800) 0x2400 else 0x2000
+    }
+    val tilePosition = (tileYWithOffset / 4 * 8) + tileX / 4
+    val byte = ppuMemory.get(basetable + 0x3c0 + tilePosition)
+    val ty = tileYWithOffset % 4 / 2
     val tx = tileX % 4 / 2
     return when {
         ty == 0 && tx == 0 -> byte.toInt().and(0x3)

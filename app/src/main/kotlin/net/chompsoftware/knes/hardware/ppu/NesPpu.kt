@@ -66,8 +66,9 @@ class NesPpu(
 
     private fun getInProgressImage() = if (finishedImageSwitch) bufferedImage1 else bufferedImage0
 
-    private fun selectPalette(tileH: Int, tileW: Int): Array<Color> {
-        val paletteNumber = selectPaletteNumber(ppuMemory, tileW, tileH, ppuOperationState.baseNametableAddress)
+    private fun selectPalette(tileH: Int, tileW: Int, scrollY: Int): Array<Color> {
+        val paletteNumber =
+            selectPaletteNumber(ppuMemory, tileH, tileW, scrollY, ppuOperationState.baseNametableAddress)
         val start = paletteNumber * 4 + 1
 
         return arrayOf(
@@ -102,12 +103,10 @@ class NesPpu(
             nesPpuStatus.setInVBlank(true)
         }
 
-        val offsetRow = scanlineRow + nesScrollStatus.getY()
-        val tileRow = offsetRow / 8
         val rowWithinTile = horizontalPixelOffset(scanlineRow, nesScrollStatus.getY())
         for (tilew in 0 until TILES_PER_ROW) {
             // row by tile
-            val palette = selectPalette(tileRow, tilew)
+            val palette = selectPalette(scanlineRow, tilew, nesScrollStatus.getY())
             val tileRequired = ppuMemory.get(
                 horizontalMirroringPosition(
                     ppuOperationState.baseNametableAddress,
@@ -312,7 +311,6 @@ class NesPpuStatus(
     first and third nametables (and second and fourth) are mirrors of each other
 */
 fun horizontalMirroringPosition(baseNameTableAddress: Int, tileX: Int, scanlineRow: Int, scrollY: Int): Int {
-
     var tileYWithOffset = (scanlineRow + scrollY) / 8
     val basetable = if (tileYWithOffset >= ROWS) {
         tileYWithOffset -= ROWS
