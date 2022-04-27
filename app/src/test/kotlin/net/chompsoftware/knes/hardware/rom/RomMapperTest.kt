@@ -22,7 +22,7 @@ class RomMapperTest {
 
 
             val mapper = RomLoader.loadMapper(rom)
-            for (i in 0 until 0x8000) {
+            for (i in 0 until 0x8000 step 0x1000) {
                 assertThrows<RomMapperError> { mapper.getPrgRom(i) }
             }
             assertThrows<RomMapperError> { mapper.getPrgRom(0x10000) }

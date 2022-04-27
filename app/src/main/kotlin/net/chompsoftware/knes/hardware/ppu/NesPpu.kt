@@ -311,14 +311,8 @@ class NesPpuStatus(
     first and third nametables (and second and fourth) are mirrors of each other
 */
 fun horizontalMirroringPosition(baseNameTableAddress: Int, tileX: Int, scanlineRow: Int, scrollY: Int): Int {
-    var tileYWithOffset = (scanlineRow + scrollY) / 8
-    val basetable = if (tileYWithOffset >= ROWS) {
-        tileYWithOffset -= ROWS
-        if (baseNameTableAddress == 0x2800) 0x2000 else 0x2400
-    } else {
-        if (baseNameTableAddress == 0x2800) 0x2400 else 0x2000
-    }
-    return basetable + tileX + (tileYWithOffset * TILES_PER_ROW)
+    val yPosition = YPosition(scanlineRow, scrollY)
+    return yPosition.getNameTable(baseNameTableAddress) + tileX + (yPosition.getTileY() * TILES_PER_ROW)
 }
 
 fun horizontalPixelOffset(scanlineRow: Int, scrollY: Int) = (scanlineRow + scrollY) % 8

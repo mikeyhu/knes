@@ -287,7 +287,6 @@ class NesPpuTest {
             assertEquals(expected, result)
         }
     }
-
 }
 
 
