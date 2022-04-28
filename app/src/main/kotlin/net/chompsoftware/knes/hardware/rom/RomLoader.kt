@@ -121,7 +121,7 @@ class RomLoadError(message: String) : Error(message)
 
 class RomMapperError(message: String) : Error(message)
 
-// Alternate `main` that allows a ROM to be inspected
+// Alternate `main` that allows ROMs to be inspected
 fun main(args: Array<String>) {
     val inspector = RomInspector
     val fileData = readFileToByteArray(File(args[0]))

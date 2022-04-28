@@ -10,6 +10,7 @@ import net.chompsoftware.knes.hardware.ppu.NesPpuMemory
 import net.chompsoftware.knes.hardware.ppu.NesPpu
 import net.chompsoftware.knes.hardware.ppu.VERTICAL_RESOLUTION
 import net.chompsoftware.knes.hardware.rom.RomLoader
+import net.chompsoftware.knes.hardware.rom.readZipToUByteArray
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
@@ -121,9 +122,16 @@ fun main() {
 //    val file = File("../nes-test-roms/full_palette/full_palette.nes")
 //    val file = File("../nes-test-roms/PaddleTest3/PaddleTest.nes")
 //    val file = File("otherRoms/color_test.nes")
-    val file = File("../../emulation/nes/pacman.nes")
+//    val file = File("../../emulation/nes/pacman.nes")
+//    val file = File("../../emulation/nes/Galaga.zip")
+    val file = File("../../emulation/nes/Xevious.zip")
 
-    val mapper = RomLoader.loadMapper(readFileToByteArray(file))
+    val mapper = if (file.name.endsWith(".nes")) {
+        RomLoader.loadMapper(readFileToByteArray(file))
+    } else if (file.name.endsWith(".zip")) {
+        RomLoader.loadMapper(readZipToUByteArray(file))
+    } else TODO("unsupported file extension")
+
     val ppu = NesPpu(NesPpuMemory(mapper))
     val controllerInput = NesControllerInput()
     val bus = NesBus(ppu, controllerInput)
@@ -148,3 +156,4 @@ fun main() {
     }
     println("finished at $ticksDone")
 }
+
