@@ -2,8 +2,11 @@ package net.chompsoftware.knes.hardware.ppu
 
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 
 
 class TileReaderTest {
@@ -59,5 +62,77 @@ class TileReaderTest {
         ).toByteArray()
 
         assertArrayEquals(output, tile.pixels)
+    }
+
+    @Nested
+    inner class TileRowTest {
+        @ParameterizedTest
+        @CsvSource(
+            "0x00, 0x00, 0x00",
+            "0x01, 0x00, 0x01",
+            "0x00, 0x01, 0x02",
+            "0x01, 0x01, 0x03",
+
+            "0x02, 0x00, 0x04",
+            "0x00, 0x02, 0x08",
+            "0x02, 0x02, 0x0c",
+
+            "0x04, 0x00, 0x10",
+            "0x00, 0x04, 0x20",
+            "0x04, 0x04, 0x30",
+
+            "0x08, 0x00, 0x40",
+            "0x00, 0x08, 0x80",
+            "0x08, 0x08, 0xc0",
+
+            "0x10, 0x00, 0x100",
+            "0x00, 0x10, 0x200",
+            "0x10, 0x10, 0x300",
+
+            "0x20, 0x00, 0x400",
+            "0x00, 0x20, 0x800",
+            "0x20, 0x20, 0xc00",
+
+            "0x40, 0x00, 0x1000",
+            "0x00, 0x40, 0x2000",
+            "0x40, 0x40, 0x3000",
+
+            "0x80, 0x00, 0x4000",
+            "0x00, 0x80, 0x8000",
+            "0x80, 0x80, 0xc000",
+
+            "0xff, 0xff, 0xffff"
+        )
+        fun `Can convert two tileBytes into palette information in an Int`(tileA: Int, tileB: Int, expected: Int) {
+            val result = toTileRow(tileA, tileB)
+            assertEquals(expected, result)
+        }
+
+        @ParameterizedTest
+        @CsvSource(
+            "  0x00, 7, 0",
+            "  0x01, 7, 1",
+            "  0x02, 7, 2",
+            "  0x03, 7, 3",
+            "  0x00, 6, 0",
+            "  0x01, 6, 0",
+            "  0x02, 6, 0",
+            "  0x03, 6, 0",
+            "  0x04, 6, 1",
+            "  0x08, 6, 2",
+            "  0x0c, 6, 3",
+            "0xffff, 0, 3",
+            "0xffff, 1, 3",
+            "0xffff, 2, 3",
+            "0xffff, 3, 3",
+            "0xffff, 4, 3",
+            "0xffff, 5, 3",
+            "0xffff, 6, 3",
+            "0xffff, 7, 3"
+        )
+        fun `Retrieve a pattern from a larger Int`(tile: Int, position: Int, expected: Int) {
+            val result = tile.pixelFor(position)
+            assertEquals(expected, result)
+        }
     }
 }

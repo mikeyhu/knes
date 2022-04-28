@@ -41,9 +41,9 @@ class CycleCoordinator(
             val elapsed = currentMillis - previousCallbackMillis
 
             if (elapsed < millisecondsPerFrame) {
+                println("sleeping for ${millisecondsPerFrame - elapsed}ms")
                 Thread.sleep(millisecondsPerFrame - elapsed)
             }
-
             previousCallbackMillis = System.currentTimeMillis()
         }
         onNMICallback()

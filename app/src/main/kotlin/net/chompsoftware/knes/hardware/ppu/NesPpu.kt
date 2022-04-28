@@ -115,14 +115,13 @@ class NesPpu(
                     nesScrollStatus.getY()
                 )
             ).toInt()
-            val tileByteA = ppuMemory.get(tileRequired * 16 + rowWithinTile)
-            val tileByteB = ppuMemory.get(tileRequired * 16 + rowWithinTile + 8)
+            val tileRow = getTileRow(ppuOperationState.backgroundPatternAddress,tileRequired, rowWithinTile)
             for (w in 0..7) {
                 //each tile by horizontal pixel
                 bufferedImage.setRGB(
                     (tilew * TILE_SIZE) + w,
                     scanlineRow,
-                    palette[pixelFor(tileByteA, tileByteB, w)].rgb
+                    palette[tileRow.pixelFor(w)].rgb
                 )
             }
         }
@@ -151,14 +150,13 @@ class NesPpu(
                 val spriteLine = (scanlineRow - spriteYPosition).let {
                     if (spriteAttributes.spriteFlipVertical()) flip(it) else it
                 }
-                val tileByteA = ppuMemory.get(ppuOperationState.spritePatternAddress + spriteIndex * 16 + spriteLine)
-                val tileByteB =
-                    ppuMemory.get(ppuOperationState.spritePatternAddress + spriteIndex * 16 + spriteLine + 8)
                 val palette = selectPalette(spriteAttributes.spritePalette() + 4)
+                val tileRow = getTileRow(ppuOperationState.spritePatternAddress,spriteIndex, spriteLine)
                 for (w in 0..7) {
                     val offset = if (spriteAttributes.spriteFlipHorizontal()) flip(w) else w
                     //each tile by horizontal pixel
-                    val pixel = pixelFor(tileByteA, tileByteB, w)
+//                    val pixel = pixelFor(tileByteA, tileByteB, w)
+                    val pixel = tileRow.pixelFor(w)
                     if (pixel > 0) {
                         val pixelXPosition = ppuMemory.oam().spriteXPosition(spriteNum) + offset
                         if (pixelXPosition < HORIZONTAL_RESOLUTION) {
@@ -174,12 +172,10 @@ class NesPpu(
         }
     }
 
-    private fun pixelFor(tile: UByte, tilePlus8: UByte, bit: Int) =
-        tile.bitAsByte(7 - bit) + tilePlus8.bitAsByte(7 - bit) * 2
-
-
-    private fun UByte.bitAsByte(position: Int): Byte {
-        return this.toUInt().shr(position).and(1u).toByte()
+    private fun getTileRow(patternAddress: Int, spriteIndex: Int, rowInSprite: Int): TileRow {
+        val tileByteA = ppuMemory.get(patternAddress + spriteIndex * 16 + rowInSprite)
+        val tileByteB = ppuMemory.get(patternAddress + spriteIndex * 16 + rowInSprite + 8)
+        return toTileRow(tileByteA.toInt(), tileByteB.toInt())
     }
 
     override fun busMemoryWriteEvent(position: Int, value: UByte) {

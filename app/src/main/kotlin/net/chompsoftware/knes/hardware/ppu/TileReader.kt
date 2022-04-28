@@ -43,3 +43,33 @@ object TileReader {
         return this.toUInt().shr(position).and(1u).toByte()
     }
 }
+
+typealias TileRow = Int
+
+fun toTileRow(tileALine: Int, tileBLine: Int): TileRow {
+    return partialRow(tileALine, tileBLine, 0x1) +
+            partialRow(tileALine, tileBLine, 0x2) +
+            partialRow(tileALine, tileBLine, 0x4) +
+            partialRow(tileALine, tileBLine, 0x8) +
+            partialRow(tileALine, tileBLine, 0x10) +
+            partialRow(tileALine, tileBLine, 0x20) +
+            partialRow(tileALine, tileBLine, 0x40) +
+            partialRow(tileALine, tileBLine, 0x80)
+}
+
+fun partialRow(tileALine: Int, tileBLine: Int, position: Int): Int =
+    (tileALine.and(position) + (tileBLine.and(position) shl 1)) * position
+
+fun TileRow.pixelFor(position: Int): Int {
+    return when (7 - position) {
+        0 -> this.and(0x03)
+        1 -> this.and(0x0c) shr 2
+        2 -> this.and(0x30) shr 4
+        3 -> this.and(0xc0) shr 6
+        4 -> this.and(0x300) shr 8
+        5 -> this.and(0xc00) shr 10
+        6 -> this.and(0x3000) shr 12
+        7 -> this.and(0xc000) shr 14
+        else -> 0
+    }
+}
