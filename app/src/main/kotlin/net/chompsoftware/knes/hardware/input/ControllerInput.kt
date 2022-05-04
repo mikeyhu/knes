@@ -44,14 +44,14 @@ class NesControllerInput() : ControllerInput {
 
 
 data class Controller(
-    var buttonA: Boolean = false,
-    var buttonB: Boolean = false,
-    var buttonSelect: Boolean = false,
-    var buttonStart: Boolean = false,
-    var buttonUp: Boolean = false,
-    var buttonDown: Boolean = false,
-    var buttonLeft: Boolean = false,
-    var buttonRight: Boolean = false,
+    private var buttonA: Boolean = false,
+    private var buttonB: Boolean = false,
+    private var buttonSelect: Boolean = false,
+    private var buttonStart: Boolean = false,
+    private var buttonUp: Boolean = false,
+    private var buttonDown: Boolean = false,
+    private var buttonLeft: Boolean = false,
+    private var buttonRight: Boolean = false,
     private var strobeBit: Boolean = false,
     private var strobePosition: Int = 0
 ) {
@@ -86,4 +86,63 @@ data class Controller(
     fun getStrobeBit() = strobeBit
 
     private fun Boolean.asController() = if (this) CONTROLLER_POSITIVE else CONTROLLER_NEGATIVE
+
+    fun getButtonA() = buttonA
+    fun setButtonA(value: Boolean) {
+        buttonA = value
+    }
+
+    fun getButtonB() = buttonB
+    fun setButtonB(value: Boolean) {
+        buttonB = value
+    }
+
+    fun getButtonSelect() = buttonSelect
+    fun setButtonSelect(value: Boolean) {
+        buttonSelect = value
+    }
+
+    fun getButtonStart() = buttonStart
+    fun setButtonStart(value: Boolean) {
+        buttonStart = value
+    }
+    fun getButtonUp() = buttonUp
+    fun setButtonUp(value: Boolean) {
+        buttonUp = value
+        if (value) {
+            buttonLeft = false
+            buttonRight = false
+            buttonDown = false
+        }
+    }
+
+    fun getButtonDown() = buttonDown
+    fun setButtonDown(value: Boolean) {
+        buttonDown = value
+        if (value) {
+            buttonUp = false
+            buttonLeft = false
+            buttonRight = false
+        }
+    }
+
+    fun getButtonLeft() = buttonLeft
+    fun setButtonLeft(value: Boolean) {
+        buttonLeft = value
+        if (value) {
+            buttonUp = false
+            buttonDown = false
+            buttonRight = false
+        }
+    }
+
+    fun getButtonRight() = buttonRight
+    fun setButtonRight(value: Boolean) {
+        buttonRight = value
+        if (value) {
+            buttonUp = false
+            buttonDown = false
+            buttonLeft = false
+        }
+    }
 }

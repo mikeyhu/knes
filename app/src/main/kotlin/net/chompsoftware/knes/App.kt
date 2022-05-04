@@ -68,23 +68,23 @@ class App(ppu: NesPpu, controllerInput: ControllerInput) : JFrame() {
 
             private fun setKey(keyEvent: KeyEvent, value: Boolean) {
                 when (keyEvent.keyCode) {
-                    KeyEvent.VK_A -> controllerInput.getControllerO().buttonLeft = value
-                    KeyEvent.VK_S -> controllerInput.getControllerO().buttonDown = value
-                    KeyEvent.VK_D -> controllerInput.getControllerO().buttonRight = value
-                    KeyEvent.VK_W -> controllerInput.getControllerO().buttonUp = value
-                    KeyEvent.VK_F -> controllerInput.getControllerO().buttonA = value
-                    KeyEvent.VK_G -> controllerInput.getControllerO().buttonB = value
-                    KeyEvent.VK_R -> controllerInput.getControllerO().buttonSelect = value
-                    KeyEvent.VK_T -> controllerInput.getControllerO().buttonStart = value
+                    KeyEvent.VK_A -> controllerInput.getControllerO().setButtonLeft(value)
+                    KeyEvent.VK_S -> controllerInput.getControllerO().setButtonDown(value)
+                    KeyEvent.VK_D -> controllerInput.getControllerO().setButtonRight(value)
+                    KeyEvent.VK_W -> controllerInput.getControllerO().setButtonUp(value)
+                    KeyEvent.VK_F -> controllerInput.getControllerO().setButtonA(value)
+                    KeyEvent.VK_G -> controllerInput.getControllerO().setButtonB(value)
+                    KeyEvent.VK_R -> controllerInput.getControllerO().setButtonSelect(value)
+                    KeyEvent.VK_T -> controllerInput.getControllerO().setButtonStart(value)
 
-                    KeyEvent.VK_J -> controllerInput.getController1().buttonLeft = value
-                    KeyEvent.VK_K -> controllerInput.getController1().buttonDown = value
-                    KeyEvent.VK_L -> controllerInput.getController1().buttonRight = value
-                    KeyEvent.VK_I -> controllerInput.getController1().buttonUp = value
-                    KeyEvent.VK_COLON -> controllerInput.getController1().buttonA = value
-                    KeyEvent.VK_QUOTEDBL -> controllerInput.getController1().buttonB = value
-                    KeyEvent.VK_P -> controllerInput.getController1().buttonSelect = value
-                    KeyEvent.VK_BRACELEFT -> controllerInput.getController1().buttonStart = value
+                    KeyEvent.VK_J -> controllerInput.getController1().setButtonLeft(value)
+                    KeyEvent.VK_K -> controllerInput.getController1().setButtonDown(value)
+                    KeyEvent.VK_L -> controllerInput.getController1().setButtonRight(value)
+                    KeyEvent.VK_I -> controllerInput.getController1().setButtonUp(value)
+                    KeyEvent.VK_COLON -> controllerInput.getController1().setButtonA(value)
+                    KeyEvent.VK_QUOTEDBL -> controllerInput.getController1().setButtonB(value)
+                    KeyEvent.VK_P -> controllerInput.getController1().setButtonSelect(value)
+                    KeyEvent.VK_BRACELEFT -> controllerInput.getController1().setButtonStart(value)
                 }
             }
         })

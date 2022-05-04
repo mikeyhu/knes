@@ -26,7 +26,7 @@ class ControllerInputTest {
     @Test
     fun `Reading from 0x4016 will read controller0 data`() {
         val controllerInput = NesControllerInput()
-        controllerInput.getControllerO().buttonA = true
+        controllerInput.getControllerO().setButtonA(true)
 
         assertEquals(CONTROLLER_POSITIVE, controllerInput.read(CONTROLLER0_POSITION))
     }
@@ -34,7 +34,7 @@ class ControllerInputTest {
     @Test
     fun `Reading from 0x4017 will read controller1 data`() {
         val controllerInput = NesControllerInput()
-        controllerInput.getControllerO().buttonA = true
+        controllerInput.getControllerO().setButtonA(true)
 
         assertEquals(CONTROLLER_POSITIVE, controllerInput.read(CONTROLLER0_POSITION))
     }
@@ -54,7 +54,7 @@ class ControllerInputTest {
                 assertEquals(CONTROLLER_POSITIVE, controller.read())
             }
 
-            controller.buttonA = false
+            controller.setButtonA(false)
 
             for (i in 0..50) {
                 assertEquals(CONTROLLER_NEGATIVE, controller.read())
@@ -67,23 +67,23 @@ class ControllerInputTest {
                 val controller = Controller(
                     strobeBit = false
                 )
-                controller.buttonA = Random.nextBoolean()
-                controller.buttonB = Random.nextBoolean()
-                controller.buttonSelect = Random.nextBoolean()
-                controller.buttonStart = Random.nextBoolean()
-                controller.buttonUp = Random.nextBoolean()
-                controller.buttonDown = Random.nextBoolean()
-                controller.buttonLeft = Random.nextBoolean()
-                controller.buttonRight = Random.nextBoolean()
+                controller.setButtonA(Random.nextBoolean())
+                controller.setButtonB(Random.nextBoolean())
+                controller.setButtonSelect(Random.nextBoolean())
+                controller.setButtonStart(Random.nextBoolean())
+                controller.setButtonUp(Random.nextBoolean())
+                controller.setButtonDown(Random.nextBoolean())
+                controller.setButtonLeft(Random.nextBoolean())
+                controller.setButtonRight(Random.nextBoolean())
 
-                assertEquals(controller.buttonA.asController(), controller.read())
-                assertEquals(controller.buttonB.asController(), controller.read())
-                assertEquals(controller.buttonSelect.asController(), controller.read())
-                assertEquals(controller.buttonStart.asController(), controller.read())
-                assertEquals(controller.buttonUp.asController(), controller.read())
-                assertEquals(controller.buttonDown.asController(), controller.read())
-                assertEquals(controller.buttonLeft.asController(), controller.read())
-                assertEquals(controller.buttonRight.asController(), controller.read())
+                assertEquals(controller.getButtonA().asController(), controller.read())
+                assertEquals(controller.getButtonB().asController(), controller.read())
+                assertEquals(controller.getButtonSelect().asController(), controller.read())
+                assertEquals(controller.getButtonStart().asController(), controller.read())
+                assertEquals(controller.getButtonUp().asController(), controller.read())
+                assertEquals(controller.getButtonDown().asController(), controller.read())
+                assertEquals(controller.getButtonLeft().asController(), controller.read())
+                assertEquals(controller.getButtonRight().asController(), controller.read())
             }
         }
 
