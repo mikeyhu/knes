@@ -22,7 +22,7 @@ data class NesScrollStatus(
             y = value.toInt()
         }
         nextIsX = !nextIsX
-        Logging.debug(this.toString())
+        Logging.debug { this.toString() }
     }
 
     fun getX() = x

@@ -183,7 +183,7 @@ class NesPpu(
         when (position) {
             PPU_REG_CONTROLLER -> {
                 ppuOperationState = PpuOperationState.fromUByte(value)
-                Logging.debug(ppuOperationState.toString())
+                Logging.debug { ppuOperationState.toString() }
             }
             PPU_REG_ADDRESS -> {
                 ppuAddressHigh = ppuAddressLow
@@ -199,7 +199,7 @@ class NesPpu(
             PPU_REG_SCROLL -> {
                 nesScrollStatus.write(value)
             }
-            else -> Logging.warn("PPU IGNORED WRITE: $position => ${value.toLogHex()}")
+            else -> Logging.warn { "PPU IGNORED WRITE: $position => ${value.toLogHex()}" }
         }
     }
 

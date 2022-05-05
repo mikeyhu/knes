@@ -36,16 +36,20 @@ object Logging {
         }
     }
 
-    fun warn(message: String) {
-        if (loggingEnabled && logWarn()) log.println(message)
+    fun error(functionToMessage: () -> String) {
+        if (loggingEnabled && logError()) log.println(functionToMessage())
     }
 
-    fun debug(message: String) {
-        if (loggingEnabled && logDebug()) log.println(message)
+    fun warn(functionToMessage: () -> String) {
+        if (loggingEnabled && logWarn()) log.println(functionToMessage())
     }
 
-    fun verbose(message: String) {
-        if (loggingEnabled && logVerbose()) log.println(message)
+    fun debug(functionToMessage: () -> String) {
+        if (loggingEnabled && logDebug()) log.println(functionToMessage())
+    }
+
+    fun verbose(functionToMessage: () -> String) {
+        if (loggingEnabled && logVerbose()) log.println(functionToMessage())
     }
 
     private fun logError() = logLevel > 0

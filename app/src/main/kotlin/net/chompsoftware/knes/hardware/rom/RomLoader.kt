@@ -49,7 +49,7 @@ object RomInspector {
 object RomLoader {
     fun loadMapper(rom: UByteArray): RomMapper {
         val info = RomInspector.inspectRom(rom)
-        Logging.debug(info.toString())
+        Logging.debug { info.toString() }
         return when (info.mapper) {
             0 -> {
                 TypeZeroRomMapper(info, rom)

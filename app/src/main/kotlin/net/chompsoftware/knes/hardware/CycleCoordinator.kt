@@ -41,7 +41,7 @@ class CycleCoordinator(
             } catch (e: Throwable) {
                 Logging.error(e)
             }
-            Logging.error("Thread finished due to error at $ticksDone")
+            Logging.error { "Thread finished due to error at $ticksDone" }
         }
     }
 
@@ -67,7 +67,7 @@ class CycleCoordinator(
             val elapsed = currentMillis - previousCallbackMillis
 
             if (elapsed < millisecondsPerFrame) {
-                Logging.debug("sleeping for ${millisecondsPerFrame - elapsed}ms")
+                Logging.debug { "sleeping for ${millisecondsPerFrame - elapsed}ms" }
                 Thread.sleep(millisecondsPerFrame - elapsed)
             }
             previousCallbackMillis = System.currentTimeMillis()
@@ -76,7 +76,7 @@ class CycleCoordinator(
     }
 
     private fun suspendCpu(cycles: Int) {
-        Logging.verbose("Suspending for $cycles cycles")
+        Logging.verbose { "Suspending for $cycles cycles" }
         cpuCyclesToSuspend = cycles
     }
 
