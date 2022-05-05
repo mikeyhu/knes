@@ -3,6 +3,7 @@ package net.chompsoftware.knes.hardware
 import net.chompsoftware.knes.Configuration
 import net.chompsoftware.knes.hardware.ppu.Ppu
 import net.chompsoftware.knes.toInt16
+import kotlin.concurrent.thread
 
 
 class CycleCoordinator(
@@ -22,6 +23,30 @@ class CycleCoordinator(
 
     private var previousCallbackMillis: Long = System.currentTimeMillis()
     private val millisecondsPerFrame = 1000 / Configuration.limitToFPS
+
+    private var shouldPauseOnNextTick = false
+    fun start(callback: () -> Unit) {
+        thread {
+            var ticksDone = 0
+            try {
+                while (true) {
+                    if (shouldPauseOnNextTick) {
+                        Thread.sleep(100)
+                    } else {
+                        cycle(onNMICallback = callback)
+                        ticksDone++
+                    }
+                }
+            } catch (e: Throwable) {
+                println(e)
+            }
+            println("Thread finished due to error at $ticksDone")
+        }
+    }
+
+    fun togglePause() {
+        shouldPauseOnNextTick = !shouldPauseOnNextTick
+    }
 
     fun cycle(onNMICallback: () -> Unit) {
         val isNMIInterrupt = ppu.cpuTick(callbackInterceptor(onNMICallback))

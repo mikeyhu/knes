@@ -26,7 +26,7 @@ import kotlin.system.exitProcess
 const val verticalMultiple = 4
 const val horizontalMultiple = 4
 
-class App(ppu: NesPpu, controllerInput: ControllerInput) : JFrame() {
+class App(cycleCoordinator: CycleCoordinator, ppu: NesPpu, controllerInput: ControllerInput) : JFrame() {
 
     init {
         title = "KNES"
@@ -55,8 +55,12 @@ class App(ppu: NesPpu, controllerInput: ControllerInput) : JFrame() {
             override fun keyTyped(e: KeyEvent?) {}
 
             override fun keyPressed(e: KeyEvent?) {
-                e?.also {
-                    setKey(it, true)
+                if (e?.keyCode == KeyEvent.VK_1) {
+                    cycleCoordinator.togglePause()
+                } else {
+                    e?.also {
+                        setKey(it, true)
+                    }
                 }
             }
 
@@ -122,12 +126,12 @@ fun main() {
 //    val file = File("../nes-test-roms/full_palette/full_palette.nes")
 //    val file = File("../nes-test-roms/PaddleTest3/PaddleTest.nes")
 //    val file = File("otherRoms/color_test.nes")
-//    val file = File("../../emulation/nes/pacman.nes")
+    val file = File("../../emulation/nes/pacman.nes")
 //    val file = File("../../emulation/nes/Galaga.zip")
-    val file = File("../../emulation/nes/Xevious.zip")
+//    val file = File("../../emulation/nes/Xevious.zip")
 
     val mapper = if (file.name.endsWith(".nes")) {
-        RomLoader.loadMapper(readFileToByteArray(file))
+        RomLoader.loadMapper(readFileToUByteArray(file))
     } else if (file.name.endsWith(".zip")) {
         RomLoader.loadMapper(readZipToUByteArray(file))
     } else TODO("unsupported file extension")
@@ -142,18 +146,9 @@ fun main() {
     Configuration.limitSpeed = true
     Configuration.showFPS = false
 
-    val app = App(ppu, controllerInput)
+    val app = App(cycleCoordinator, ppu, controllerInput)
     app.isVisible = true
 
-    var ticksDone = 0
-    try {
-        while (true) {
-            cycleCoordinator.cycle(onNMICallback = app::repaint)
-            ticksDone++
-        }
-    } catch (e: Throwable) {
-        println(e)
-    }
-    println("finished at $ticksDone")
+    cycleCoordinator.start(app::repaint)
 }
 

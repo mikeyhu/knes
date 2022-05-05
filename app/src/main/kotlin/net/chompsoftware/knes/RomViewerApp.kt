@@ -57,7 +57,7 @@ val defaultFile = "../nes-test-roms/instr_test-v3/rom_singles/" + "01-implied.ne
 
 fun main(args: Array<String>) {
     val inspector = RomInspector
-    val fileData = readFileToByteArray(File(args.getOrNull(0) ?: defaultFile))
+    val fileData = readFileToUByteArray(File(args.getOrNull(0) ?: defaultFile))
 
     println(inspector.inspectRom(fileData))
 

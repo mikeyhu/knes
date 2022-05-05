@@ -10,7 +10,7 @@ import net.chompsoftware.knes.hardware.ppu.NesPpu
 import net.chompsoftware.knes.hardware.rom.RomLoader
 import net.chompsoftware.knes.hardware.utilities.LoggingHarness
 import net.chompsoftware.knes.hardware.utilities.LoggingType
-import net.chompsoftware.knes.readFileToByteArray
+import net.chompsoftware.knes.readFileToUByteArray
 import net.chompsoftware.knes.toHex
 import net.chompsoftware.knes.toInt16
 import org.junit.jupiter.api.Test
@@ -40,7 +40,7 @@ class NesSuiteTest {
     @MethodSource("testFiles")
     fun `Run external NES suites - CPU`(file: String) {
 
-        val suiteFile = readFileToByteArray(File(testDirectory + file))
+        val suiteFile = readFileToUByteArray(File(testDirectory + file))
 
         val mapper = RomLoader.loadMapper(suiteFile)
         val ppu = NesPpu(NesPpuMemory(mapper))
@@ -108,7 +108,7 @@ class NesSuiteTest {
     @Test
     fun `Run external NES suites - CPU - nestest`() {
 
-        val suiteFile = readFileToByteArray(File("../nesSuite/nestest.nes"))
+        val suiteFile = readFileToUByteArray(File("../nesSuite/nestest.nes"))
 
         val mapper = RomLoader.loadMapper(suiteFile)
         val ppu = NesPpu(NesPpuMemory(mapper))

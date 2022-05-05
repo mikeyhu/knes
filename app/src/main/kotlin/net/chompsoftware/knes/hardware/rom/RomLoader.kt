@@ -1,6 +1,6 @@
 package net.chompsoftware.knes.hardware.rom
 
-import net.chompsoftware.knes.readFileToByteArray
+import net.chompsoftware.knes.readFileToUByteArray
 import java.io.File
 
 const val HEADER_SIZE = 16
@@ -124,7 +124,7 @@ class RomMapperError(message: String) : Error(message)
 // Alternate `main` that allows ROMs to be inspected
 fun main(args: Array<String>) {
     val inspector = RomInspector
-    val fileData = readFileToByteArray(File(args[0]))
+    val fileData = readFileToUByteArray(File(args[0]))
 
     println(inspector.inspectRom(fileData))
 }
