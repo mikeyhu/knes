@@ -1,6 +1,7 @@
 package net.chompsoftware.knes.hardware
 
 import net.chompsoftware.knes.Configuration
+import net.chompsoftware.knes.Logging
 import net.chompsoftware.knes.hardware.ppu.Ppu
 import net.chompsoftware.knes.toInt16
 import kotlin.concurrent.thread
@@ -38,9 +39,9 @@ class CycleCoordinator(
                     }
                 }
             } catch (e: Throwable) {
-                println(e)
+                Logging.error(e)
             }
-            println("Thread finished due to error at $ticksDone")
+            Logging.error("Thread finished due to error at $ticksDone")
         }
     }
 
@@ -66,7 +67,7 @@ class CycleCoordinator(
             val elapsed = currentMillis - previousCallbackMillis
 
             if (elapsed < millisecondsPerFrame) {
-                println("sleeping for ${millisecondsPerFrame - elapsed}ms")
+                Logging.debug("sleeping for ${millisecondsPerFrame - elapsed}ms")
                 Thread.sleep(millisecondsPerFrame - elapsed)
             }
             previousCallbackMillis = System.currentTimeMillis()
@@ -75,7 +76,7 @@ class CycleCoordinator(
     }
 
     private fun suspendCpu(cycles: Int) {
-        println("Suspending for $cycles cycles")
+        Logging.verbose("Suspending for $cycles cycles")
         cpuCyclesToSuspend = cycles
     }
 

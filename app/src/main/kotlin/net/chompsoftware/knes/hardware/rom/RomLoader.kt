@@ -1,5 +1,6 @@
 package net.chompsoftware.knes.hardware.rom
 
+import net.chompsoftware.knes.Logging
 import net.chompsoftware.knes.readFileToUByteArray
 import java.io.File
 
@@ -48,7 +49,7 @@ object RomInspector {
 object RomLoader {
     fun loadMapper(rom: UByteArray): RomMapper {
         val info = RomInspector.inspectRom(rom)
-        println(info)
+        Logging.debug(info.toString())
         return when (info.mapper) {
             0 -> {
                 TypeZeroRomMapper(info, rom)

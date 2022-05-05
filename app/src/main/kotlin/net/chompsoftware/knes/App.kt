@@ -130,6 +130,11 @@ fun main() {
 //    val file = File("../../emulation/nes/Galaga.zip")
 //    val file = File("../../emulation/nes/Xevious.zip")
 
+    Logging.enableLogging(
+        level = 2,
+        toFile = false
+    )
+
     val mapper = if (file.name.endsWith(".nes")) {
         RomLoader.loadMapper(readFileToUByteArray(file))
     } else if (file.name.endsWith(".zip")) {

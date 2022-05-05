@@ -1,6 +1,7 @@
 package net.chompsoftware.knes.hardware.ppu
 
 import net.chompsoftware.knes.Configuration
+import net.chompsoftware.knes.Logging
 import net.chompsoftware.knes.toInt16
 import net.chompsoftware.knes.toLogHex
 import java.awt.Color
@@ -182,7 +183,7 @@ class NesPpu(
         when (position) {
             PPU_REG_CONTROLLER -> {
                 ppuOperationState = PpuOperationState.fromUByte(value)
-                println(ppuOperationState)
+                Logging.debug(ppuOperationState.toString())
             }
             PPU_REG_ADDRESS -> {
                 ppuAddressHigh = ppuAddressLow
@@ -198,12 +199,11 @@ class NesPpu(
             PPU_REG_SCROLL -> {
                 nesScrollStatus.write(value)
             }
-            else -> println("PPU IGNORED WRITE: $position => ${value.toLogHex()}")
+            else -> Logging.warn("PPU IGNORED WRITE: $position => ${value.toLogHex()}")
         }
     }
 
     override fun busMemoryReadEvent(position: Int): UByte {
-//        println("PPU READ: $position")
         return when (position) {
             PPU_REG_DATA -> {
                 when (val ppuMemoryPosition = toInt16(ppuAddressLow, ppuAddressHigh)) {

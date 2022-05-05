@@ -1,5 +1,7 @@
 package net.chompsoftware.knes.hardware.ppu
 
+import net.chompsoftware.knes.Logging
+
 
 data class NesScrollStatus(
     private var nextIsX: Boolean = true,
@@ -20,7 +22,7 @@ data class NesScrollStatus(
             y = value.toInt()
         }
         nextIsX = !nextIsX
-        println(this)
+        Logging.debug(this.toString())
     }
 
     fun getX() = x

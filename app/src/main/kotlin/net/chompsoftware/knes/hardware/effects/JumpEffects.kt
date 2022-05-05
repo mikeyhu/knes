@@ -7,7 +7,6 @@ import net.chompsoftware.knes.hardware.OperationState
 
 object Jump : Effect() {
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-//        println("Jumping from ${cpuState.programCounter.toHex()} to ${operationState.getLocation().toHex()}")
         cpuState.programCounter = operationState.getLocation()
     }
 
@@ -16,7 +15,6 @@ object Jump : Effect() {
 
 object JumpWithBreak : Effect() {
     override fun run(cpuState: CpuState, memory: Memory, operationState: OperationState) {
-//        println("Jumping from ${cpuState.programCounter.toHex()} to ${operationState.getLocation().toHex()}")
         cpuState.programCounter = operationState.getLocation()
         cpuState.isInterruptDisabledFlag = true
     }
